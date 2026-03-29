@@ -26,16 +26,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: r-lib/actions/setup-pandoc@v2
-
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck, any::xml2
-          needs: check
+          extra-packages: any::xml2
+          needs: website
 
       - name: Run data fetch scripts
         run: Rscript data-raw/fetch_all.R
@@ -51,12 +49,6 @@ jobs:
             echo "summary=Updated data files: $NEW" >> $GITHUB_OUTPUT
           fi
         shell: bash
-
-      - uses: r-lib/actions/check-r-package@v2
-        if: steps.changes.outputs.changed == 'true'
-        with:
-          upload-snapshots: true
-          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
 
       - name: Open Pull Request
         if: steps.changes.outputs.changed == 'true'
@@ -74,7 +66,7 @@ jobs:
             **Changes:** ${{ steps.changes.outputs.summary }}
 
             ### Review checklist
-            - [ ] R CMD CHECK passes (run above)
+            - [ ] R CMD CHECK passes (runs automatically on this PR)
             - [ ] `cdiscdata_versions()` output looks correct
             - [ ] Spot-check SDTM CT: `get_ct("sdtm")`
             - [ ] Spot-check ADaM CT: `get_ct("adam")`
