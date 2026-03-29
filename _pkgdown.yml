@@ -1,37 +1,4 @@
 url: https://humanpred.github.io/cdiscdata/
-
 template:
   bootstrap: 5
 
-navbar:
-  structure:
-    left: [intro, reference, articles, news]
-
-reference:
-  - title: "Data catalogue"
-    contents:
-      - list_datasets
-      - cdiscdata_versions
-  - title: "Version discovery"
-    contents:
-      - available_ct_versions
-  - title: "Data retrieval"
-    contents:
-      - get_dataset
-      - get_ct
-  - title: "File paths"
-    contents:
-      - schema_path
-      - stylesheet_path
-  - title: "Datasets"
-    contents:
-      - ct_sdtm
-      - ct_adam
-      - datasets_catalogue
-
-articles:
-  - title: "Guides"
-    navbar: ~
-    contents:
-      - cdiscdata
-      - versioning
