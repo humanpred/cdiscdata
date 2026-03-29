@@ -5,7 +5,7 @@
 utils::globalVariables(c("ct_sdtm", "ct_adam", "datasets_catalogue"))
 
 # Validate that a data frame has all required columns.
-# Used in data integrity checks.
+# Returns the data frame invisibly on success; stops on failure.
 .check_columns <- function(df, required, name) {
   missing <- setdiff(required, names(df))
   if (length(missing) > 0L) {
@@ -16,3 +16,9 @@ utils::globalVariables(c("ct_sdtm", "ct_adam", "datasets_catalogue"))
   }
   invisible(df)
 }
+
+# Thin wrappers around base functions that perform file-system look-ups.
+# Keeping them as one-liners in this file makes them mockable in tests
+# via testthat::local_mocked_bindings(.package = "cdiscdata").
+.sys_file <- function(...) system.file(...)
+.list_dirs <- function(path) list.dirs(path, full.names = FALSE, recursive = FALSE)

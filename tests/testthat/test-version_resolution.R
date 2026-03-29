@@ -49,3 +49,11 @@ test_that(".resolve_schema_version invalid version gives informative error", {
     regexp = "not available"
   )
 })
+
+test_that(".resolve_schema_version errors when no schema dirs found in package", {
+  local_mocked_bindings(
+    .list_dirs = function(path) character(0L),
+    .package = "cdiscdata"
+  )
+  expect_error(resolve_sch(NULL), "No Define-XML schemas found")
+})

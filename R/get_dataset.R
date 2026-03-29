@@ -60,8 +60,8 @@ get_dataset <- function(name, version = NULL) {
 
 # Internal: resolve schema/stylesheet version from disk; NULL returns latest
 .resolve_schema_version <- function(version) {
-  schema_dir <- system.file("extdata", "schema", package = "cdiscdata")
-  dirs <- list.dirs(schema_dir, full.names = FALSE, recursive = FALSE)
+  schema_dir <- .sys_file("extdata", "schema", package = "cdiscdata")
+  dirs <- .list_dirs(schema_dir)
   avail <- sort(
     sub("^define-xml-", "", dirs[grepl("^define-xml-", dirs)]),
     decreasing = TRUE

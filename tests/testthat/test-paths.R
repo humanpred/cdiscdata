@@ -35,3 +35,13 @@ test_that("schema_path rejects invalid version", {
 test_that("schema_path and stylesheet_path return different files for same version", {
   expect_false(identical(schema_path("2.1"), stylesheet_path("2.1")))
 })
+
+test_that("schema_path errors when installed file cannot be found", {
+  local_mocked_bindings(.sys_file = function(...) "", .package = "cdiscdata")
+  expect_error(schema_path("2.1"), "not found in package")
+})
+
+test_that("stylesheet_path errors when installed file cannot be found", {
+  local_mocked_bindings(.sys_file = function(...) "", .package = "cdiscdata")
+  expect_error(stylesheet_path("2.1"), "not found in package")
+})
