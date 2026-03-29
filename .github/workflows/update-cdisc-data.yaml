@@ -1,0 +1,75 @@
+name: Update CDISC Data
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Every Monday 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: "Force update even if no new versions detected"
+        type: boolean
+        default: false
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      - name: Run data fetch scripts
+        run: Rscript data-raw/fetch_all.R
+
+      - name: Check for changes to data/ and inst/extdata/
+        id: changes
+        run: |
+          if git diff --quiet data/ inst/extdata/ data-raw/raw/; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            NEW=$(git diff --name-only data/ data-raw/raw/ | head -5 | tr '\n' ' ')
+            echo "summary=Updated data files: $NEW" >> $GITHUB_OUTPUT
+          fi
+
+      - name: R CMD CHECK on updated package
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          R CMD build .
+          R CMD CHECK --as-cran *.tar.gz
+
+      - name: Open Pull Request
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: auto/cdisc-data-update
+          commit-message: "data: automated CDISC data update"
+          title: "Data update: ${{ steps.changes.outputs.summary }}"
+          body: |
+            ## Automated CDISC Data Update
+
+            This PR was opened automatically after new CDISC data was detected.
+
+            **Changes:** ${{ steps.changes.outputs.summary }}
+
+            ### Review checklist
+            - [ ] R CMD CHECK passes (run above)
+            - [ ] `cdiscdata_versions()` output looks correct
+            - [ ] Spot-check SDTM CT: `get_ct("sdtm")`
+            - [ ] Spot-check ADaM CT: `get_ct("adam")`
+            - [ ] Update `NEWS.md` with new version(s)
+            - [ ] Decide whether to trigger a CRAN submission after merge
+
+            ### CRAN release decision
+            - Patch bump (0.x.Y): routine quarterly CT update
+            - Minor bump (0.X.0): new schema or stylesheet version
+          labels: "automated,data-update"

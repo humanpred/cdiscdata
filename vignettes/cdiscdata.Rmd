@@ -1,0 +1,69 @@
+---
+title: "Getting Started with cdiscdata"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with cdiscdata}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(cdiscdata)
+```
+
+## Overview
+
+`cdiscdata` provides versioned CDISC reference data as a standard R package:
+
+- **Controlled Terminology (CT)**: SDTM and ADaM CT from the NCI EVS FTP site,
+  all historical versions in a single compact table.
+- **Define-XML schemas (XSD)**: For validating define.xml files.
+- **XSLT stylesheets**: For rendering define.xml as HTML.
+
+## Discovering what is available
+
+```{r}
+list_datasets()
+cdiscdata_versions()
+```
+
+## Controlled Terminology
+
+Retrieve the latest CT:
+
+```{r}
+ct <- get_ct("sdtm")
+nrow(ct)
+head(ct[, c("codelist_code", "codelist_name", "term", "decoded_value")])
+```
+
+Retrieve a specific historical version:
+
+```{r}
+versions <- available_ct_versions("sdtm")
+head(versions)
+
+# Get CT as it was at the second-most-recent release
+if (length(versions) >= 2) {
+  ct_old <- get_ct("sdtm", version = versions[[2]])
+  nrow(ct_old)
+}
+```
+
+## Define-XML schemas and stylesheets
+
+```{r}
+schema_path("2.1")
+stylesheet_path("2.1")
+```
+
+Use `get_dataset()` as a unified entry point:
+
+```{r}
+get_dataset("define_xml_schema", version = "2.1")
+get_dataset("ct_sdtm")
+```

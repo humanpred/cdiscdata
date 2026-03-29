@@ -1,0 +1,29 @@
+Package: cdiscdata
+Title: Versioned CDISC Standards Reference Data
+Version: 0.1.0
+Authors@R: person("Bill", "Denney", email = "wdenney@humanpred.com",
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0002-5759-428X"))
+Description: Provides versioned CDISC Controlled Terminology (SDTM, ADaM)
+    and Define-XML schemas (XSD) and CDISC XSLT stylesheets. Uses a
+    validity-date design to store all historical CT versions compactly
+    without redundant row duplication. Intended as a shared data
+    dependency for pharmaverse-aligned packages.
+License: MIT + file LICENSE
+Depends: R (>= 4.1.0)
+Suggests:
+    testthat (>= 3.0.0),
+    xml2,
+    withr,
+    covr,
+    pkgdown,
+    knitr,
+    rmarkdown
+LazyData: true
+LazyDataCompression: xz
+Encoding: UTF-8
+Config/testthat/edition: 3
+URL: https://github.com/humanpred/cdiscdata
+BugReports: https://github.com/humanpred/cdiscdata/issues
+VignetteBuilder: knitr
+RoxygenNote: 7.3.3
