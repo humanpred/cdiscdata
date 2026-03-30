@@ -65,5 +65,8 @@ Use `get_dataset()` as a unified entry point:
 
 ```{r}
 get_dataset("define_xml_schema", version = "2.1")
-get_dataset("ct_sdtm")
+
+ct_via_generic <- get_dataset("ct_sdtm")
+nrow(ct_via_generic)
+head(ct_via_generic[, c("codelist_code", "term", "valid_from", "valid_to")])
 ```
