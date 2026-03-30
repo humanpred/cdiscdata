@@ -1,7 +1,7 @@
 # Minimal fixture CT table for unit tests — does not load package data
 make_ct_fixture <- function(n_terms = 5L,
-                             valid_from = as.Date("2024-03-29"),
-                             valid_to   = as.Date(NA)) {
+                            valid_from = as.Date("2024-03-29"),
+                            valid_to   = as.Date(NA)) {
   data.frame(
     codelist_code  = "C66731",
     codelist_name  = "SEX",
@@ -21,8 +21,8 @@ make_ct_fixture <- function(n_terms = 5L,
 # Fixture with two CT versions: an old row closed out and a new replacement
 make_versioned_ct_fixture <- function() {
   old_row <- make_ct_fixture(n_terms = 2L, valid_from = as.Date("2023-09-29"),
-                              valid_to = as.Date("2024-03-28"))
+                             valid_to = as.Date("2024-03-28"))
   new_row <- make_ct_fixture(n_terms = 3L, valid_from = as.Date("2024-03-29"),
-                              valid_to = as.Date(NA))
+                             valid_to = as.Date(NA))
   rbind(old_row, new_row)
 }
