@@ -12,6 +12,7 @@ STYLESHEET_URLS <- c(
     "https://raw.githubusercontent.com/dbosak01/defineR/master/inst/extdata/2.0.0/cdisc-xsl/define2-0.xsl"
 )
 
+stylesheet_updated <- FALSE
 dir.create("inst/extdata/stylesheet", recursive = TRUE, showWarnings = FALSE)
 
 for (fname in names(STYLESHEET_URLS)) {
@@ -19,6 +20,7 @@ for (fname in names(STYLESHEET_URLS)) {
   if (!file.exists(dest)) {
     message(sprintf("Downloading stylesheet %s...", fname))
     download.file(STYLESHEET_URLS[[fname]], dest, quiet = TRUE, mode = "wb")
+    stylesheet_updated <- TRUE
   }
 }
 message("Stylesheets are in place.")

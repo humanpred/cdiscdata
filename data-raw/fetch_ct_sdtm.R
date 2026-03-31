@@ -72,4 +72,5 @@ if (length(dates_needed) == 0L) {
   # ── Save ────────────────────────────────────────────────────────────────────
   usethis::use_data(ct_sdtm, overwrite = TRUE, compress = "xz")
   message("ct_sdtm saved.")
+  sdtm_updated <- TRUE
 }

@@ -69,4 +69,5 @@ if (length(dates_needed) == 0L) {
   # ── Save ────────────────────────────────────────────────────────────────────
   usethis::use_data(ct_adam, overwrite = TRUE, compress = "xz")
   message("ct_adam saved.")
+  adam_updated <- TRUE
 }

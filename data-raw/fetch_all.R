@@ -32,6 +32,12 @@ old_adam_versions <- if (file.exists("data/ct_adam.rda")) {
   character(0)
 }
 
+# Flags set to TRUE by each fetch script when new data is actually downloaded.
+sdtm_updated       <- FALSE
+adam_updated       <- FALSE
+schema_updated     <- FALSE
+stylesheet_updated <- FALSE
+
 message("\n--- SDTM CT ---")
 source("data-raw/fetch_ct_sdtm.R")
 
@@ -44,13 +50,19 @@ source("data-raw/fetch_schemas.R")
 message("\n--- XSLT Stylesheets ---")
 source("data-raw/fetch_stylesheets.R")
 
-message("\n--- Rebuild datasets_catalogue ---")
-source("data-raw/build_catalogue.R")
+any_updated <- sdtm_updated || adam_updated || schema_updated || stylesheet_updated
 
-message("\n--- Change summary ---")
-source("data-raw/describe_changes.R")
-describe_ct_changes(ct_sdtm, prev_versions = old_sdtm_versions, label = "SDTM CT")
-describe_ct_changes(ct_adam, prev_versions = old_adam_versions, label = "ADaM CT")
+if (any_updated) {
+  message("\n--- Rebuild datasets_catalogue ---")
+  source("data-raw/build_catalogue.R")
+
+  message("\n--- Change summary ---")
+  source("data-raw/describe_changes.R")
+  describe_ct_changes(ct_sdtm, prev_versions = old_sdtm_versions, label = "SDTM CT")
+  describe_ct_changes(ct_adam, prev_versions = old_adam_versions, label = "ADaM CT")
+} else {
+  message("\nAll data is already up to date. Nothing to update.")
+}
 
 message("\n=== Done ===")
 message(Sys.time())

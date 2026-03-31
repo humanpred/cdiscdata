@@ -28,6 +28,7 @@ SCHEMA_URLS <- list(
   )
 )
 
+schema_updated <- FALSE
 for (ver in names(SCHEMA_URLS)) {
   spec <- SCHEMA_URLS[[ver]]
   dir.create(spec$dir, recursive = TRUE, showWarnings = FALSE)
@@ -36,6 +37,7 @@ for (ver in names(SCHEMA_URLS)) {
     if (!file.exists(dest)) {
       message(sprintf("Downloading schema %s (Define-XML %s)...", fname, ver))
       download.file(spec$files[[fname]], dest, quiet = TRUE, mode = "wb")
+      schema_updated <- TRUE
     }
   }
 }
