@@ -25,49 +25,62 @@ if (file.exists(existing_path)) {
 }
 
 # ── Find versions to add ───────────────────────────────────────────────────────
-current_date  <- fetch_current_release_date("adam")
-archive_dates <- list_archive_dates("adam")
-all_dates     <- sort(unique(c(archive_dates, current_date)))
-
-dates_needed <- all_dates[
-  !vapply(all_dates, function(d) {
-    already_have_version(ct_adam, d) || file.exists(raw_ct_path("adam", d))
-  }, logical(1L))
-]
-
-if (length(dates_needed) == 0L) {
-  message("ADaM CT is already up to date.")
-} else {
-  message(sprintf(
-    "Adding %d new ADaM CT version(s): %s",
-    length(dates_needed),
-    paste(format(dates_needed), collapse = ", ")
-  ))
-
-  # ── Apply updates in chronological order ───────────────────────────────────
-  for (d in sort(dates_needed)) {
-    d <- as.Date(d)
-    message(sprintf("  Processing %s...", format(d)))
-
-    url <- if (identical(d, current_date)) ADAM_CURRENT else archive_url("adam", d)
-
-    new_release <- tryCatch(
-      fetch_raw_ct_tbl(url, "adam", d),
-      error = function(e) {
-        warning(sprintf("Failed to fetch/parse ADaM CT %s: %s", format(d), e$message))
-        NULL
-      }
-    )
-
-    if (!is.null(new_release)) {
-      ct_adam <- apply_ct_update(ct_adam, new_release, d)
-      if (nrow(ct_adam) > 0L) assert_no_na_valid_from(ct_adam)
-      message(sprintf("    -> ct_adam now has %d rows", nrow(ct_adam)))
-    }
+current_date <- tryCatch(
+  fetch_current_release_date("adam"),
+  error = function(e) {
+    message(sprintf(
+      "Could not fetch ADaM CT release date stamp: %s\nFalling back to archive listing only.",
+      e$message
+    ))
+    as.Date(NA_character_)
   }
+)
+archive_dates <- list_archive_dates("adam")
+all_dates     <- sort(unique(c(archive_dates, if (!is.na(current_date)) current_date)))
 
-  # ── Save ────────────────────────────────────────────────────────────────────
-  usethis::use_data(ct_adam, overwrite = TRUE, compress = "xz")
-  message("ct_adam saved.")
-  adam_updated <- TRUE
+if (length(all_dates) == 0L) {
+  message("Could not reach NCI server. Skipping ADaM CT update.")
+} else {
+  dates_needed <- all_dates[
+    !vapply(all_dates, function(d) {
+      already_have_version(ct_adam, d) || file.exists(raw_ct_path("adam", d))
+    }, logical(1L))
+  ]
+
+  if (length(dates_needed) == 0L) {
+    message("ADaM CT is already up to date.")
+  } else {
+    message(sprintf(
+      "Adding %d new ADaM CT version(s): %s",
+      length(dates_needed),
+      paste(format(dates_needed), collapse = ", ")
+    ))
+
+    # ── Apply updates in chronological order ───────────────────────────────────
+    for (d in sort(dates_needed)) {
+      d <- as.Date(d)
+      message(sprintf("  Processing %s...", format(d)))
+
+      url <- if (identical(d, current_date)) ADAM_CURRENT else archive_url("adam", d)
+
+      new_release <- tryCatch(
+        fetch_raw_ct_tbl(url, "adam", d),
+        error = function(e) {
+          warning(sprintf("Failed to fetch/parse ADaM CT %s: %s", format(d), e$message))
+          NULL
+        }
+      )
+
+      if (!is.null(new_release)) {
+        ct_adam <- apply_ct_update(ct_adam, new_release, d)
+        if (nrow(ct_adam) > 0L) assert_no_na_valid_from(ct_adam)
+        message(sprintf("    -> ct_adam now has %d rows", nrow(ct_adam)))
+      }
+    }
+
+    # ── Save ────────────────────────────────────────────────────────────────────
+    usethis::use_data(ct_adam, overwrite = TRUE, compress = "xz")
+    message("ct_adam saved.")
+    adam_updated <- TRUE
+  }
 }
