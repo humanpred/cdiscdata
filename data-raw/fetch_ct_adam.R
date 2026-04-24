@@ -61,7 +61,7 @@ if (length(all_dates) == 0L) {
       d <- as.Date(d)
       message(sprintf("  Processing %s...", format(d)))
 
-      url <- if (identical(d, current_date)) ADAM_CURRENT else archive_url("adam", d)
+      url <- archive_url("adam", d)
 
       new_release <- tryCatch(
         fetch_raw_ct_tbl(url, "adam", d),
