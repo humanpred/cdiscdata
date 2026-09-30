@@ -22,11 +22,35 @@
   further, rarer source-data quirks this could not fully resolve; the
   *current* release is verified clean, and the historical gap is bounded by
   `tests/testthat/test-data_integrity.R` rather than silently tolerated.
-* Fixed `fetch_current_release_date()` for NCI's 2026 change to the
-  publication-date-stamp file format (now a small Quarter/Release
-  Date/Modified date/Reason table instead of a bare date on line 1); it now
-  scans every line and returns the newest date found, rather than assuming
-  the date is on the first line.
+* Fixed `list_archive_dates()`, which had been silently returning zero
+  dates: NCI rebuilt evs.nci.nih.gov as a JavaScript single-page app at some
+  point in 2024-2025, so the Archive/ directory URL this scraped for file
+  names now serves that app's empty HTML shell instead of a plain listing.
+  It now calls the JSON API the app itself uses
+  (`GET /ftp1/folder?folder=<path>`) instead; see the comment above
+  `list_archive_dates()` in `data-raw/utils_nci.R` for that API's one
+  limitation (no working pagination past 1000 entries) and why it does not
+  affect finding every release date in practice. `fetch_current_release_date()`
+  (previously reading NCI's Publication Date Stamp file, which changed
+  format at least twice - a bare date, then "SDTM Terminology YYYY-MM-DD",
+  then, as of 2026, a small table - and 403'd from GitHub Actions in
+  between) was replaced with a derivation from this same, now-working
+  archive listing (`origin/main` PR "fix/nci-stamp-403-fallback", merged
+  into this branch).
+* Investigated a reported gap in `available_ct_versions()` - SDTM CT
+  appeared to be missing the 2024-06, 2024-12, 2025-06, 2025-12, and
+  2026-06 quarterly releases. Verified directly against NCI's own file
+  listing (not assumed): none of these five releases exist for either
+  SDTM or ADaM - NCI shifted SDTM CT from quarterly to semi-annual
+  (March/September) releases starting in 2024, and ADaM CT has never been
+  reliably quarterly (gaps of 266-448 days recur from 2017 on, long before
+  2024). There was nothing to backfill. Added
+  `tests/testthat/test-data_integrity.R` gap tests calibrated to each
+  type's actual verified history (200 days for SDTM, 500 days for ADaM;
+  not a single ~120-day bound, which would flag the genuine 2024-on
+  semi-annual gaps as failures) plus a freshness check, so a release that
+  is *actually* skipped or a fetch workflow that silently stops running
+  would still fail loudly.
 * Verified `PKPARMCD` (C85839), `PKPARM` (C85493), and `PKUNIT` (C85494)
   are present in the 2026-09-25 release and returned by `get_ct("sdtm")`.
 
