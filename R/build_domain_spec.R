@@ -50,7 +50,10 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
                               adsl = TRUE) {
   domain <- match.arg(domain)
   if (domain != "ADPP" && !isTRUE(adsl)) {
-    warning("`adsl` is ignored for domain != \"ADPP\".")
+    .cdiscdata_warn(
+      "`adsl` is ignored for domain != \"ADPP\".",
+      "adsl_ignored"
+    )
   }
 
   if (domain %in% c("PP", "SUPPPP")) {
@@ -60,9 +63,10 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
     version <- .resolve_ig_version(ig_version, sdtmig_all$version, "SDTMIG")
     sub <- sdtmig_all[sdtmig_all$domain == ig_domain & sdtmig_all$version == version, ]
     if (nrow(sub) == 0L) {
-      stop(paste0(
-        "No SDTMIG '", ig_domain, "' variables found for version '", version, "'."
-      ))
+      .cdiscdata_abort(
+        paste0("No SDTMIG '", ig_domain, "' variables found for version '", version, "'."),
+        "no_ig_variables"
+      )
     }
     ct <- get_ct("sdtm", version = ct_version)
     sub$source <- "SDTMIG"
@@ -72,7 +76,10 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
     version <- .resolve_ig_version(ig_version, adamig_all$version, "ADaMIG")
     bds <- adamig_all[adamig_all$dataset == "BDS" & adamig_all$version == version, ]
     if (nrow(bds) == 0L) {
-      stop(paste0("No ADaMIG BDS variables found for version '", version, "'."))
+      .cdiscdata_abort(
+        paste0("No ADaMIG BDS variables found for version '", version, "'."),
+        "no_ig_variables"
+      )
     }
     bds$source <- "BDS"
     ct_adam <- get_ct("adam", version = ct_version)
@@ -123,10 +130,13 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
     return(as.character(max(package_version(avail))))
   }
   if (!ig_version %in% avail) {
-    stop(paste0(
-      "Version '", ig_version, "' is not available for ", label, ". ",
-      "Available versions: ", paste(avail, collapse = ", "), "."
-    ))
+    .cdiscdata_abort(
+      paste0(
+        "Version '", ig_version, "' is not available for ", label, ". ",
+        "Available versions: ", paste(avail, collapse = ", "), "."
+      ),
+      "ig_version_unavailable"
+    )
   }
   ig_version
 }

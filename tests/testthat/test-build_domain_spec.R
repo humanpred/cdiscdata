@@ -65,15 +65,74 @@ test_that("shared BDS/ADSL variables keep the BDS version, not duplicated", {
   expect_equal(sum(adpp$variable == "STUDYID"), 1L)
 })
 
-test_that("build_domain_spec warns when adsl is passed for a non-ADPP domain", {
-  expect_warning(build_domain_spec("PP", adsl = FALSE), regexp = "ignored")
+test_that("build_domain_spec warns (classed) when adsl is passed for a non-ADPP domain", {
+  w <- expect_warning(
+    build_domain_spec("PP", adsl = FALSE),
+    class = "cdiscdata_warning_adsl_ignored"
+  )
+  expect_match(conditionMessage(w), "ignored", fixed = TRUE)
 })
 
-test_that("build_domain_spec aborts informatively on unknown ig_version", {
-  expect_error(build_domain_spec("PP", ig_version = "9.9"), regexp = "not available")
-  expect_error(build_domain_spec("ADPP", ig_version = "9.9"), regexp = "not available")
+test_that("build_domain_spec aborts (classed) on unknown ig_version", {
+  e_pp <- expect_error(
+    build_domain_spec("PP", ig_version = "9.9"),
+    class = "cdiscdata_error_ig_version_unavailable"
+  )
+  expect_match(conditionMessage(e_pp), "not available", fixed = TRUE)
+
+  e_adpp <- expect_error(
+    build_domain_spec("ADPP", ig_version = "9.9"),
+    class = "cdiscdata_error_ig_version_unavailable"
+  )
+  expect_match(conditionMessage(e_adpp), "not available", fixed = TRUE)
 })
 
 test_that("build_domain_spec aborts informatively on unknown ct_version", {
   expect_error(build_domain_spec("PP", ct_version = "1900-01-01"), regexp = "not available")
+})
+
+test_that("build_domain_spec aborts (classed) when an SDTMIG version has no PP/SUPPQUAL rows", {
+  # Not reachable via the public API with the currently bundled ig_sdtm
+  # (SDTMIG's one version, 3.2, always has both PP and SUPPQUAL rows); this
+  # exercises the defensive check directly by mocking get_ig() to return a
+  # version that validates but has no rows for either domain.
+  fake_sdtm <- data.frame(
+    source = "SDTMIG", version = "9.9", class = NA_character_,
+    domain = "OTHER", order = 1L, variable = "X", label = "X", type = "Char",
+    role = NA_character_, core = "Req", codelist = NA_character_,
+    length = NA_integer_, notes = NA_character_, stringsAsFactors = FALSE
+  )
+  testthat::local_mocked_bindings(
+    get_ig = function(standard, version = NULL) {
+      if (standard == "sdtm") fake_sdtm else get_ig(standard, version)
+    },
+    .package = "cdiscdata"
+  )
+  e <- expect_error(
+    build_domain_spec("PP"),
+    class = "cdiscdata_error_no_ig_variables"
+  )
+  expect_match(conditionMessage(e), "No SDTMIG 'PP' variables found", fixed = TRUE)
+})
+
+test_that("build_domain_spec aborts (classed) when an ADaMIG version has no BDS rows", {
+  # Same rationale as the SDTMIG test above: not reachable with the
+  # currently bundled ig_adam (every version has BDS rows), so mocked.
+  fake_adam <- data.frame(
+    dataset = "OTHER", version = "9.9", category = "X", order = 1L,
+    variable = "X", label = "X", type = "Char", core = "Req",
+    codelist = NA_character_, length = NA_integer_, notes = NA_character_,
+    stringsAsFactors = FALSE
+  )
+  testthat::local_mocked_bindings(
+    get_ig = function(standard, version = NULL) {
+      if (standard == "adam") fake_adam else get_ig(standard, version)
+    },
+    .package = "cdiscdata"
+  )
+  e <- expect_error(
+    build_domain_spec("ADPP"),
+    class = "cdiscdata_error_no_ig_variables"
+  )
+  expect_match(conditionMessage(e), "No ADaMIG BDS variables found", fixed = TRUE)
 })

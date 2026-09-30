@@ -1,5 +1,20 @@
 # cdiscdata 0.2.0
 
+## Classed conditions and coverage
+
+* Every error and warning `get_ig()` and `build_domain_spec()` raise is now
+  classed (e.g. `cdiscdata_error_ig_version_unavailable`,
+  `cdiscdata_error_no_ig_variables`, `cdiscdata_warning_adsl_ignored`), so
+  they can be caught or asserted on by class rather than by matching
+  message text. Implemented with a small internal `.cdiscdata_abort()`/
+  `.cdiscdata_warn()` helper rather than a new dependency (e.g. rlang), to
+  keep the package's zero-runtime-dependency design.
+* `build_domain_spec()` is now at 100% line coverage; two defensive checks
+  (an SDTMIG/ADaMIG version with no rows for the requested domain/dataset -
+  not reachable via the public API with the currently bundled `ig_sdtm`/
+  `ig_adam`, since every version there has PP/SUPPQUAL/BDS rows) are
+  exercised directly via mocking `get_ig()`.
+
 ## CT refresh
 
 * Added the 2026-09-25 NCI SDTM and ADaM CT releases (previous latest:

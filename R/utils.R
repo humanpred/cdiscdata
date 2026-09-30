@@ -22,6 +22,25 @@ utils::globalVariables(c("ct_sdtm", "ct_adam", "ig_sdtm", "ig_adam", "datasets_c
   e[[name]]
 }
 
+# Signal a classed error/warning without adding a runtime dependency (e.g.
+# rlang) just for condition classes. `class` is a short suffix, prefixed
+# with "cdiscdata_error_"/"cdiscdata_warning_" so every condition this
+# package raises is findable by class (tryCatch/testthat::expect_error(...,
+# class = ...)) without depending on exact message text.
+.cdiscdata_abort <- function(message, class) {
+  stop(structure(
+    class = c(paste0("cdiscdata_error_", class), "error", "condition"),
+    list(message = message, call = sys.call(-1L))
+  ))
+}
+
+.cdiscdata_warn <- function(message, class) {
+  warning(structure(
+    class = c(paste0("cdiscdata_warning_", class), "warning", "condition"),
+    list(message = message, call = sys.call(-1L))
+  ))
+}
+
 # Validate that a data frame has all required columns.
 # Returns the data frame invisibly on success; stops on failure.
 .check_columns <- function(df, required, name) {

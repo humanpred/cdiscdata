@@ -41,10 +41,13 @@ get_ig <- function(standard = c("sdtm", "adam"), version = NULL) {
 
   avail <- sort(unique(tbl$version))
   if (!version %in% avail) {
-    stop(paste0(
-      "Version '", version, "' is not available for standard '", standard, "'. ",
-      "Available versions: ", paste(avail, collapse = ", "), "."
-    ))
+    .cdiscdata_abort(
+      paste0(
+        "Version '", version, "' is not available for standard '", standard, "'. ",
+        "Available versions: ", paste(avail, collapse = ", "), "."
+      ),
+      "ig_version_unavailable"
+    )
   }
   tbl[tbl$version == version, ]
 }

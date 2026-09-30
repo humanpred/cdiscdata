@@ -27,9 +27,18 @@ test_that("get_ig filters to one version when given", {
   expect_true(all(adam_10$version == "1.0"))
 })
 
-test_that("get_ig aborts informatively on unknown version", {
-  expect_error(get_ig("sdtm", version = "9.9"), regexp = "not available")
-  expect_error(get_ig("adam", version = "9.9"), regexp = "not available")
+test_that("get_ig aborts (classed) on unknown version", {
+  e_sdtm <- expect_error(
+    get_ig("sdtm", version = "9.9"),
+    class = "cdiscdata_error_ig_version_unavailable"
+  )
+  expect_match(conditionMessage(e_sdtm), "not available", fixed = TRUE)
+
+  e_adam <- expect_error(
+    get_ig("adam", version = "9.9"),
+    class = "cdiscdata_error_ig_version_unavailable"
+  )
+  expect_match(conditionMessage(e_adam), "not available", fixed = TRUE)
 })
 
 test_that("ig_sdtm has expected columns and no NA variable/version", {
