@@ -8,5 +8,5 @@
 cdiscdata_versions <- function() {
   cat_cols <- c("dataset", "type", "description", "latest", "n_versions",
                 "last_updated")
-  datasets_catalogue[, cat_cols]
+  .pkg_data("datasets_catalogue")[, cat_cols]
 }
