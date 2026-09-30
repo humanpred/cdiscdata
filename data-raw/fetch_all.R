@@ -54,6 +54,11 @@ any_updated <- sdtm_updated || adam_updated || schema_updated || stylesheet_upda
 
 if (any_updated) {
   message("\n--- Rebuild datasets_catalogue ---")
+  # build_catalogue.R also reports on ig_sdtm/ig_adam (built separately by
+  # build_ig_sdtm.R / build_ig_adam.R, since they have no NCI network
+  # source); load the already-built copies rather than rebuilding them here.
+  load("data/ig_sdtm.rda")
+  load("data/ig_adam.rda")
   source("data-raw/build_catalogue.R")
 
   message("\n--- Change summary ---")

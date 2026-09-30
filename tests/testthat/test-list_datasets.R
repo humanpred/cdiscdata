@@ -5,7 +5,7 @@ test_that("list_datasets returns a data frame", {
 
 test_that("list_datasets contains expected dataset names", {
   ds <- list_datasets()$dataset
-  expect_true(all(c("ct_sdtm", "ct_adam",
+  expect_true(all(c("ct_sdtm", "ct_adam", "ig_sdtm", "ig_adam",
                     "define_xml_schema", "define_xml_stylesheet") %in% ds))
 })
 
@@ -18,5 +18,5 @@ test_that("list_datasets has required columns", {
 
 test_that("list_datasets type values are expected set", {
   types <- unique(list_datasets()$type)
-  expect_true(all(types %in% c("CT", "Schema", "Stylesheet")))
+  expect_true(all(types %in% c("CT", "IG", "Schema", "Stylesheet")))
 })
