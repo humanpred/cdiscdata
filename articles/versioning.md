@@ -12,10 +12,10 @@ duplication, since most terms do not change between releases.
 `cdiscdata` uses a *validity-date* design. Each row represents a unique
 **term-state**: the set of values for a term at a given point in time.
 
-| Column       | Meaning                                                                              |
-|--------------|--------------------------------------------------------------------------------------|
-| `valid_from` | Date of the first CT release in which this term-state appeared                       |
-| `valid_to`   | Date of the last CT release in which this term-state appeared; `NA` if still current |
+| Column | Meaning |
+|----|----|
+| `valid_from` | Date of the first CT release in which this term-state appeared |
+| `valid_to` | Date of the last CT release in which this term-state appeared; `NA` if still current |
 
 When a term’s content changes between releases: 1. The old row is
 *closed* by setting `valid_to = new_release_date - 1`. 2. A new row is
@@ -32,6 +32,7 @@ and
 filter the table to rows valid at the requested date:
 
 ``` r
+
 # Rows where valid_from <= query_date AND (valid_to >= query_date OR valid_to is NA)
 tbl[tbl$valid_from <= query_date &
       (is.na(tbl$valid_to) | tbl$valid_to >= query_date), ]
@@ -52,6 +53,7 @@ keeping the package size manageable for CRAN submission.
 ## Example
 
 ``` r
+
 # How many rows represent "closed" (historical) term states?
 n_closed  <- sum(!is.na(ct_sdtm$valid_to))
 n_current <- sum(is.na(ct_sdtm$valid_to))

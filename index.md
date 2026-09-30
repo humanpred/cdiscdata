@@ -23,6 +23,7 @@ Install the development version from
 [GitHub](https://github.com/humanpred/cdiscdata):
 
 ``` r
+
 # install.packages("pak")
 pak::pak("humanpred/cdiscdata")
 ```
@@ -32,6 +33,7 @@ pak::pak("humanpred/cdiscdata")
 ### Discover what is available
 
 ``` r
+
 library(cdiscdata)
 
 # List all bundled datasets with version counts and latest release dates
@@ -44,6 +46,7 @@ cdiscdata_versions()
 ### Controlled Terminology
 
 ``` r
+
 # Latest SDTM CT (all codelists and terms as a data frame)
 ct <- get_ct("sdtm")
 nrow(ct)
@@ -69,6 +72,7 @@ reconstructs the state of any release on the fly.
 ### Define-XML schemas and stylesheets
 
 ``` r
+
 # File paths to the bundled XSD and XSLT assets
 schema_path("2.1")       # path to the Define-XML 2.1 XSD directory
 stylesheet_path("2.1")   # path to the Define-XML 2.1 XSLT file
@@ -83,6 +87,7 @@ xml_validate(doc, schema)
 ### Unified access via `get_dataset()`
 
 ``` r
+
 # get_dataset() is a single entry point for all bundled assets
 get_dataset("ct_sdtm")                          # latest SDTM CT
 get_dataset("ct_adam", version = "2024-03-29")  # historical ADaM CT
@@ -96,22 +101,22 @@ get_dataset("define_xml_stylesheet", version = "2.0")
 pharmaverse-aligned packages (e.g. `cdisclib`, `defineauto`). Key design
 decisions:
 
-| Decision                                 | Rationale                                                                 |
-|------------------------------------------|---------------------------------------------------------------------------|
-| Zero runtime dependencies                | Easier deployment in locked/air-gapped environments; CRAN friendly        |
-| Validity-date CT storage                 | Compact representation of all historical releases without row duplication |
-| Public data only                         | No API key or license required to install or use the package              |
-| Per-release RDS cache in `data-raw/raw/` | Fast incremental rebuilds; preserves full audit trail                     |
+| Decision | Rationale |
+|----|----|
+| Zero runtime dependencies | Easier deployment in locked/air-gapped environments; CRAN friendly |
+| Validity-date CT storage | Compact representation of all historical releases without row duplication |
+| Public data only | No API key or license required to install or use the package |
+| Per-release RDS cache in `data-raw/raw/` | Fast incremental rebuilds; preserves full audit trail |
 
 ## Data sources
 
-| Data                  | Source                                                                                                                                            | License          |
-|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
-| SDTM CT               | [NCI EVS FTP](https://evs.nci.nih.gov/ftp1/CDISC/SDTM/)                                                                                           | Public domain    |
-| ADaM CT               | [NCI EVS FTP](https://evs.nci.nih.gov/ftp1/CDISC/ADaM/)                                                                                           | Public domain    |
-| Define-XML 2.1 schema | [cdisc-org/DataExchange-RWD-Lineage](https://github.com/cdisc-org/DataExchange-RWD-Lineage)                                                       | Apache 2.0       |
-| Define-XML 2.0 schema | [dbosak01/defineR](https://github.com/dbosak01/defineR)                                                                                           | MIT              |
-| XSLT stylesheets      | [cdisc-org/data-definition-engine](https://github.com/cdisc-org/data-definition-engine) / [dbosak01/defineR](https://github.com/dbosak01/defineR) | Apache 2.0 / MIT |
+| Data | Source | License |
+|----|----|----|
+| SDTM CT | [NCI EVS FTP](https://evs.nci.nih.gov/ftp1/CDISC/SDTM/) | Public domain |
+| ADaM CT | [NCI EVS FTP](https://evs.nci.nih.gov/ftp1/CDISC/ADaM/) | Public domain |
+| Define-XML 2.1 schema | [cdisc-org/DataExchange-RWD-Lineage](https://github.com/cdisc-org/DataExchange-RWD-Lineage) | Apache 2.0 |
+| Define-XML 2.0 schema | [dbosak01/defineR](https://github.com/dbosak01/defineR) | MIT |
+| XSLT stylesheets | [cdisc-org/data-definition-engine](https://github.com/cdisc-org/data-definition-engine) / [dbosak01/defineR](https://github.com/dbosak01/defineR) | Apache 2.0 / MIT |
 
 ## Related packages
 

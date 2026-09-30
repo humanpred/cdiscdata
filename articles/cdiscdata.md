@@ -13,6 +13,7 @@ package:
 ## Discovering what is available
 
 ``` r
+
 list_datasets()
 #>                 dataset       type ct_type                 description
 #> 1               ct_sdtm         CT    sdtm SDTM Controlled Terminology
@@ -42,6 +43,7 @@ cdiscdata_versions()
 Retrieve the latest CT:
 
 ``` r
+
 ct <- get_ct("sdtm")
 nrow(ct)
 #> [1] 46774
@@ -65,6 +67,7 @@ head(ct[, c("codelist_code", "codelist_name", "term", "decoded_value")])
 Retrieve a specific historical version:
 
 ``` r
+
 versions <- available_ct_versions("sdtm")
 head(versions)
 #> [1] "2026-03-27" "2025-09-26" "2025-03-28" "2024-09-27" "2024-03-29"
@@ -81,6 +84,7 @@ if (length(versions) >= 2) {
 ## Define-XML schemas and stylesheets
 
 ``` r
+
 schema_path("2.1")
 #> [1] "/home/runner/work/_temp/Library/cdiscdata/extdata/schema/define-xml-2.1/define2-1-0.xsd"
 stylesheet_path("2.1")
@@ -92,6 +96,7 @@ Use
 as a unified entry point:
 
 ``` r
+
 get_dataset("define_xml_schema", version = "2.1")
 #> [1] "/home/runner/work/_temp/Library/cdiscdata/extdata/schema/define-xml-2.1/define2-1-0.xsd"
 

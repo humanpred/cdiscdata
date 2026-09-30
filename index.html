@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Versioned CDISC Standards Reference Data • cdiscdata</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Versioned CDISC Standards Reference Data">
 <meta name="description" content="Provides versioned CDISC Controlled Terminology (SDTM, ADaM) and Define-XML schemas (XSD) and CDISC XSLT stylesheets. Uses a validity-date design to store all historical CT versions compactly without redundant row duplication. Intended as a shared data dependency for pharmaverse-aligned packages.">
@@ -146,24 +146,24 @@
 <col width="47%">
 <col width="52%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Decision</th>
 <th>Rationale</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Zero runtime dependencies</td>
 <td>Easier deployment in locked/air-gapped environments; CRAN friendly</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Validity-date CT storage</td>
 <td>Compact representation of all historical releases without row duplication</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Public data only</td>
 <td>No API key or license required to install or use the package</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Per-release RDS cache in <code>data-raw/raw/</code>
 </td>
 <td>Fast incremental rebuilds; preserves full audit trail</td>
@@ -180,33 +180,33 @@
 <col width="34%">
 <col width="39%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Data</th>
 <th>Source</th>
 <th>License</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>SDTM CT</td>
 <td><a href="https://evs.nci.nih.gov/ftp1/CDISC/SDTM/" class="external-link">NCI EVS FTP</a></td>
 <td>Public domain</td>
 </tr>
-<tr class="even">
+<tr>
 <td>ADaM CT</td>
 <td><a href="https://evs.nci.nih.gov/ftp1/CDISC/ADaM/" class="external-link">NCI EVS FTP</a></td>
 <td>Public domain</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Define-XML 2.1 schema</td>
 <td><a href="https://github.com/cdisc-org/DataExchange-RWD-Lineage" class="external-link">cdisc-org/DataExchange-RWD-Lineage</a></td>
 <td>Apache 2.0</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Define-XML 2.0 schema</td>
 <td><a href="https://github.com/dbosak01/defineR" class="external-link">dbosak01/defineR</a></td>
 <td>MIT</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>XSLT stylesheets</td>
 <td>
 <a href="https://github.com/cdisc-org/data-definition-engine" class="external-link">cdisc-org/data-definition-engine</a> / <a href="https://github.com/dbosak01/defineR" class="external-link">dbosak01/defineR</a>
@@ -282,7 +282,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
