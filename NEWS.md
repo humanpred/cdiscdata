@@ -57,11 +57,25 @@
 * Added `ig_adam`: ADaMIG ADSL (subject-level) and BDS (Basic Data
   Structure, used by ADPP) variable tables, for versions 1.0, 1.1, and 1.2.
 * Added `get_ig(standard, version)`, mirroring `get_ct()`.
-* Added `build_domain_spec(domain, ig_version, ct_version)`, returning a
-  ready-to-use variable spec (name, label, type, length, core, order,
-  codelist id) for `"PP"`, `"SUPPPP"` (via the generic SUPP-- structure),
-  or `"ADPP"` (via the generic BDS structure), joined against CT for
-  codelist ids.
+* Added `build_domain_spec(domain, ig_version, ct_version, adsl)`, returning
+  a ready-to-use variable spec (name, label, type, length, core, order,
+  source, codelist id) for `"PP"`, `"SUPPPP"` (via the generic SUPP--
+  structure), or `"ADPP"` (via the generic BDS structure, joined against CT
+  for codelist ids). For `"ADPP"`, `adsl = TRUE` (the default) also unions
+  in the ADaMIG ADSL variables - a real ADPP carries ADSL's subject-level
+  variables alongside its own BDS variables - marked `source = "ADSL"` and
+  `core = "Perm"` (ADSL's own Core reflects requirements for ADSL itself,
+  not for merging a variable into ADPP, which is always optional); a
+  variable defined by both tables (e.g. `STUDYID`, `USUBJID`) keeps its BDS
+  version rather than being duplicated. `adsl = FALSE` returns the BDS
+  variables alone, as before. Neither table carries PP's own variables
+  (`PPTESTCD` and the rest) forward into ADPP; that remains a downstream
+  derivation choice, not IG metadata this function sources.
+* `get_ig()`/`ig_sdtm`'s SDTMIG-3.2-only coverage of the PP domain and
+  SUPP-- structure is now called out explicitly in `get_ig()`'s
+  documentation, including the specific known gaps versus a newer SDTMIG
+  (`PPANMETH`, `EPOCH`, `PTAETORD` not yet added; SDTMIG 3.2 still has
+  `PPDTC`, not the later `PPPDTC` rename).
 * IG metadata is transcribed from CDISC's own published SDTM
   Model/SDTMIG/ADaMIG specification tables, copied read-only (with
   attribution) from Bill Denney's private Rsdtm package - see

@@ -11,6 +11,17 @@
 #' \code{\link{build_domain_spec}} does this filtering for the PP, SUPPPP,
 #' and ADPP datasets specifically.
 #'
+#' \strong{SDTMIG coverage.} The SDTMIG PP domain and the generic SUPP--
+#' structure are only available at version 3.2, because that is as far as
+#' the Rsdtm source this package copies from goes (see
+#' \code{data-raw/ig_source/README.md}); no newer SDTMIG's PP/SUPP-- tables
+#' were available to source. As a result, PP variables CDISC added or
+#' renamed after SDTMIG 3.2 are absent from \code{ig_sdtm} - notably
+#' \code{PPANMETH}, \code{EPOCH}, and \code{PTAETORD} (added later), and the
+#' \code{PPDTC} to \code{PPPDTC} rename (SDTMIG 3.2 still has \code{PPDTC}).
+#' Sourcing a newer SDTMIG - via a CDISC Library API key or a newer public
+#' transcription - would close this gap.
+#'
 #' @param standard One of \code{"sdtm"} or \code{"adam"}.
 #' @param version A version string present in the \code{version} column
 #'   (e.g. \code{"3.2"} for SDTMIG, \code{"1.7"} for the SDTM Model,
