@@ -98,19 +98,21 @@ parse_nci_ct_txt <- function(local_path, release_date) {
   result
 }
 
-# Extract the release date from the NCI Publication Date Stamp text file
+# Return the most recent CT release date by inspecting the archive listing.
+# Replaces the former approach of downloading the Publication Date Stamp file,
+# which became unreliable from GitHub Actions (HTTP 403 via download.file).
+# The archive already contains a dated file for every published release, so
+# the maximum archive date equals the current release date.
 fetch_current_release_date <- function(type = c("sdtm", "adam")) {
   type <- match.arg(type)
-  stamp_url <- switch(type,
-    sdtm = paste0(NCI_BASE, "/SDTM/SDTM%20Publication%20Date%20Stamp.txt"),
-    adam = paste0(NCI_BASE, "/ADaM/ADaM%20Publication%20Date%20Stamp.txt")
-  )
-  tmp <- tempfile()
-  on.exit(unlink(tmp))
-  download.file(stamp_url, tmp, quiet = TRUE)
-  stamp <- readLines(tmp, warn = FALSE)[[1L]]
-  # Format is typically "SDTM Terminology YYYY-MM-DD" or just "YYYY-MM-DD"
-  as.Date(regmatches(stamp, regexpr("\\d{4}-\\d{2}-\\d{2}", stamp)))
+  dates <- list_archive_dates(type)
+  if (length(dates) == 0L) {
+    stop(sprintf(
+      "Could not determine current %s CT release date: archive listing returned no dates.",
+      toupper(type)
+    ))
+  }
+  max(dates)
 }
 
 # List all archived version dates for a CT type by parsing the Apache
