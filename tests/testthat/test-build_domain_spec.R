@@ -229,7 +229,7 @@ test_that("build_domain_spec ADPP sdtm_domain = 'PP' works with adsl = FALSE (BD
   expect_equal(nb$codelist_id[nb$variable == "PPTESTCD"], "C85839")
 })
 
-test_that("build_domain_spec ADPP sdtmig_version picks the SDTMIG version (3.2 and 3.3 PP tables are identical; 3.4 adds two)", {
+test_that("build_domain_spec ADPP sdtmig_version picks the SDTMIG version (3.2 = 3.3; 3.4 adds two)", {
   expect_identical(
     build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "3.2"),
     build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "3.3")

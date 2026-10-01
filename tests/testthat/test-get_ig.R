@@ -110,7 +110,7 @@ test_that("PP rows added from the SDTMIG v3.3 table have the published label, ty
   expect_equal(row("PPDTC")$label, "Date/Time of Parameter Calculations")
 })
 
-test_that("PP never carries the aNCA-style names PPPDTC, PPPDY, or PTAETORD; PPANMETH and PPTPTREF appear only at 3.4", {
+test_that("PP never has PPPDTC, PPPDY or PTAETORD; PPANMETH and PPTPTREF appear only at 3.4", {
   pp <- get_ig("sdtm", domain = "PP")
   expect_equal(intersect(c("PPPDTC", "PPPDY", "PTAETORD"), pp$variable), character(0L))
   by_version <- split(pp$variable, pp$version)
