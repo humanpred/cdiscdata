@@ -176,8 +176,8 @@ test_that("the SDTM IG labels that exceeded 40 characters are the abbreviated pu
   expect_equal(sort(testcd$version), c("1.4", "1.5", "1.6"))
   expect_equal(testcd$label, rep("Short Name of Measurement, Test or Exam", 3L))
   ppstresc <- sdtm[sdtm$variable == "PPSTRESC" & sdtm$source == "SDTMIG", ]
-  expect_equal(sort(ppstresc$version), c("3.2", "3.3"))
-  expect_equal(ppstresc$label, rep("Character Result/Finding in Std Format", 2L))
+  expect_equal(sort(ppstresc$version), c("3.2", "3.3", "3.4"))
+  expect_equal(ppstresc$label, rep("Character Result/Finding in Std Format", 3L))
 
 })
 

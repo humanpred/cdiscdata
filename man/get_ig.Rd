@@ -15,8 +15,9 @@ get_ig(standard = c("sdtm", "adam"), version = NULL, domain = NULL)
 versions.}
 
 \item{domain}{Restrict to one domain/dataset: for \code{"sdtm"}, the
-\code{domain} column (\code{"PP"} or \code{"SUPPQUAL"}; SDTM Model
-rows have no domain and are excluded); for \code{"adam"}, the
+\code{domain} column (\code{"PP"} or \code{"SUPPQUAL"} at SDTMIG
+3.2 and 3.3, any of 63 domains at 3.4; SDTM Model rows have no domain
+and are excluded); for \code{"adam"}, the
 \code{dataset} column (\code{"ADSL"} or \code{"BDS"}). \code{NULL}
 (the default) applies no domain filter.}
 }
@@ -37,17 +38,18 @@ caller to filter further (by \code{source}/\code{domain}/\code{class} for
 and ADPP datasets specifically.
 }
 \details{
-\strong{SDTMIG coverage.} The SDTMIG PP domain and the generic SUPP--
-structure are available at versions 3.2 and 3.3. Version 3.3 reuses the
-3.2 tables: the published SDTMIG v3.3 stamps its PP specification
-"Version 3.2" (unchanged since 3.2) and its SUPP-- specification has the
-same ten variables. Both versions include \code{TAETORD}, \code{EPOCH},
-and \code{PPDY}, which the Rsdtm transcription of 3.2 this package copies
-from omitted. Neither includes \code{PPANMETH} or \code{PPTPTREF}, which
-are reported to be SDTMIG 3.4 additions that have not yet been sourced from
-the IG itself (see \code{data-raw/ig_source/README.md}). \code{PPDTC} (not
+\strong{SDTMIG coverage.} SDTMIG 3.2 and 3.3 carry only the PP domain and
+the generic SUPP-- structure; version 3.3 reuses the 3.2 tables, since the
+published SDTMIG v3.3 stamps its PP specification "Version 3.2" (unchanged
+since 3.2) and its SUPP-- specification has the same ten variables. Both
+include \code{TAETORD}, \code{EPOCH}, and \code{PPDY}, which the Rsdtm
+transcription of 3.2 this package copies from omitted. SDTMIG 3.4 carries
+every one of its 63 domains, from a CDISC Library export (names, labels,
+types, codelists, roles, Core, and order; the export's CDISC Notes text is
+not included, so \code{notes} is \code{NA} for those rows). Its PP table
+adds \code{PPANMETH} and \code{PPTPTREF}. \code{PPDTC} (not
 \code{PPPDTC}) is the published name of the date/time-of-calculation
-variable in both versions.
+variable in all three versions. See \code{data-raw/ig_source/README.md}.
 }
 \examples{
 get_ig("sdtm")

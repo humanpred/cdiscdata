@@ -43,8 +43,7 @@
   version 3.3 as well as 3.2, and `get_ig()` gains a `domain` argument
   (`get_ig("sdtm", version = "3.3", domain = "PP")`; for `"adam"` it matches
   the `dataset` column, `"ADSL"` or `"BDS"`). An unknown domain is a classed
-  `cdiscdata_error_ig_domain_unavailable`. `build_domain_spec("PP")` and
-  `build_domain_spec("SUPPPP")` now default to 3.3.
+  `cdiscdata_error_ig_domain_unavailable`.
 * Checked against the published SDTMIG v3.3 (CDISC wiki PDF): its section
   6.3.11.2 PP specification is stamped "Version 3.2" and its revision history
   lists no PP change, so the PP table is unchanged between 3.2 and 3.3; the
@@ -57,11 +56,39 @@
   table and were simply dropped from the Rsdtm 3.2 transcription (21 of 24
   rows), now added to both 3.2 and 3.3 in their published positions;
   `PPDTC` (not `PPPDTC`) is the published name; and `PPANMETH` is not in the
-  3.3 PP table. `PPANMETH` and `PPTPTREF` are reported (by a vendor
-  appendix, not the IG) as SDTMIG 3.4 additions; SDTMIG 3.4 is not yet
-  included because CDISC does not host it publicly. nca.reporter's
-  `PTAETORD`, `PPPDTC`, and `PPPDY` (seeded from aNCA) are not published
-  SDTMIG names.
+  3.3 PP table. `PPANMETH` and `PPTPTREF` are SDTMIG 3.4 additions, now
+  confirmed against the 3.4 export below. nca.reporter's `PTAETORD`,
+  `PPPDTC`, and `PPPDY` (seeded from aNCA) are not published SDTMIG names.
+
+## Every domain of the newest SDTMIG
+
+* `ig_sdtm` now carries all 63 domains of SDTMIG 3.4 (1917 variables), so
+  `get_ig("sdtm", version = "3.4", domain = "PP")` works, and
+  `build_domain_spec("PP")`, `build_domain_spec("SUPPPP")` and
+  `build_domain_spec("ADPP", sdtm_domain = "PP")` default to 3.4. The 3.4 PP
+  table has 26 variables: the 24 of 3.2/3.3 plus `PPANMETH` (Analysis
+  Method, codelist `PKANMET`) and `PPTPTREF` (Time Point Reference), both
+  Permissible; the default PP spec therefore grows from 24 to 26 variables,
+  and the `sdtm_domain = "PP"` union adds 24 variables (22 with
+  `sdtmig_version = "3.3"`). `class` is populated for the 3.4 rows.
+* Source: a CDISC Library CSV export downloaded under CDISC's own terms and
+  conditions, which is **not in this repository** and is never committed.
+  `data-raw/build_ig_sdtm.R` reads it from `CDISC_SOURCES_DIR` (default
+  `../cdisc-sources`) and stops with a message naming the expected file if it
+  is absent, so the build is reproducible by anyone who obtains the export
+  under their own CDISC terms. Only variable metadata is transcribed (order,
+  class, domain, name, label, type, role, Core, codelist); the export's CDISC
+  Notes text is not carried into the package data (`notes` is `NA` for the 3.4
+  rows) and is read only to recover a stated maximum length as an integer.
+  The export lists codelists as CDISC CT C-codes only; each first code is
+  mapped to its submission value from the stored CT (4 of the 135 distinct
+  first codes are for codelists since retired from the CT, and are named from
+  their most recent historical header).
+* All the existing gates (labels non-`NA`, newline-free and at most 40
+  characters; names non-blank and whitespace-free; no stray whitespace in
+  `type`/`core`/`codelist`/`role`) pass on every one of the 1917 rows with
+  no problems found. New tests pin the 3.4 PP table, the domain count, that
+  `notes` is empty, and that each domain's order is 1..n.
 
 ## ADPP: optional PP variables via `sdtm_domain`
 

@@ -44,11 +44,34 @@ Core "Permissible" taken from the Certara PKSubmit SDTM_3.2 appendix
 because the PDF does not show it. Existing rows keep their Core from the
 Rsdtm transcription.
 
-A newer SDTMIG's PP/SUPP-- tables can be added by copying the equivalent CSVs
-into a new `sdtmig_<version>/` directory and adding the version to
-`sdtmig_sources` in `data-raw/build_ig_sdtm.R`. SDTMIG 3.4 is not yet
-included: its PDF is not publicly hosted by CDISC (the cdisc.org copy is
-members-only).
+## SDTMIG 3.4 (every domain, from a CDISC Library export)
+
+SDTMIG 3.4 comes from `SDTMIG_v3.4.csv`, a CDISC Library CSV export (one row
+per variable: Version, Variable Order, Class, Dataset Name, Variable Name,
+Variable Label, Type, CDISC CT Codelist Code(s), Codelist Submission Values,
+Described Value Domain(s), Value List, Role, CDISC Notes, Core; 1917 rows,
+63 domains) that was downloaded under CDISC's own terms and conditions. That
+file is **not in this repository and must never be committed or copied into
+any repository**; `build_ig_sdtm.R` reads it from `CDISC_SOURCES_DIR`
+(default `../cdisc-sources`, relative to the checkout) and stops with a
+message naming the expected file if it is absent. Anyone reproducing the
+build obtains the export under their own CDISC terms.
+
+Only variable metadata is transcribed into `ig_sdtm`: order, class, domain,
+variable name, label, type, role, Core, and the codelist. The CDISC Notes
+column is not carried into the package data (`notes` is `NA` for these rows);
+it is read only to recover, as an integer, a maximum length a note states.
+The export gives codelists only as CDISC CT C-codes, so each variable's first
+code is mapped to its submission value (e.g. `C85839` to `PKPARMCD`) from the
+stored CT, using the most recent header row that carries the code because a
+few codes (4 of the 135 distinct first codes) are for codelists since retired
+from the CT; a code with no header anywhere stops the build. Where a variable
+lists several codelists (e.g. PPORRESU: PKUNIT, PKUWG, ...) only the first is
+kept, as for 3.2 and 3.3.
+
+A newer SDTMIG's PP/SUPP-- tables from public sources can be added by copying
+the equivalent CSVs into a new `sdtmig_<version>/` directory and adding the
+version to `sdtmig_sources` in `data-raw/build_ig_sdtm.R`.
 
 ## Encoding
 

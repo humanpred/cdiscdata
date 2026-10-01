@@ -13,10 +13,11 @@ with zero runtime dependencies. It bundles:
   using a validity-date design (one row per term-state, not one copy per release).
   Current as of the 2026-09-25 NCI release.
 - **Implementation-guide (IG) variable metadata**: SDTM Model and SDTMIG
-  variable tables (the Findings general-observation-class variables, the PP
-  domain, and the generic SUPP-- structure used for SUPPPP) and ADaMIG ADSL
-  and BDS variable tables (BDS covers ADPP, a BDS-structured dataset). See
-  `get_ig()` and `build_domain_spec()`.
+  variable tables (the Findings general-observation-class variables; the PP
+  domain and generic SUPP-- structure used for SUPPPP at SDTMIG 3.2 and 3.3;
+  every domain of SDTMIG 3.4) and ADaMIG ADSL and BDS variable tables (BDS
+  covers ADPP, a BDS-structured dataset). See `get_ig()` and
+  `build_domain_spec()`.
 - **Define-XML XSD schemas**: for validating `define.xml` files (versions 2.0 and
   2.1).
 - **XSLT stylesheets**: for rendering `define.xml` as HTML (versions 2.0 and 2.1).
@@ -132,7 +133,8 @@ packages (e.g. `cdisclib`, `defineauto`). Key design decisions:
 |------|--------|---------|
 | SDTM CT | [NCI EVS FTP](https://evs.nci.nih.gov/ftp1/CDISC/SDTM/) | Public domain |
 | ADaM CT | [NCI EVS FTP](https://evs.nci.nih.gov/ftp1/CDISC/ADaM/) | Public domain |
-| SDTM Model / SDTMIG / ADaMIG variable metadata | CDISC's published specification documents, transcribed via [Bill Denney's Rsdtm package](https://github.com/humanpred/Rsdtm) (private); see `data-raw/ig_source/README.md` for full provenance/attribution | CDISC published standards |
+| SDTM Model / SDTMIG 3.2-3.3 / ADaMIG variable metadata | CDISC's published specification documents, transcribed via [Bill Denney's Rsdtm package](https://github.com/humanpred/Rsdtm) (private); see `data-raw/ig_source/README.md` for full provenance/attribution | CDISC published standards |
+| SDTMIG 3.4 variable metadata | A CDISC Library CSV export, downloaded under CDISC's terms and **not redistributed**; only variable metadata is transcribed (not the CDISC Notes text); see `data-raw/ig_source/README.md` | CDISC terms and conditions |
 | Define-XML 2.1 schema | [cdisc-org/DataExchange-RWD-Lineage](https://github.com/cdisc-org/DataExchange-RWD-Lineage) | Apache 2.0 |
 | Define-XML 2.0 schema | [dbosak01/defineR](https://github.com/dbosak01/defineR) | MIT |
 | XSLT stylesheets | [cdisc-org/data-definition-engine](https://github.com/cdisc-org/data-definition-engine) / [dbosak01/defineR](https://github.com/dbosak01/defineR) | Apache 2.0 / MIT |

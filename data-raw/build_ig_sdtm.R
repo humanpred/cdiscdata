@@ -114,7 +114,75 @@ sdtmig_rows <- do.call(rbind, c(
          domain = "SUPPQUAL", file = "Supplemental_Qualifiers-specification.csv")
 ))
 
-ig_sdtm <- rbind(model_rows, sdtmig_rows)
+# ── SDTMIG 3.4: every domain, from the CDISC Library export ─────────────────
+# SDTMIG_v3.4.csv (CDISC Library CSV: Version, Variable Order, Class, Dataset
+# Name, Variable Name, Variable Label, Type, CDISC CT Codelist Code(s),
+# Codelist Submission Values, Described Value Domain(s), Value List, Role,
+# CDISC Notes, Core). Read from outside the repository (see
+# cdisc_sources_file()); only names, labels, types, codelists, roles, Core, and
+# order are transcribed. The CDISC Notes column is NOT carried into the package
+# data (`notes` is NA for these rows); it is read only to recover the maximum
+# length a note states, as an integer, the same way as for 3.2/3.3.
+#
+# The export gives codelists as CDISC CT C-codes only ("Codelist Submission
+# Values" is empty throughout). `ig_sdtm$codelist` holds the submission value
+# (e.g. "PKPARMCD"), so each first code is mapped to its name from the stored CT.
+# A code may be retired from the current CT (4 of the 135 distinct first codes
+# are), so the name comes from the most recent CT header row that carries it,
+# not only a current one; a code with no header anywhere stops the build.
+build_sdtmig_34 <- function() {
+  x <- utils::read.csv(cdisc_sources_file("SDTMIG_v3.4.csv"), check.names = FALSE,
+                       stringsAsFactors = FALSE, na.strings = "",
+                       fileEncoding = "UTF-8")
+  need <- c("Version", "Variable Order", "Class", "Dataset Name", "Variable Name",
+            "Variable Label", "Type", "CDISC CT Codelist Code(s)", "Role",
+            "CDISC Notes", "Core")
+  if (!all(need %in% names(x))) {
+    stop("SDTMIG_v3.4.csv is missing column(s): ",
+         paste(setdiff(need, names(x)), collapse = ", "), call. = FALSE)
+  }
+  stopifnot(all(x$Version == "SDTMIG v3.4"))
+
+  e <- new.env(parent = emptyenv())
+  load("data/ct_sdtm.rda", envir = e)
+  hdr <- e$ct_sdtm[is.na(e$ct_sdtm$term_code) & !is.na(e$ct_sdtm$codelist_code) &
+                     !is.na(e$ct_sdtm$codelist_name), ]
+  hdr <- hdr[order(hdr$codelist_code, hdr$valid_from, decreasing = TRUE), ]
+  hdr <- hdr[!duplicated(hdr$codelist_code), c("codelist_code", "codelist_name")]
+
+  first_code <- trimws(sub(";.*$", "", x[["CDISC CT Codelist Code(s)"]]))
+  codelist   <- hdr$codelist_name[match(first_code, hdr$codelist_code)]
+  unmapped   <- unique(first_code[!is.na(first_code) & is.na(codelist)])
+  if (length(unmapped)) {
+    stop("SDTMIG 3.4 codelist code(s) with no header row in the stored CT: ",
+         paste(unmapped, collapse = ", "), call. = FALSE)
+  }
+
+  data.frame(
+    source   = "SDTMIG",
+    version  = "3.4",
+    class    = tidy_text(x$Class),
+    domain   = tidy_text(x[["Dataset Name"]]),
+    order    = as.integer(x[["Variable Order"]]),
+    variable = tidy_text(x[["Variable Name"]]),
+    label    = tidy_text(x[["Variable Label"]]),
+    type     = tidy_text(x$Type),
+    role     = tidy_text(x$Role),
+    core     = tidy_text(x$Core),
+    codelist = codelist,
+    length   = parse_documented_length(x[["CDISC Notes"]]),
+    notes    = NA_character_,
+    stringsAsFactors = FALSE
+  )
+}
+
+sdtmig_34_rows <- build_sdtmig_34()
+stopifnot(
+  !anyDuplicated(paste(sdtmig_34_rows$domain, sdtmig_34_rows$variable)),
+  all(c("PP", "SUPPQUAL") %in% sdtmig_34_rows$domain)
+)
+
+ig_sdtm <- rbind(model_rows, sdtmig_rows, sdtmig_34_rows)
 rownames(ig_sdtm) <- NULL
 
 # ── Labels over the 40-character XPT limit ─────────────────────────────────

@@ -124,3 +124,28 @@ parse_documented_length <- function(notes) {
   len[hit] <- suppressWarnings(as.integer(sub("\\D*(\\d+).*", "\\1", matched)))
   len
 }
+
+# Path to a CDISC source file that is NOT part of this repository.
+#
+# The SDTMIG 3.4 export is a CDISC Library download made under CDISC's own
+# terms and conditions (use within the downloader's organization only; no
+# copying, distribution, or derivative works of the material itself). The
+# file is therefore never committed here: it is read from CDISC_SOURCES_DIR
+# (default "../cdisc-sources", relative to the checkout), and only variable
+# metadata is transcribed from it into data/. Anyone reproducing the build
+# obtains the export under their own CDISC terms and places it there.
+cdisc_sources_file <- function(file) {
+  dir  <- Sys.getenv("CDISC_SOURCES_DIR", "../cdisc-sources")
+  path <- file.path(dir, file)
+  if (!file.exists(path)) {
+    stop(
+      "Cannot find the CDISC source file '", file, "'.\n",
+      "Expected it at: ", normalizePath(path, winslash = "/", mustWork = FALSE), "\n",
+      "It is a CDISC Library export that is not part of this repository; obtain it ",
+      "under your own CDISC terms and put it there, or set the CDISC_SOURCES_DIR ",
+      "environment variable to the directory that holds it.",
+      call. = FALSE
+    )
+  }
+  path
+}

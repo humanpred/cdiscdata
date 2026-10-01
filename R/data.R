@@ -38,11 +38,12 @@
 #' SDTM implementation-guide variable metadata
 #'
 #' Versioned SDTM Model and SDTMIG variable metadata: the Model's Findings
-#' general-observation-class variables (versions 1.4-1.7), the SDTMIG PP
-#' domain, and the SDTMIG generic SUPP-- qualifier structure (used for
-#' SUPPPP; versions 3.2 and 3.3, which share the same tables - see
-#' \code{\link{get_ig}} and \code{data-raw/ig_source/README.md} for why no
-#' newer SDTMIG version's PP/SUPP-- tables are available yet).
+#' general-observation-class variables (versions 1.4-1.7); the SDTMIG PP
+#' domain and generic SUPP-- qualifier structure (used for SUPPPP) at
+#' versions 3.2 and 3.3, which share the same tables; and every domain of
+#' SDTMIG 3.4 (63 domains, 1917 variables), transcribed from a CDISC Library
+#' export that is not redistributed (see \code{\link{get_ig}} and
+#' \code{data-raw/ig_source/README.md}).
 #' Use \code{\link{get_ig}} to retrieve it, and
 #' \code{\link{build_domain_spec}} to build a ready-to-use PP/SUPPPP/ADPP
 #' variable spec from it (joined to CT for codelist ids).
@@ -51,13 +52,15 @@
 #' \describe{
 #'   \item{source}{\code{"SDTM_MODEL"} or \code{"SDTMIG"}.}
 #'   \item{version}{SDTM Model version (\code{"1.4"}-\code{"1.7"}) for
-#'     \code{source == "SDTM_MODEL"} rows; SDTMIG version (\code{"3.2"} or \code{"3.3"}) for
-#'     \code{source == "SDTMIG"} rows. The two are independent numbering
+#'     \code{source == "SDTM_MODEL"} rows; SDTMIG version (\code{"3.2"},
+#'     \code{"3.3"}, or \code{"3.4"}) for \code{source == "SDTMIG"} rows. The two are independent numbering
 #'     systems; see \code{\link{get_ig}}.}
 #'   \item{class}{General observation class, e.g. \code{"Findings"}.
-#'     \code{NA} for \code{SDTMIG} rows.}
-#'   \item{domain}{\code{"PP"} or \code{"SUPPQUAL"} for \code{SDTMIG} rows.
-#'     \code{NA} for \code{SDTM_MODEL} rows.}
+#'     \code{NA} for \code{SDTMIG} 3.2 and 3.3 rows; populated for 3.4.}
+#'   \item{domain}{Domain: \code{"PP"} or \code{"SUPPQUAL"} for SDTMIG 3.2
+#'     and 3.3; any of the 63 SDTMIG 3.4 domains (\code{"AE"}, \code{"LB"},
+#'     \code{"SUPPQUAL"}, ...) for 3.4. \code{NA} for \code{SDTM_MODEL}
+#'     rows.}
 #'   \item{order}{Row order within its source table, as published.}
 #'   \item{variable}{Variable name, e.g. \code{"PPTESTCD"}.}
 #'   \item{label}{Variable label.}

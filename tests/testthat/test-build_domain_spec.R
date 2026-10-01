@@ -20,17 +20,25 @@ test_that("build_domain_spec resolves PPTESTCD/PPTEST/PPSTAT codelist ids agains
   expect_equal(pp$length[pp$variable == "PPTESTCD"], 8L)
 })
 
-test_that("build_domain_spec PP defaults to the newest SDTMIG (3.3) and returns the 24 published variables in order", {
+test_that("build_domain_spec PP defaults to the newest SDTMIG (3.4) and returns its 26 variables in order", {
   pp <- build_domain_spec("PP")
   expect_equal(pp$variable,
                c("STUDYID", "DOMAIN", "USUBJID", "PPSEQ", "PPGRPID", "PPTESTCD",
                  "PPTEST", "PPCAT", "PPSCAT", "PPORRES", "PPORRESU", "PPSTRESC",
                  "PPSTRESN", "PPSTRESU", "PPSTAT", "PPREASND", "PPSPEC",
-                 "TAETORD", "EPOCH", "PPDTC", "PPDY", "PPRFTDTC", "PPSTINT",
-                 "PPENINT"))
-  expect_equal(pp$order, 1:24)
+                 "PPANMETH", "TAETORD", "EPOCH", "PPDTC", "PPDY", "PPTPTREF",
+                 "PPRFTDTC", "PPSTINT", "PPENINT"))
+  expect_equal(pp$order, 1:26)
   expect_equal(pp$codelist_id[pp$variable == "EPOCH"], "C99079")
-  expect_identical(pp, build_domain_spec("PP", ig_version = "3.3"))
+  expect_equal(pp$codelist_id[pp$variable == "PPANMETH"], "C172330")
+  expect_equal(pp$core[pp$variable %in% c("PPANMETH", "PPTPTREF")], c("Perm", "Perm"))
+  expect_identical(pp, build_domain_spec("PP", ig_version = "3.4"))
+})
+
+test_that("build_domain_spec PP at 3.3 returns the 24 published variables, without PPANMETH or PPTPTREF", {
+  pp <- build_domain_spec("PP", ig_version = "3.3")
+  expect_equal(pp$variable, setdiff(build_domain_spec("PP")$variable, c("PPANMETH", "PPTPTREF")))
+  expect_equal(pp$order, 1:24)
 })
 
 test_that("build_domain_spec PP at 3.2 equals 3.3 (the tables are unchanged between them)", {
@@ -157,14 +165,15 @@ test_that("build_domain_spec aborts (classed) when an ADaMIG version has no BDS 
 
 # ---- sdtm_domain: union the SDTMIG PP variables into an ADPP spec ----------
 
-# PP's 24 published variables less STUDYID and USUBJID, which BDS already
-# defines (the BDS version is kept).
+# SDTMIG 3.4's 26 PP variables less STUDYID and USUBJID, which BDS already
+# defines (the BDS version is kept); at 3.3 PPANMETH and PPTPTREF are absent.
 pp_added_to_adpp <- c(
   "DOMAIN", "PPSEQ", "PPGRPID", "PPTESTCD", "PPTEST", "PPCAT", "PPSCAT",
   "PPORRES", "PPORRESU", "PPSTRESC", "PPSTRESN", "PPSTRESU", "PPSTAT",
-  "PPREASND", "PPSPEC", "TAETORD", "EPOCH", "PPDTC", "PPDY", "PPRFTDTC",
-  "PPSTINT", "PPENINT"
+  "PPREASND", "PPSPEC", "PPANMETH", "TAETORD", "EPOCH", "PPDTC", "PPDY",
+  "PPTPTREF", "PPRFTDTC", "PPSTINT", "PPENINT"
 )
+pp_added_to_adpp_33 <- setdiff(pp_added_to_adpp, c("PPANMETH", "PPTPTREF"))
 
 test_that("build_domain_spec ADPP leaves the PP variables out by default, and sdtm_domain = NULL is the default", {
   base <- build_domain_spec("ADPP")
@@ -172,18 +181,18 @@ test_that("build_domain_spec ADPP leaves the PP variables out by default, and sd
   expect_identical(base, build_domain_spec("ADPP", sdtm_domain = NULL))
 })
 
-test_that("build_domain_spec ADPP sdtm_domain = 'PP' appends exactly the 22 PP variables not already defined", {
+test_that("build_domain_spec ADPP sdtm_domain = 'PP' appends exactly the 24 PP variables not already defined", {
   base <- build_domain_spec("ADPP")
   withpp <- build_domain_spec("ADPP", sdtm_domain = "PP")
   added <- withpp[withpp$source == "SDTMIG", ]
 
-  expect_equal(nrow(withpp), nrow(base) + 22L)
+  expect_equal(nrow(withpp), nrow(base) + 24L)
   # the BDS + ADSL rows are untouched and come first
   expect_identical(withpp[seq_len(nrow(base)), ], base)
   expect_equal(added$variable, pp_added_to_adpp)
   expect_true(all(added$core == "Perm"))
   # ordered after everything already there, continuing the sequence
-  expect_equal(added$order, max(base$order) + seq_len(22L))
+  expect_equal(added$order, max(base$order) + seq_len(24L))
   # shared base variables keep their BDS version and appear once
   expect_equal(withpp$source[withpp$variable == "STUDYID"], "BDS")
   expect_equal(sum(withpp$variable %in% c("STUDYID", "USUBJID")), 2L)
@@ -208,6 +217,7 @@ test_that("build_domain_spec ADPP resolves the PP codelist ids against the SDTM 
   expect_equal(withpp$codelist_id[withpp$variable == "PPSTAT"], "C66789")
   expect_equal(withpp$codelist_id[withpp$variable == "PPSPEC"], "C78734")
   expect_equal(withpp$codelist_id[withpp$variable == "EPOCH"], "C99079")
+  expect_equal(withpp$codelist_id[withpp$variable == "PPANMETH"], "C172330")
 })
 
 test_that("build_domain_spec ADPP sdtm_domain = 'PP' works with adsl = FALSE (BDS + PP only)", {
@@ -219,11 +229,16 @@ test_that("build_domain_spec ADPP sdtm_domain = 'PP' works with adsl = FALSE (BD
   expect_equal(nb$codelist_id[nb$variable == "PPTESTCD"], "C85839")
 })
 
-test_that("build_domain_spec ADPP sdtmig_version picks the SDTMIG version (3.2 and 3.3 PP tables are identical)", {
+test_that("build_domain_spec ADPP sdtmig_version picks the SDTMIG version (3.2 and 3.3 PP tables are identical; 3.4 adds two)", {
   expect_identical(
     build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "3.2"),
     build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "3.3")
   )
+  at33 <- build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "3.3")
+  expect_equal(at33$variable[at33$source == "SDTMIG"], pp_added_to_adpp_33)
+  at34 <- build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "3.4")
+  expect_equal(nrow(at34) - nrow(at33), 2L)
+  expect_equal(setdiff(at34$variable, at33$variable), c("PPANMETH", "PPTPTREF"))
   e <- expect_error(
     build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "9.9"),
     class = "cdiscdata_error_ig_version_unavailable"
