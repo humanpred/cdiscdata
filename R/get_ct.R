@@ -8,9 +8,11 @@
 #' @return A data frame of CT terms valid at the requested version.
 #' @export
 #' @examples
-#' get_ct("sdtm")
-#' get_ct("sdtm", version = "2024-09-27")
-#' get_ct("adam")
+#' ct <- get_ct("sdtm")
+#' head(ct)
+#' ct_2024 <- get_ct("sdtm", version = "2024-09-27")
+#' nrow(ct_2024)
+#' head(get_ct("adam"))
 get_ct <- function(type = c("sdtm", "adam"), version = NULL) {
   type <- match.arg(type)
   get_dataset(paste0("ct_", type), version = version)

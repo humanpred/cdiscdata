@@ -1,5 +1,13 @@
 # cdiscdata 0.2.0
 
+## CRAN release preparation
+
+* First CRAN submission: the maintainer email address is corrected, the
+  copyright holders of the bundled Define-XML schema files (CDISC, MIT
+  License) and stylesheets (Lex Jansen, MIT License) are stated in
+  `Authors@R` and `inst/COPYRIGHTS` (the README had described them as
+  Apache-licensed), and a spelling word list is added.
+
 ## Classed conditions and coverage
 
 * Every error and warning `get_ig()` and `build_domain_spec()` raise is now

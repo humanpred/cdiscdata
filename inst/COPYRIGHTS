@@ -1,0 +1,28 @@
+Copyright and licensing of the files bundled in this package
+
+Package code and documentation: Copyright (c) Bill Denney, MIT License (see
+LICENSE).
+
+inst/extdata/schema/define-xml-2.0/*.xsd
+inst/extdata/schema/define-xml-2.1/*.xsd
+  Define-XML schema files, Copyright (c) Clinical Data Interchange Standards
+  Consortium (CDISC).  Obtained from
+  https://github.com/cdisc-org/DataExchange-RWD-Lineage (MIT License) for
+  Define-XML 2.1 and, for Define-XML 2.0, as redistributed by the defineR
+  package (https://github.com/dbosak01/defineR, CC0).
+
+inst/extdata/stylesheet/*.xsl
+  Define-XML stylesheets, Copyright (c) 2013-2018 Lex Jansen, MIT License
+  (the license text is in the header of each file).  Obtained from
+  https://github.com/cdisc-org/data-definition-engine and
+  https://github.com/dbosak01/defineR.
+
+data/ct_sdtm.rda, data/ct_adam.rda
+  CDISC Controlled Terminology as published by the National Cancer Institute
+  Enterprise Vocabulary Services (https://evs.nci.nih.gov/ftp1/CDISC/), a
+  work of the United States Government in the public domain.
+
+data/ig_sdtm.rda, data/ig_adam.rda
+  Variable metadata transcribed from the published SDTM, SDTMIG, and ADaMIG
+  specification documents (facts about the standards, not copies of the
+  documents).

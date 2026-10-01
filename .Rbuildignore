@@ -7,3 +7,5 @@
 ^LICENSE\.md$
 ^design$
 ^pkgdown$
+^\.git$
+^CRAN-SUBMISSION$

@@ -19,7 +19,9 @@ A data frame of CT terms valid at the requested version.
 Convenience wrapper around \code{\link{get_dataset}} for CT data.
 }
 \examples{
-get_ct("sdtm")
-get_ct("sdtm", version = "2024-09-27")
-get_ct("adam")
+ct <- get_ct("sdtm")
+head(ct)
+ct_2024 <- get_ct("sdtm", version = "2024-09-27")
+nrow(ct_2024)
+head(get_ct("adam"))
 }

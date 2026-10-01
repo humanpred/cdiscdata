@@ -2,8 +2,9 @@
 # Safe to re-run; existing files are not re-downloaded.
 #
 # Sources (both publicly available, open-source licensed):
-#   Define-XML 2.1: cdisc-org/DataExchange-RWD-Lineage (MIT License)
-#   Define-XML 2.0: dbosak01/defineR CRAN package (MIT License)
+#   Define-XML 2.1: cdisc-org/DataExchange-RWD-Lineage (MIT License, CDISC)
+#   Define-XML 2.0: dbosak01/defineR CRAN package (CC0), redistributing the
+#     CDISC Define-XML 2.0 schema files
 
 RWD_BASE   <- "https://raw.githubusercontent.com/cdisc-org/DataExchange-RWD-Lineage/main/tools/schema"
 DEFR_BASE  <- "https://raw.githubusercontent.com/dbosak01/defineR/master/inst/extdata/2.0.0/cdisc-define-2.0"

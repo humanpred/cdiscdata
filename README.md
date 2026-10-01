@@ -134,9 +134,9 @@ packages (e.g. `cdisclib`, `defineauto`). Key design decisions:
 | SDTM CT | [NCI EVS FTP](https://evs.nci.nih.gov/ftp1/CDISC/SDTM/) | Public domain |
 | ADaM CT | [NCI EVS FTP](https://evs.nci.nih.gov/ftp1/CDISC/ADaM/) | Public domain |
 | SDTM Model / SDTMIG / ADaMIG variable metadata | CDISC's published specification documents, transcribed via [Bill Denney's Rsdtm package](https://github.com/humanpred/Rsdtm) (private); see `data-raw/ig_source/README.md` for full provenance/attribution | CDISC published standards |
-| Define-XML 2.1 schema | [cdisc-org/DataExchange-RWD-Lineage](https://github.com/cdisc-org/DataExchange-RWD-Lineage) | Apache 2.0 |
+| Define-XML 2.1 schema | [cdisc-org/DataExchange-RWD-Lineage](https://github.com/cdisc-org/DataExchange-RWD-Lineage) | MIT (CDISC) |
 | Define-XML 2.0 schema | [dbosak01/defineR](https://github.com/dbosak01/defineR) | MIT |
-| XSLT stylesheets | [cdisc-org/data-definition-engine](https://github.com/cdisc-org/data-definition-engine) / [dbosak01/defineR](https://github.com/dbosak01/defineR) | Apache 2.0 / MIT |
+| XSLT stylesheets | [cdisc-org/data-definition-engine](https://github.com/cdisc-org/data-definition-engine) / [dbosak01/defineR](https://github.com/dbosak01/defineR) | MIT (Lex Jansen) |
 
 ## Related packages
 
