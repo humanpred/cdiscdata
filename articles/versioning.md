@@ -58,6 +58,6 @@ keeping the package size manageable for CRAN submission.
 n_closed  <- sum(!is.na(ct_sdtm$valid_to))
 n_current <- sum(is.na(ct_sdtm$valid_to))
 cat("Current rows:", n_current, "\nHistorical rows:", n_closed, "\n")
-#> Current rows: 46774 
-#> Historical rows: 68588
+#> Current rows: 47242 
+#> Historical rows: 77625
 ```

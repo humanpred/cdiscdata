@@ -17,14 +17,18 @@ number of versions available, and when the data was last updated.
 
 ``` r
 cdiscdata_versions()
-#>                 dataset       type                 description     latest
-#> 1               ct_sdtm         CT SDTM Controlled Terminology 2026-03-27
-#> 2               ct_adam         CT ADaM Controlled Terminology 2026-03-27
-#> 3     define_xml_schema     Schema      Define-XML XSD schemas        2.1
-#> 4 define_xml_stylesheet Stylesheet Define-XML XSLT stylesheets        2.1
-#>   n_versions last_updated
-#> 1         73   2026-03-29
-#> 2         26   2026-03-29
-#> 3          2   2026-03-29
-#> 4          2   2026-03-29
+#>                 dataset       type                           description
+#> 1               ct_sdtm         CT           SDTM Controlled Terminology
+#> 2               ct_adam         CT           ADaM Controlled Terminology
+#> 3               ig_sdtm         IG SDTM Model + SDTMIG variable metadata
+#> 4               ig_adam         IG   ADaMIG ADSL + BDS variable metadata
+#> 5     define_xml_schema     Schema                Define-XML XSD schemas
+#> 6 define_xml_stylesheet Stylesheet           Define-XML XSLT stylesheets
+#>       latest n_versions last_updated
+#> 1 2026-09-25         84   2026-09-30
+#> 2 2026-09-25         27   2026-09-30
+#> 3        1.7          5   2026-09-30
+#> 4        1.2          3   2026-09-30
+#> 5        2.1          2   2026-09-30
+#> 6        2.1          2   2026-09-30
 ```

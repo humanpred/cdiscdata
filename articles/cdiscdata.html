@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cdiscdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,27 +89,42 @@ HTML.</li>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/list_datasets.html">list_datasets</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                 dataset       type ct_type                 description</span></span>
-<span><span class="co">#&gt; 1               ct_sdtm         CT    sdtm SDTM Controlled Terminology</span></span>
-<span><span class="co">#&gt; 2               ct_adam         CT    adam ADaM Controlled Terminology</span></span>
-<span><span class="co">#&gt; 3     define_xml_schema     Schema    &lt;NA&gt;      Define-XML XSD schemas</span></span>
-<span><span class="co">#&gt; 4 define_xml_stylesheet Stylesheet    &lt;NA&gt; Define-XML XSLT stylesheets</span></span>
-<span><span class="co">#&gt;                   versions n_versions     latest last_updated</span></span>
-<span><span class="co">#&gt; 1 2008-10-09 to 2026-03-27         73 2026-03-27   2026-03-29</span></span>
-<span><span class="co">#&gt; 2 2010-03-05 to 2026-03-27         26 2026-03-27   2026-03-29</span></span>
-<span><span class="co">#&gt; 3               2.0 to 2.1          2        2.1   2026-03-29</span></span>
-<span><span class="co">#&gt; 4               2.0 to 2.1          2        2.1   2026-03-29</span></span>
+<span><span class="co">#&gt;                 dataset       type ct_type</span></span>
+<span><span class="co">#&gt; 1               ct_sdtm         CT    sdtm</span></span>
+<span><span class="co">#&gt; 2               ct_adam         CT    adam</span></span>
+<span><span class="co">#&gt; 3               ig_sdtm         IG    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4               ig_adam         IG    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5     define_xml_schema     Schema    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6 define_xml_stylesheet Stylesheet    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;                             description                      versions</span></span>
+<span><span class="co">#&gt; 1           SDTM Controlled Terminology      2007-03-06 to 2026-09-25</span></span>
+<span><span class="co">#&gt; 2           ADaM Controlled Terminology      2010-03-05 to 2026-09-25</span></span>
+<span><span class="co">#&gt; 3 SDTM Model + SDTMIG variable metadata Model 1.4 to 1.7 (SDTMIG 3.2)</span></span>
+<span><span class="co">#&gt; 4   ADaMIG ADSL + BDS variable metadata                    1.0 to 1.2</span></span>
+<span><span class="co">#&gt; 5                Define-XML XSD schemas                    2.0 to 2.1</span></span>
+<span><span class="co">#&gt; 6           Define-XML XSLT stylesheets                    2.0 to 2.1</span></span>
+<span><span class="co">#&gt;   n_versions     latest last_updated</span></span>
+<span><span class="co">#&gt; 1         84 2026-09-25   2026-09-30</span></span>
+<span><span class="co">#&gt; 2         27 2026-09-25   2026-09-30</span></span>
+<span><span class="co">#&gt; 3          5        1.7   2026-09-30</span></span>
+<span><span class="co">#&gt; 4          3        1.2   2026-09-30</span></span>
+<span><span class="co">#&gt; 5          2        2.1   2026-09-30</span></span>
+<span><span class="co">#&gt; 6          2        2.1   2026-09-30</span></span>
 <span><span class="fu"><a href="../reference/cdiscdata_versions.html">cdiscdata_versions</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                 dataset       type                 description     latest</span></span>
-<span><span class="co">#&gt; 1               ct_sdtm         CT SDTM Controlled Terminology 2026-03-27</span></span>
-<span><span class="co">#&gt; 2               ct_adam         CT ADaM Controlled Terminology 2026-03-27</span></span>
-<span><span class="co">#&gt; 3     define_xml_schema     Schema      Define-XML XSD schemas        2.1</span></span>
-<span><span class="co">#&gt; 4 define_xml_stylesheet Stylesheet Define-XML XSLT stylesheets        2.1</span></span>
-<span><span class="co">#&gt;   n_versions last_updated</span></span>
-<span><span class="co">#&gt; 1         73   2026-03-29</span></span>
-<span><span class="co">#&gt; 2         26   2026-03-29</span></span>
-<span><span class="co">#&gt; 3          2   2026-03-29</span></span>
-<span><span class="co">#&gt; 4          2   2026-03-29</span></span></code></pre></div>
+<span><span class="co">#&gt;                 dataset       type                           description</span></span>
+<span><span class="co">#&gt; 1               ct_sdtm         CT           SDTM Controlled Terminology</span></span>
+<span><span class="co">#&gt; 2               ct_adam         CT           ADaM Controlled Terminology</span></span>
+<span><span class="co">#&gt; 3               ig_sdtm         IG SDTM Model + SDTMIG variable metadata</span></span>
+<span><span class="co">#&gt; 4               ig_adam         IG   ADaMIG ADSL + BDS variable metadata</span></span>
+<span><span class="co">#&gt; 5     define_xml_schema     Schema                Define-XML XSD schemas</span></span>
+<span><span class="co">#&gt; 6 define_xml_stylesheet Stylesheet           Define-XML XSLT stylesheets</span></span>
+<span><span class="co">#&gt;       latest n_versions last_updated</span></span>
+<span><span class="co">#&gt; 1 2026-09-25         84   2026-09-30</span></span>
+<span><span class="co">#&gt; 2 2026-09-25         27   2026-09-30</span></span>
+<span><span class="co">#&gt; 3        1.7          5   2026-09-30</span></span>
+<span><span class="co">#&gt; 4        1.2          3   2026-09-30</span></span>
+<span><span class="co">#&gt; 5        2.1          2   2026-09-30</span></span>
+<span><span class="co">#&gt; 6        2.1          2   2026-09-30</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="controlled-terminology">Controlled Terminology<a class="anchor" aria-label="anchor" href="#controlled-terminology"></a>
@@ -118,35 +133,35 @@ HTML.</li>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_ct.html">get_ct</a></span><span class="op">(</span><span class="st">"sdtm"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ct</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 46774</span></span>
+<span><span class="co">#&gt; [1] 47242</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ct</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"codelist_code"</span>, <span class="st">"codelist_name"</span>, <span class="st">"term"</span>, <span class="st">"decoded_value"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    codelist_code codelist_name     term</span></span>
-<span><span class="co">#&gt; 4                         &lt;NA&gt;    QSCAT</span></span>
-<span><span class="co">#&gt; 6                         &lt;NA&gt;   RELSUB</span></span>
-<span><span class="co">#&gt; 9                         &lt;NA&gt;    ADCTN</span></span>
-<span><span class="co">#&gt; 12                        &lt;NA&gt;    ADCTC</span></span>
-<span><span class="co">#&gt; 16                        &lt;NA&gt; BPRSA1TN</span></span>
-<span><span class="co">#&gt; 20                        &lt;NA&gt; BPRSA1TC</span></span>
-<span><span class="co">#&gt;                                                         decoded_value</span></span>
-<span><span class="co">#&gt; 4                            CDISC Questionnaire Category Terminology</span></span>
-<span><span class="co">#&gt; 6                      CDISC SDTM Relationship to Subject Terminology</span></span>
-<span><span class="co">#&gt; 9  CDISC Functional Test ADAS-Cog CDISC Version Test Name Terminology</span></span>
-<span><span class="co">#&gt; 12 CDISC Functional Test ADAS-Cog CDISC Version Test Code Terminology</span></span>
-<span><span class="co">#&gt; 16  CDISC Clinical Classification BPRS-Anchored Test Name Terminology</span></span>
-<span><span class="co">#&gt; 20  CDISC Clinical Classification BPRS-Anchored Test Code Terminology</span></span></code></pre></div>
+<span><span class="co">#&gt;    codelist_code codelist_name            term</span></span>
+<span><span class="co">#&gt; 13       C100129         QSCAT            &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 18       C100129         QSCAT             BPI</span></span>
+<span><span class="co">#&gt; 23       C100129         QSCAT  BPI SHORT FORM</span></span>
+<span><span class="co">#&gt; 42       C100129         QSCAT            COMM</span></span>
+<span><span class="co">#&gt; 47       C100129         QSCAT C-SSRS BASELINE</span></span>
+<span><span class="co">#&gt; 52       C100129         QSCAT            FPSR</span></span>
+<span><span class="co">#&gt;                                                    decoded_value</span></span>
+<span><span class="co">#&gt; 13                      CDISC Questionnaire Category Terminology</span></span>
+<span><span class="co">#&gt; 18                            Brief Pain Inventory Questionnaire</span></span>
+<span><span class="co">#&gt; 23                 Brief Pain Inventory Short Form Questionnaire</span></span>
+<span><span class="co">#&gt; 42                   Current Opioid Misuse Measure Questionnaire</span></span>
+<span><span class="co">#&gt; 47 Columbia-Suicide Severity Rating Scale Baseline Questionnaire</span></span>
+<span><span class="co">#&gt; 52                        Faces Pain Scale Revised Questionnaire</span></span></code></pre></div>
 <p>Retrieve a specific historical version:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">versions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/available_ct_versions.html">available_ct_versions</a></span><span class="op">(</span><span class="st">"sdtm"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">versions</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "2026-03-27" "2025-09-26" "2025-03-28" "2024-09-27" "2024-03-29"</span></span>
-<span><span class="co">#&gt; [6] "2023-12-15"</span></span>
+<span><span class="co">#&gt; [1] "2026-09-25" "2026-03-27" "2025-09-26" "2025-03-28" "2024-09-27"</span></span>
+<span><span class="co">#&gt; [6] "2024-03-29"</span></span>
 <span></span>
 <span><span class="co"># Get CT as it was at the second-most-recent release</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">versions</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">ct_old</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_ct.html">get_ct</a></span><span class="op">(</span><span class="st">"sdtm"</span>, version <span class="op">=</span> <span class="va">versions</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ct_old</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span><span class="co">#&gt; [1] 46011</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 46774</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="define-xml-schemas-and-stylesheets">Define-XML schemas and stylesheets<a class="anchor" aria-label="anchor" href="#define-xml-schemas-and-stylesheets"></a>
@@ -163,15 +178,15 @@ HTML.</li>
 <span></span>
 <span><span class="va">ct_via_generic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"ct_sdtm"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ct_via_generic</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 46774</span></span>
+<span><span class="co">#&gt; [1] 47242</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ct_via_generic</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"codelist_code"</span>, <span class="st">"term"</span>, <span class="st">"valid_from"</span>, <span class="st">"valid_to"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    codelist_code     term valid_from valid_to</span></span>
-<span><span class="co">#&gt; 4                   QSCAT 2017-06-30     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6                  RELSUB 2024-09-27     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 9                   ADCTN 2024-09-27     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 12                  ADCTC 2024-09-27     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 16               BPRSA1TN 2022-09-30     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 20               BPRSA1TC 2022-09-30     &lt;NA&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt;    codelist_code            term valid_from valid_to</span></span>
+<span><span class="co">#&gt; 13       C100129            &lt;NA&gt; 2017-06-30     &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 18       C100129             BPI 2019-09-27     &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 23       C100129  BPI SHORT FORM 2019-09-27     &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 42       C100129            COMM 2019-09-27     &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 47       C100129 C-SSRS BASELINE 2019-09-27     &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 52       C100129            FPSR 2019-09-27     &lt;NA&gt;</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
