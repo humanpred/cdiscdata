@@ -29,6 +29,32 @@
     characters; no variable name is `NA`, blank, or contains whitespace; no
     `type`/`core`/`codelist`/`role` value has stray whitespace.
 
+## SDTMIG 3.3 PP/SUPP-- and `get_ig(domain =)`
+
+* `ig_sdtm` now carries the SDTMIG PP domain and generic SUPP-- structure at
+  version 3.3 as well as 3.2, and `get_ig()` gains a `domain` argument
+  (`get_ig("sdtm", version = "3.3", domain = "PP")`; for `"adam"` it matches
+  the `dataset` column, `"ADSL"` or `"BDS"`). An unknown domain is a classed
+  `cdiscdata_error_ig_domain_unavailable`. `build_domain_spec("PP")` and
+  `build_domain_spec("SUPPPP")` now default to 3.3.
+* Checked against the published SDTMIG v3.3 (CDISC wiki PDF): its section
+  6.3.11.2 PP specification is stamped "Version 3.2" and its revision history
+  lists no PP change, so the PP table is unchanged between 3.2 and 3.3; the
+  section 8.4.1 SUPP-- specification has the same ten variables. The 3.3
+  tables are therefore the 3.2 ones.
+* **Correction to the 0.2.0 notes.** They said `PPANMETH`, `EPOCH`,
+  `PTAETORD`, and a `PPPDTC` rename were missing because only SDTMIG 3.2 was
+  available. Checked against the published SDTMIG v3.3, that was wrong in
+  three ways: `EPOCH`, `TAETORD` (not `PTAETORD`), and `PPDY` are in the PP
+  table and were simply dropped from the Rsdtm 3.2 transcription (21 of 24
+  rows), now added to both 3.2 and 3.3 in their published positions;
+  `PPDTC` (not `PPPDTC`) is the published name; and `PPANMETH` is not in the
+  3.3 PP table. `PPANMETH` and `PPTPTREF` are reported (by a vendor
+  appendix, not the IG) as SDTMIG 3.4 additions; SDTMIG 3.4 is not yet
+  included because CDISC does not host it publicly. nca.reporter's
+  `PTAETORD`, `PPPDTC`, and `PPPDY` (seeded from aNCA) are not published
+  SDTMIG names.
+
 # cdiscdata 0.2.0
 
 ## Classed conditions and coverage

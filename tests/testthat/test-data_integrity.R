@@ -141,8 +141,9 @@ test_that("the specific IG labels that exceeded 40 characters are the abbreviate
                    sdtm$version %in% c("1.4", "1.5", "1.6"), ]
   expect_equal(sort(testcd$version), c("1.4", "1.5", "1.6"))
   expect_equal(testcd$label, rep("Short Name of Measurement, Test or Exam", 3L))
-  expect_equal(sdtm$label[sdtm$variable == "PPSTRESC" & sdtm$source == "SDTMIG"],
-               "Character Result/Finding in Std Format")
+  ppstresc <- sdtm[sdtm$variable == "PPSTRESC" & sdtm$source == "SDTMIG", ]
+  expect_equal(sort(ppstresc$version), c("3.2", "3.3"))
+  expect_equal(ppstresc$label, rep("Character Result/Finding in Std Format", 2L))
 
   adam <- get_ig("adam")
   expect_equal(adam$label[adam$variable == "PBCHGCyN"],

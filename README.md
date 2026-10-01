@@ -81,8 +81,7 @@ current). `get_ct()` reconstructs the state of any release on the fly.
 ig_sdtm <- get_ig("sdtm")
 
 # Just the SDTMIG PP domain
-pp_ig <- get_ig("sdtm", version = "3.2")
-pp_ig <- pp_ig[pp_ig$domain == "PP", ]
+pp_ig <- get_ig("sdtm", version = "3.3", domain = "PP")
 
 # A ready-to-use variable spec (name, label, type, length, core, order,
 # codelist id) for PP, SUPPPP, or ADPP, joined to CT for codelist ids

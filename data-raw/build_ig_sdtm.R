@@ -12,10 +12,16 @@
 # the SDTM Model is available for versions 1.4-1.7 (Findings class only, the
 # class PP/SUPPPP need); the SDTMIG PP and Supplemental Qualifiers domain
 # specifications are only transcribed for version 3.2 (Rsdtm's SDTMIG_3.3
-# copy covers a different, unrelated set of domains). Only version 3.2 is
-# built here as a result; a newer SDTMIG's PP/SUPP-- tables can be added by
-# copying the equivalent CSVs into data-raw/ig_source/sdtmig_<version>/ and
-# extending the `sdtmig_versions` loop below.
+# copy covers a different, unrelated set of domains).
+#
+# SDTMIG 3.3 reuses the 3.2 tables: the published SDTMIG v3.3 stamps its PP
+# specification "Version 3.2" (so it is unchanged since 3.2; its revision
+# history lists no PP change) and its SUPP-- specification, while stamped
+# 3.3, has the same ten variables with the same labels and types. See
+# `sdtmig_sources` below and data-raw/ig_source/README.md. A newer SDTMIG's
+# tables can be added by copying the equivalent CSVs into
+# data-raw/ig_source/sdtmig_<version>/ and adding the version to
+# `sdtmig_sources`.
 
 source("data-raw/utils_ig.R")
 
@@ -47,11 +53,42 @@ model_rows <- do.call(rbind, lapply(model_versions, function(v) {
 }))
 
 # ── SDTMIG: PP and Supplemental Qualifiers (SUPP--) ─────────────────────────
-sdtmig_versions <- "3.2"
+# SDTMIG version -> data-raw/ig_source/sdtmig_<dir> its tables are read from.
+sdtmig_sources <- c("3.2" = "3.2", "3.3" = "3.2")
+sdtmig_versions <- names(sdtmig_sources)
+
+# PP variables the SDTMIG v3.3 PDF (section 6.3.11.2, PP specification table)
+# shows that Rsdtm's SDTMIG 3.2 transcription lacks (it has 21 of the 24 rows,
+# evidently dropping the ones straddling a page break). Each row names the
+# variable it follows, so the published order is kept.
+read_pp_additions <- function() {
+  utils::read.csv("data-raw/ig_source/sdtmig_3.2/PP-additions.csv",
+                  stringsAsFactors = FALSE, na.strings = "")
+}
+
+insert_pp_additions <- function(tbl, additions) {
+  for (i in seq_len(nrow(additions))) {
+    a <- additions[i, ]
+    pos <- match(a$after, tbl$variable)
+    stopifnot(!is.na(pos), !a$variable %in% tbl$variable)
+    new <- data.frame(
+      variable = a$variable, label = a$label, type = a$type,
+      core = a$core, codelist = a$codelist, role = a$role,
+      notes = NA_character_, stringsAsFactors = FALSE
+    )
+    tbl <- rbind(tbl[seq_len(pos), names(new)], new,
+                 tbl[seq_len(nrow(tbl))[-seq_len(pos)], names(new)])
+  }
+  tbl
+}
 
 build_sdtmig_domain <- function(version, domain, file) {
-  path <- file.path("data-raw/ig_source", paste0("sdtmig_", version), file)
+  path <- file.path("data-raw/ig_source",
+                    paste0("sdtmig_", sdtmig_sources[[version]]), file)
   tbl  <- read_ig_csv(path)
+  if (domain == "PP") {
+    tbl <- insert_pp_additions(tbl, read_pp_additions())
+  }
   data.frame(
     source   = "SDTMIG",
     version  = version,
@@ -94,13 +131,13 @@ rownames(ig_sdtm) <- NULL
 #   (with an Oxford comma); Model 1.4-1.6 transcribe the long form
 #   "Short Name of Measurement, Test or Examination" (46 characters).
 sdtm_label_overrides <- data.frame(
-  source   = c("SDTM_MODEL", "SDTM_MODEL", "SDTM_MODEL", "SDTMIG"),
-  version  = c("1.4", "1.5", "1.6", "3.2"),
-  variable = c("--TESTCD", "--TESTCD", "--TESTCD", "PPSTRESC"),
+  source   = c("SDTM_MODEL", "SDTM_MODEL", "SDTM_MODEL", "SDTMIG", "SDTMIG"),
+  version  = c("1.4", "1.5", "1.6", "3.2", "3.3"),
+  variable = c("--TESTCD", "--TESTCD", "--TESTCD", "PPSTRESC", "PPSTRESC"),
   label    = c(rep("Short Name of Measurement, Test or Exam", 3),
-               "Character Result/Finding in Std Format"),
+               rep("Character Result/Finding in Std Format", 2)),
   evidence = c(rep("SDTMIG v3.3 6.3.10.1 generic table; 4.2.1 label limit", 3),
-               "SDTMIG v3.3 6.3.11.2 PP specification table"),
+               rep("SDTMIG v3.3 6.3.11.2 PP specification table", 2)),
   stringsAsFactors = FALSE
 )
 ig_sdtm <- apply_label_overrides(ig_sdtm, sdtm_label_overrides,

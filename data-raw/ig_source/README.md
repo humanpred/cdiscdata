@@ -22,16 +22,33 @@ to describe this sourcing.
 | Directory | Standard | Version(s) | Content |
 |---|---|---|---|
 | `sdtm_model/1.4` .. `1.7` | SDTM Model | 1.4, 1.5, 1.6, 1.7 | `Findings_Observation_Class.csv`: the Findings general-observation-class variables (PP and ADPP are Findings-class datasets) |
-| `sdtmig_3.2` | SDTMIG | 3.2 | `PP-specification.csv` (the PP domain); `Supplemental_Qualifiers-specification.csv` (the generic SUPP-- structure used for SUPPPP) |
+| `sdtmig_3.2` | SDTMIG | 3.2, and 3.3 (reuses these) | `PP-specification.csv` (the PP domain); `PP-additions.csv` (three PP rows missing from the Rsdtm transcription); `Supplemental_Qualifiers-specification.csv` (the generic SUPP-- structure used for SUPPPP) |
 | `adamig_1.0`, `adamig_1.1`, `adamig_1.2` | ADaMIG | 1.0, 1.1, 1.2 | ADSL (subject-level) and BDS (Basic Data Structure, used by ADPP) variable tables, each split by Rsdtm into several category files (`ADSL_*` = ADSL, everything else = BDS) |
 
-**SDTMIG coverage is limited to version 3.2.** Rsdtm's `SDTMIG_3.3` copy
-covers only CO, DM, SE, SM, and SV — not PP or Supplemental Qualifiers — so
-no newer SDTMIG version's PP/SUPP-- tables could be sourced this way. A
-newer version can be added later by copying the equivalent
-`PP-specification.csv` / `Supplemental_Qualifiers-specification.csv` into a
-new `sdtmig_<version>/` directory here and extending the version list in
-`data-raw/build_ig_sdtm.R`.
+**SDTMIG coverage is limited to versions 3.2 and 3.3.** Rsdtm's
+`SDTMIG_3.3` copy covers only CO, DM, SE, SM, and SV, not PP or Supplemental
+Qualifiers, so the PP/SUPP-- tables come from its 3.2 transcription, and
+`ig_sdtm` carries them for 3.3 as well because the published SDTMIG v3.3
+(CDISC wiki PDF, https://wiki.cdisc.org/download/attachments/66274516/sdtmig_v3.3.pdf)
+shows they did not change: its section 6.3.11.2 PP specification is stamped
+"Version 3.2" and the revision history lists no PP change, and its section
+8.4.1 SUPP-- specification has the same ten variables, labels, and types.
+
+That PDF is a browser print of the web page and is cropped on the right, so it
+shows each variable's name, label, type, codelist, and role but not Core or
+the CDISC Notes. It also shows `TAETORD`, `EPOCH`, and `PPDY` in the PP table,
+which the Rsdtm 3.2 transcription (21 of the 24 rows) lacks;
+`sdtmig_3.2/PP-additions.csv` adds them in their published positions, with
+Core "Permissible" taken from the Certara PKSubmit SDTM_3.2 appendix
+(https://onlinehelp.certara.com/pksubmit/2.1/PKSubmit/Appendix/SDTM_3.2.htm)
+because the PDF does not show it. Existing rows keep their Core from the
+Rsdtm transcription.
+
+A newer SDTMIG's PP/SUPP-- tables can be added by copying the equivalent CSVs
+into a new `sdtmig_<version>/` directory and adding the version to
+`sdtmig_sources` in `data-raw/build_ig_sdtm.R`. SDTMIG 3.4 is not yet
+included: its PDF is not publicly hosted by CDISC (the cdisc.org copy is
+members-only).
 
 ## Encoding
 

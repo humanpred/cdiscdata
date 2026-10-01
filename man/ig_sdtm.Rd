@@ -9,7 +9,7 @@ A data frame with columns:
 \describe{
   \item{source}{\code{"SDTM_MODEL"} or \code{"SDTMIG"}.}
   \item{version}{SDTM Model version (\code{"1.4"}-\code{"1.7"}) for
-    \code{source == "SDTM_MODEL"} rows; SDTMIG version (\code{"3.2"}) for
+    \code{source == "SDTM_MODEL"} rows; SDTMIG version (\code{"3.2"} or \code{"3.3"}) for
     \code{source == "SDTMIG"} rows. The two are independent numbering
     systems; see \code{\link{get_ig}}.}
   \item{class}{General observation class, e.g. \code{"Findings"}.
@@ -50,8 +50,9 @@ ig_sdtm
 Versioned SDTM Model and SDTMIG variable metadata: the Model's Findings
 general-observation-class variables (versions 1.4-1.7), the SDTMIG PP
 domain, and the SDTMIG generic SUPP-- qualifier structure (used for
-SUPPPP; version 3.2 only - see \code{data-raw/ig_source/README.md} for
-why no newer SDTMIG version's PP/SUPP-- tables were available to source).
+SUPPPP; versions 3.2 and 3.3, which share the same tables - see
+\code{\link{get_ig}} and \code{data-raw/ig_source/README.md} for why no
+newer SDTMIG version's PP/SUPP-- tables are available yet).
 Use \code{\link{get_ig}} to retrieve it, and
 \code{\link{build_domain_spec}} to build a ready-to-use PP/SUPPPP/ADPP
 variable spec from it (joined to CT for codelist ids).

@@ -20,6 +20,24 @@ test_that("build_domain_spec resolves PPTESTCD/PPTEST/PPSTAT codelist ids agains
   expect_equal(pp$length[pp$variable == "PPTESTCD"], 8L)
 })
 
+test_that("build_domain_spec PP defaults to the newest SDTMIG (3.3) and returns the 24 published variables in order", {
+  pp <- build_domain_spec("PP")
+  expect_equal(pp$variable,
+               c("STUDYID", "DOMAIN", "USUBJID", "PPSEQ", "PPGRPID", "PPTESTCD",
+                 "PPTEST", "PPCAT", "PPSCAT", "PPORRES", "PPORRESU", "PPSTRESC",
+                 "PPSTRESN", "PPSTRESU", "PPSTAT", "PPREASND", "PPSPEC",
+                 "TAETORD", "EPOCH", "PPDTC", "PPDY", "PPRFTDTC", "PPSTINT",
+                 "PPENINT"))
+  expect_equal(pp$order, 1:24)
+  expect_equal(pp$codelist_id[pp$variable == "EPOCH"], "C99079")
+  expect_identical(pp, build_domain_spec("PP", ig_version = "3.3"))
+})
+
+test_that("build_domain_spec PP at 3.2 equals 3.3 (the tables are unchanged between them)", {
+  expect_identical(build_domain_spec("PP", ig_version = "3.2"),
+                   build_domain_spec("PP", ig_version = "3.3"))
+})
+
 test_that("build_domain_spec SUPPPP returns the 10 standard SUPP-- variables", {
   supp <- build_domain_spec("SUPPPP")
   expect_setequal(
