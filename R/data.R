@@ -164,21 +164,146 @@
 #'   redistributed; see \code{data-raw/README.md}.
 "ig_adam"
 
-#' The CDISC Library exports the IG and model datasets were built from
+#' CDASH model variable metadata
+#'
+#' One row per variable of the CDISC Clinical Data Acquisition Standards
+#' Harmonization (CDASH) model, at every version: 1.0, 1.1, 1.2, and 1.3.
+#' Built from CDISC Library CSV exports not redistributed with this package
+#' (see \code{\link{ig_sources}}); only variable metadata and the collection
+#' wording (question text, prompt) is carried, not the model's definitions,
+#' mapping instructions, or implementation notes. Retrieve it with
+#' \code{\link{get_cdash}("CDASH")}.
+#'
+#' A (standard, version, class, domain, variable) is unique. The model defines
+#' most variables once per class with a \code{--} prefix (\code{domain} is
+#' \code{NA}) and some per domain.
+#'
+#' @format A data frame with columns:
+#' \describe{
+#'   \item{standard}{Always \code{"CDASH"}.}
+#'   \item{version}{Model version, e.g. \code{"1.3"}.}
+#'   \item{class}{Observation or special-purpose class, e.g.
+#'     \code{"Findings"}, \code{"Identifiers"}.}
+#'   \item{domain}{The domain a domain-specific variable belongs to (e.g.
+#'     \code{"AE"}), or \code{NA} for class-level variables.}
+#'   \item{order}{Position within the class and domain, as published.}
+#'   \item{variable}{CDASH variable name, e.g. \code{"--TERM"}.}
+#'   \item{label}{Variable label. At most 40 characters except for 6 labels
+#'     the model publishes longer (\code{--TESTCD} in 1.0 and 1.1;
+#'     \code{--ENDATF} in all four versions).}
+#'   \item{domain_specific}{\code{TRUE} where the model flags the variable as
+#'     domain specific; \code{NA} where it does not say.}
+#'   \item{question_text}{The CRF question text the model suggests.}
+#'   \item{prompt}{The CRF field prompt the model suggests.}
+#'   \item{type}{\code{"Char"} or \code{"Num"}.}
+#'   \item{sdtm_target}{The SDTM variable or variables the collected value
+#'     maps to.}
+#'   \item{codelist_code}{The CDISC CT codelist C-code the variable uses;
+#'     \code{NA} when none.}
+#' }
+#' @source CDISC Library CSV exports, downloaded under CDISC's terms and not
+#'   redistributed; see \code{data-raw/README.md}.
+"cdash_model"
+
+#' CDASH implementation-guide variable metadata
+#'
+#' One row per variable of every domain and data collection scenario of the
+#' CDASH implementation guide (CDASHIG), at every version: 1.1, 2.0, 2.1, 2.2,
+#' and 2.3. Built from CDISC Library CSV exports not redistributed with this
+#' package (see \code{\link{ig_sources}}); only variable metadata and the
+#' collection wording (question text, prompt) is carried, not the guide's
+#' definitions, CRF completion instructions, mapping instructions, or
+#' implementation notes. Retrieve it with \code{\link{get_cdash}}.
+#'
+#' A (standard, version, domain, scenario, variable) is unique.
+#'
+#' @format A data frame with columns:
+#' \describe{
+#'   \item{standard}{Always \code{"CDASHIG"}.}
+#'   \item{version}{Guide version, e.g. \code{"2.3"}.}
+#'   \item{class}{General observation class, e.g. \code{"Findings"}.}
+#'   \item{domain}{Domain, e.g. \code{"LB"}.}
+#'   \item{scenario}{The data collection scenario or implementation option
+#'     the row belongs to (e.g. \code{"Local Processing"}), or \code{NA} for
+#'     variables common to the domain.}
+#'   \item{order}{Position within the domain and scenario, as published.}
+#'   \item{variable}{CDASHIG variable name, e.g. \code{"LBORRES"}.}
+#'   \item{label}{Variable label. Not published in version 1.1 (\code{NA}
+#'     for all of its rows); at most 40 characters except for 71 labels in
+#'     version 2.0, which the guide publishes longer.}
+#'   \item{question_text}{The CRF question text the guide suggests.}
+#'   \item{prompt}{The CRF field prompt the guide suggests.}
+#'   \item{type}{As published: \code{"Char"}, \code{"Num"},
+#'     \code{"Date (dd-MON-yyyy)"}, or \code{"Time (24 hour)"}.}
+#'   \item{core}{CDASHIG Core designation, as published: \code{"HR"} (highly
+#'     recommended), \code{"R/C"} (recommended or conditional), or \code{"O"}
+#'     (optional).}
+#'   \item{sdtmig_target}{The SDTMIG variable the collected value maps to.}
+#'   \item{codelist_code}{The CDISC CT codelist C-code(s) or subset code(s)
+#'     the variable uses; \code{NA} when none.}
+#'   \item{codelist_submission_value}{The codelist submission value, where the
+#'     export gives one.}
+#' }
+#' @source CDISC Library CSV exports, downloaded under CDISC's terms and not
+#'   redistributed; see \code{data-raw/README.md}.
+"ig_cdash"
+
+#' CDISC QRS supplement item metadata
+#'
+#' One row per item of each of nine questionnaire, rating-scale, and
+#' functional-test (QRS) instrument supplements: AIMS (2.0), APACHE_II (1.0),
+#' ATLAS (1.0), CGI (2.1), HAM-A (2.1), KFSS (2.0), KPS_SCALE (2.0), PGI (1.1),
+#' and SIX_MINUTE_WALK (1.0). Built from CDISC Library CSV exports not
+#' redistributed with this package (see \code{\link{ig_sources}}); only the
+#' identifiers that map an item to SDTM controlled terminology are carried,
+#' not the item text. Reach it with \code{get_dataset("qrs_supplement")}.
+#'
+#' The exports have no \code{Version} column; \code{instrument} and
+#' \code{version} are taken from the file name (\code{HAM-A_Supplement_v2.1.csv}).
+#' A (instrument, version, item_order) is unique.
+#'
+#' @format A data frame with columns:
+#' \describe{
+#'   \item{instrument}{The instrument, as in the file name, e.g.
+#'     \code{"HAM-A"}, \code{"SIX_MINUTE_WALK"}.}
+#'   \item{version}{The supplement's version, e.g. \code{"2.1"}.}
+#'   \item{item_order}{Position of the item within the instrument.}
+#'   \item{test_name}{The item's \code{--TEST} value, e.g.
+#'     \code{"AIMS01-Muscles of Facial Expression"}; at most 40 characters.}
+#'   \item{testcd_codelist_code}{C-code of the \code{--TESTCD} codelist for
+#'     the instrument.}
+#'   \item{testcd_code}{The item's \code{--TESTCD} term C-code.}
+#'   \item{test_codelist_code}{C-code of the \code{--TEST} codelist for the
+#'     instrument.}
+#'   \item{test_code}{The item's \code{--TEST} term C-code.}
+#'   \item{response_group}{The response (value list) group the item uses, or
+#'     \code{NA} for the few items that have none.}
+#' }
+#' @source CDISC Library CSV exports, downloaded under CDISC's terms and not
+#'   redistributed; see \code{data-raw/README.md}.
+"qrs_supplement"
+
+#' The CDISC Library exports the datasets were built from
 #'
 #' One row per export file read by \code{data-raw/build_ig.R}, so which
 #' standard versions are bundled, and from exactly which files, is itself
 #' data. The files are not part of this package or repository.
 #'
-#' @format A data frame with 34 rows and columns:
+#' @format A data frame with 52 rows (34 implementation-guide and model
+#'   exports, 9 CDASH, 9 QRS supplements) and columns:
 #' \describe{
 #'   \item{file}{The export's file name.}
 #'   \item{version_string}{The export's \code{Version} value, e.g.
-#'     \code{"ADaMIG MD v1.0"}.}
-#'   \item{standard}{The canonical standard name parsed from it.}
-#'   \item{version}{The version number parsed from it.}
+#'     \code{"ADaMIG MD v1.0"}; \code{NA} for the QRS supplements, whose
+#'     exports have none.}
+#'   \item{standard}{The canonical standard name parsed from the version
+#'     string (for a QRS supplement, the instrument parsed from the file
+#'     name).}
+#'   \item{version}{The version number parsed from the version string (for a
+#'     QRS supplement, from the file name).}
 #'   \item{table}{The dataset it was loaded into: \code{"ig_sdtm"},
-#'     \code{"model_sdtm"}, or \code{"ig_adam"}.}
+#'     \code{"model_sdtm"}, \code{"ig_adam"}, \code{"cdash_model"},
+#'     \code{"ig_cdash"}, or \code{"qrs_supplement"}.}
 #'   \item{rows}{Data rows in the file, equal to the rows loaded from it.}
 #'   \item{md5}{MD5 checksum of the file, to tell whether a rebuild used the
 #'     same export.}
@@ -195,7 +320,7 @@
 #' \describe{
 #'   \item{dataset}{R object name or logical dataset identifier.}
 #'   \item{type}{One of \code{"CT"}, \code{"IG"}, \code{"Model"},
-#'     \code{"Schema"}, \code{"Stylesheet"}.}
+#'     \code{"CDASH"}, \code{"QRS"}, \code{"Schema"}, \code{"Stylesheet"}.}
 #'   \item{ct_type}{One of \code{"sdtm"}, \code{"adam"}, or \code{NA} for
 #'     non-CT datasets.}
 #'   \item{description}{Human-readable description.}

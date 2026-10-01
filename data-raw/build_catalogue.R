@@ -1,8 +1,18 @@
 # Rebuild the datasets_catalogue object after any data update.
 # Called at the end of fetch_all.R (CT), and after build_ig.R (IG and model
-# metadata, which fetch_all.R does not touch).
-# Requires ct_sdtm, ct_adam, ig_sdtm, model_sdtm, and ig_adam to be loaded in
+# CDASH, and QRS metadata, which fetch_all.R does not touch).
+# Requires ct_sdtm, ct_adam, ig_sdtm, model_sdtm, ig_adam, cdash_model, ig_cdash,
+# and qrs_supplement to be loaded in
 # the environment (e.g. via load("data/ct_sdtm.rda") or a prior build script).
+
+# Load any data object not already in the global environment, so the script
+# also runs on its own from the package root.
+for (obj in c("ct_sdtm", "ct_adam", "ig_sdtm", "model_sdtm", "ig_adam",
+              "cdash_model", "ig_cdash", "qrs_supplement")) {
+  if (!exists(obj, envir = globalenv(), inherits = FALSE)) {
+    load(file.path("data", paste0(obj, ".rda")), envir = globalenv())
+  }
+}
 
 build_version_range <- function(x) {
   x <- sort(unique(x))
@@ -36,40 +46,51 @@ ct_entries <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# ── IG and model entries ──────────────────────────────────────────────────────
-# Each of these tables holds several standards, each with its own version
-# numbering, so the version range is reported per standard ("SDTMIG 3.1.2 to
-# 3.4; SDTMIG-AP 1.0; ..."), n_versions counts (standard, version) pairs, and
-# `latest` is NA because there is no single latest across standards.
-describe_standards <- function(tbl) {
-  parts <- vapply(split(tbl$version, tbl$standard), function(v) {
+# ── IG, model, CDASH, and QRS entries ─────────────────────────────────────────
+# Each of these tables holds several standards (or instruments), each with its
+# own version numbering, so the version range is reported per standard
+# ("SDTMIG 3.1.2 to 3.4; SDTMIG-AP 1.0; ..."), n_versions counts
+# (standard, version) pairs, and `latest` is NA because there is no single
+# latest across standards.
+describe_standards <- function(tbl, by = "standard") {
+  parts <- vapply(split(tbl$version, tbl[[by]]), function(v) {
     v <- unique(v)
     v <- v[order(package_version(v))]
     if (length(v) == 1L) v else paste(v[[1L]], "to", v[[length(v)]])
   }, character(1L))
-  parts <- parts[unique(tbl$standard)]
+  parts <- parts[unique(tbl[[by]])]
   paste(paste(names(parts), parts), collapse = "; ")
 }
-count_versions <- function(tbl) nrow(unique(tbl[c("standard", "version")]))
+count_versions <- function(tbl, by = "standard") nrow(unique(tbl[c(by, "version")]))
 
 ig_entries <- data.frame(
-  dataset = c("ig_sdtm", "model_sdtm", "ig_adam"),
-  type    = c("IG", "Model", "IG"),
+  dataset = c("ig_sdtm", "model_sdtm", "ig_adam", "cdash_model", "ig_cdash",
+              "qrs_supplement"),
+  type    = c("IG", "Model", "IG", "CDASH", "CDASH", "QRS"),
   ct_type = NA_character_,
   description = c(
     "SDTMIG, SENDIG and related SDTM-side implementation-guide variable metadata",
     "SDTM model variable metadata",
-    "ADaMIG and related ADaM implementation-guide variable metadata"
+    "ADaMIG and related ADaM implementation-guide variable metadata",
+    "CDASH model variable metadata",
+    "CDASH implementation-guide (CDASHIG) variable metadata",
+    "QRS instrument supplement item metadata"
   ),
   versions = c(
     describe_standards(ig_sdtm),
     describe_standards(model_sdtm),
-    describe_standards(ig_adam)
+    describe_standards(ig_adam),
+    describe_standards(cdash_model),
+    describe_standards(ig_cdash),
+    describe_standards(qrs_supplement, by = "instrument")
   ),
   n_versions = c(
     count_versions(ig_sdtm),
     count_versions(model_sdtm),
-    count_versions(ig_adam)
+    count_versions(ig_adam),
+    count_versions(cdash_model),
+    count_versions(ig_cdash),
+    count_versions(qrs_supplement, by = "instrument")
   ),
   latest = NA_character_,
   last_updated = Sys.Date(),

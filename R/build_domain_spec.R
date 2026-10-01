@@ -91,7 +91,7 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
   domain <- match.arg(domain)
   if (domain == "ADPP") {
     return(.spec_adpp(
-      standard %||% "ADaMIG", ig_version, ct_version, adsl, sdtm_domain,
+      .if_null(standard, "ADaMIG"), ig_version, ct_version, adsl, sdtm_domain,
       sdtmig_version, extension, extension_version
     ))
   }
@@ -115,7 +115,7 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
     )
   }
   rows <- .sdtmig_domain_rows(if (domain == "PP") "PP" else "SUPPQUAL",
-                              standard %||% "SDTMIG", ig_version)
+                              .if_null(standard, "SDTMIG"), ig_version)
   ct <- get_ct("sdtm", version = ct_version)
   .spec_frame(rows, .codelist_ids(rows$codelist_code, list(ct)))
 }
@@ -216,8 +216,9 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
   list(name = extension, rows = get_ig(extension, version = extension_version))
 }
 
-.spec_adpp <- function(standard, ig_version, ct_version, adsl, sdtm_domain,
-                       sdtmig_version, extension, extension_version) {
+# Reject or warn about ADPP-only options, before any data is read.
+.check_adpp_options <- function(sdtm_domain, sdtmig_version, extension,
+                                extension_version) {
   if (!is.null(sdtm_domain) && !identical(sdtm_domain, "PP")) {
     .cdiscdata_abort(
       paste0(
@@ -235,9 +236,10 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
     .cdiscdata_warn("`extension_version` is ignored when `extension` is NULL.",
                     "extension_ignored")
   }
-  ext <- if (is.null(extension)) NULL else .extension_rows(extension, extension_version)
+}
 
-  adam <- get_ig(standard, version = ig_version)
+# The BDS variables of an ADaM guide, as the first block of an ADPP spec.
+.adpp_bds_rows <- function(adam, standard) {
   bds <- adam[adam$structure == .adam_structure_aliases[["BDS"]], ]
   if (nrow(bds) == 0L) {
     .cdiscdata_abort(
@@ -246,11 +248,15 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
       "no_ig_variables"
     )
   }
-  ct_adam <- get_ct("adam", version = ct_version)
-
   bds$source <- "BDS"
   bds$order <- seq_len(nrow(bds))
-  sub <- bds[, .spec_columns]
+  bds[, .spec_columns]
+}
+
+# BDS, then the optional unions in a fixed order: ADSL, the BDS extension, and
+# the SDTMIG PP variables.
+.adpp_union <- function(bds, adam, adsl, ext, sdtm_domain, sdtmig_version) {
+  sub <- bds
   if (isTRUE(adsl)) {
     adsl_tbl <- adam[adam$structure == .adam_structure_aliases[["ADSL"]], ]
     sub <- .append_unique(sub, adsl_tbl, "ADSL")
@@ -262,6 +268,18 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
     sub <- .append_unique(sub, .sdtmig_domain_rows(sdtm_domain, "SDTMIG", sdtmig_version),
                           "SDTMIG")
   }
+  sub
+}
+
+.spec_adpp <- function(standard, ig_version, ct_version, adsl, sdtm_domain,
+                       sdtmig_version, extension, extension_version) {
+  .check_adpp_options(sdtm_domain, sdtmig_version, extension, extension_version)
+  ext <- if (is.null(extension)) NULL else .extension_rows(extension, extension_version)
+
+  adam <- get_ig(standard, version = ig_version)
+  bds <- .adpp_bds_rows(adam, standard)
+  ct_adam <- get_ct("adam", version = ct_version)
+  sub <- .adpp_union(bds, adam, adsl, ext, sdtm_domain, sdtmig_version)
 
   cts <- list(ct_adam)
   if (isTRUE(adsl) || !is.null(sdtm_domain) || !is.null(ext)) {
@@ -274,4 +292,4 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
 }
 
 # NULL-coalescing, for optional arguments with a computed default.
-`%||%` <- function(x, y) if (is.null(x)) y else x
+.if_null <- function(x, y) if (is.null(x)) y else x

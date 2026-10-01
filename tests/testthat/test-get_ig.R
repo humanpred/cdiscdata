@@ -18,7 +18,7 @@ test_that("the pre-redesign names 'sdtm' and 'adam' are kept as aliases for SDTM
 })
 
 test_that("each standard's default version is its newest, compared numerically", {
-  src <- cdiscdata::ig_sources
+  src <- ig_standard_sources()
   for (std in unique(src$standard)) {
     v <- src$version[src$standard == std]
     newest <- v[order(package_version(v))][length(v)]
@@ -29,7 +29,7 @@ test_that("each standard's default version is its newest, compared numerically",
 })
 
 test_that("get_ig reaches every one of the 15 standards, and only that standard's rows", {
-  src <- cdiscdata::ig_sources
+  src <- ig_standard_sources()
   for (i in seq_len(nrow(src))) {
     x <- get_ig(src$standard[i], version = src$version[i])
     expect_equal(nrow(x), src$rows[i], label = paste(src$standard[i], src$version[i]))

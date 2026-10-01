@@ -55,7 +55,13 @@
 #' get_ig("SDTM", version = "2.1", domain = "Findings")
 get_ig <- function(standard = "SDTMIG", version = NULL, domain = NULL) {
   standard <- .resolve_ig_standard(standard)
-  table <- .ig_standards$table[match(standard, .ig_standards$standard)]
+  .library_rows(standard, version, domain, .ig_standards)
+}
+
+# The rows of one standard at one version (NULL = newest), optionally
+# restricted to a domain, from whichever dataset `standards` says holds it.
+.library_rows <- function(standard, version, domain, standards) {
+  table <- standards$table[match(standard, standards$standard)]
   tbl <- .pkg_data(table)
   tbl <- tbl[tbl$standard == standard, ]
 
@@ -68,18 +74,21 @@ get_ig <- function(standard = "SDTMIG", version = NULL, domain = NULL) {
   .filter_ig_domain(tbl, table, domain, standard, version)
 }
 
-# "sdtm"/"adam" are the pre-redesign first-argument values; any other value
-# must be one of the canonical standard names.
-.resolve_ig_standard <- function(standard) {
+# "sdtm"/"adam" are the pre-redesign first-argument values (get_ig only); any
+# other value must be one of the canonical standard names in `known`.
+.resolve_ig_standard <- function(standard, known = .ig_standards$standard,
+                                 aliases = c(sdtm = "SDTMIG", adam = "ADaMIG")) {
   if (!is.character(standard) || length(standard) != 1L || is.na(standard)) {
     .cdiscdata_abort("`standard` must be a single string.", "ig_standard_unavailable")
   }
-  standard <- switch(standard, sdtm = "SDTMIG", adam = "ADaMIG", standard)
-  if (!standard %in% .ig_standards$standard) {
+  if (standard %in% names(aliases)) {
+    standard <- aliases[[standard]]
+  }
+  if (!standard %in% known) {
     .cdiscdata_abort(
       paste0(
         "Standard '", standard, "' is not available. Available standards: ",
-        paste(.ig_standards$standard, collapse = ", "), "."
+        paste(known, collapse = ", "), "."
       ),
       "ig_standard_unavailable"
     )
@@ -93,19 +102,24 @@ get_ig <- function(standard = "SDTMIG", version = NULL, domain = NULL) {
   ADSL = "Subject-Level Analysis Dataset"
 )
 
+# Columns a `domain` value is matched against, by dataset: a class or a
+# dataset/domain for the models, a domain for the guides, a structure for ADaM.
+.domain_columns <- list(
+  model_sdtm  = c("class", "dataset"),
+  cdash_model = c("class", "domain"),
+  ig_sdtm     = "domain",
+  ig_cdash    = "domain",
+  ig_adam     = "structure"
+)
+
 .filter_ig_domain <- function(tbl, table, domain, standard, version) {
-  if (table == "model_sdtm") {
-    avail <- sort(unique(c(tbl$class, tbl$dataset)))
-    keep <- tbl$class %in% domain | tbl$dataset %in% domain
-  } else {
-    column <- if (table == "ig_adam") "structure" else "domain"
-    if (table == "ig_adam") {
-      domain <- ifelse(domain %in% names(.adam_structure_aliases),
-                       .adam_structure_aliases[domain], domain)
-    }
-    avail <- sort(unique(tbl[[column]]))
-    keep <- tbl[[column]] %in% domain
+  if (table == "ig_adam") {
+    domain <- ifelse(domain %in% names(.adam_structure_aliases),
+                     .adam_structure_aliases[domain], domain)
   }
+  columns <- .domain_columns[[table]]
+  avail <- sort(unique(unlist(tbl[columns], use.names = FALSE)))
+  keep <- Reduce(`|`, lapply(tbl[columns], `%in%`, domain))
   if (!all(domain %in% avail)) {
     .cdiscdata_abort(
       paste0(

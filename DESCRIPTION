@@ -5,7 +5,8 @@ Authors@R: person("Bill", "Denney", email = "wdenney@humanpred.com",
     role = c("aut", "cre"),
     comment = c(ORCID = "0000-0002-5759-428X"))
 Description: Provides versioned CDISC Controlled Terminology (SDTM, ADaM),
-    SDTM Model/SDTMIG and ADaMIG implementation-guide variable metadata,
+    variable metadata for the SDTM model, the SDTMIG, SENDIG, and ADaMIG
+    families of implementation guides, CDASH, and QRS supplements,
     and Define-XML schemas (XSD) and CDISC XSLT stylesheets. Uses a
     validity-date design to store all historical CT versions compactly
     without redundant row duplication. Intended as a shared data

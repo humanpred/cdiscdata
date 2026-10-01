@@ -22,10 +22,6 @@ ig_keys <- list(
   ig_adam    = c("standard", "version", "structure", "variable_set", "variable")
 )
 
-ig_row_key <- function(tbl, cols) {
-  do.call(paste, c(lapply(tbl[cols], as.character), sep = "\r"))
-}
-
 test_that("each IG/model table has exactly the documented metadata columns, nothing from the guides' prose", {
   tbls <- ig_gate_tables()
   expect_equal(names(tbls$ig_sdtm),
@@ -50,8 +46,8 @@ test_that("each IG/model table has exactly the documented metadata columns, noth
   }
 })
 
-test_that("ig_sources lists the 34 exports, each parsed to one distinct standard version", {
-  src <- cdiscdata::ig_sources
+test_that("ig_sources lists the 34 IG and model exports, each parsed to one distinct standard version", {
+  src <- ig_standard_sources()
   expect_equal(nrow(src), 34L)
   expect_setequal(src$version_string, ig_version_strings)
   expect_false(anyDuplicated(src$file) > 0L)
@@ -65,7 +61,7 @@ test_that("ig_sources lists the 34 exports, each parsed to one distinct standard
 })
 
 test_that("every export is loaded exactly once, with as many rows as its file has", {
-  src <- cdiscdata::ig_sources
+  src <- ig_standard_sources()
   tbls <- ig_gate_tables()
   for (nm in names(tbls)) {
     s <- src[src$table == nm, ]

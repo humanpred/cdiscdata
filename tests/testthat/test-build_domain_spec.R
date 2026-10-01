@@ -87,7 +87,7 @@ test_that("build_domain_spec SUPPPP returns the 10 standard SUPP-- variables, fr
   expect_equal(supp$variable[!is.na(supp$codelist_id)], c("RDOMAIN", "QEVAL"))
 })
 
-test_that("build_domain_spec ADPP defaults to the newest ADaMIG (1.3): 195 BDS variables plus the 137 ADSL ones not already there", {
+test_that("build_domain_spec ADPP defaults to ADaMIG 1.3: 195 BDS variables plus 137 more from ADSL", {
   adpp <- build_domain_spec("ADPP")
   expect_equal(nrow(adpp), 332L)
   expect_equal(source_counts(adpp)[c("ADSL", "BDS")], c(ADSL = 137L, BDS = 195L))
@@ -173,7 +173,7 @@ test_that(".codelist_ids takes the first code of a list, from the first CT relea
 })
 
 test_that("the NULL-coalescing helper returns its left side unless that is NULL", {
-  or <- cdiscdata:::`%||%`
+  or <- cdiscdata:::.if_null
   expect_equal(or(NULL, 1), 1)
   expect_equal(or(2, 1), 2)
   expect_equal(or(NA, 1), NA)
@@ -352,7 +352,7 @@ test_that("extension = 'NCA' unions ADaMIG-NCA onto BDS + ADSL: 56 new rows, 3 t
   expect_equal(nca$order[-seq_len(nrow(base))], nrow(base) + 1:56)
 })
 
-test_that("extension = 'NCA' is the same as 'ADaMIG-NCA' and keeps the extension's Core, unlike the ADSL and PP unions", {
+test_that("extension = 'NCA' equals 'ADaMIG-NCA' and keeps the extension's Core, unlike ADSL and PP", {
   expect_identical(build_domain_spec("ADPP", extension = "NCA"),
                    build_domain_spec("ADPP", extension = "ADaMIG-NCA"))
   expect_identical(build_domain_spec("ADPP", extension = "NCA"),

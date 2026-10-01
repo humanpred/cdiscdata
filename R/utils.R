@@ -3,6 +3,7 @@
 # Suppress R CMD check notes about lazy-loaded package data objects
 # that are not visible to the static checker.
 utils::globalVariables(c("ct_sdtm", "ct_adam", "ig_sdtm", "model_sdtm", "ig_adam",
+                         "cdash_model", "ig_cdash", "qrs_supplement",
                          "ig_sources", "datasets_catalogue"))
 
 # Retrieve one of the package's own lazy-loaded datasets (ct_sdtm, ct_adam,

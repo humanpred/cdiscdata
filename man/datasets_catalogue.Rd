@@ -9,7 +9,7 @@ A data frame with columns:
 \describe{
   \item{dataset}{R object name or logical dataset identifier.}
   \item{type}{One of \code{"CT"}, \code{"IG"}, \code{"Model"},
-    \code{"Schema"}, \code{"Stylesheet"}.}
+    \code{"CDASH"}, \code{"QRS"}, \code{"Schema"}, \code{"Stylesheet"}.}
   \item{ct_type}{One of \code{"sdtm"}, \code{"adam"}, or \code{NA} for
     non-CT datasets.}
   \item{description}{Human-readable description.}

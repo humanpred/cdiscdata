@@ -18,7 +18,7 @@ test_that("list_datasets has required columns", {
 
 test_that("list_datasets type values are expected set", {
   types <- unique(list_datasets()$type)
-  expect_true(all(types %in% c("CT", "IG", "Model", "Schema", "Stylesheet")))
+  expect_true(all(types %in% c("CT", "IG", "Model", "CDASH", "QRS", "Schema", "Stylesheet")))
 })
 
 test_that("list_datasets describes the IG and model tables by standard, counting standard versions", {

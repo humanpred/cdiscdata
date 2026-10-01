@@ -3,17 +3,23 @@
 \docType{data}
 \name{ig_sources}
 \alias{ig_sources}
-\title{The CDISC Library exports the IG and model datasets were built from}
+\title{The CDISC Library exports the datasets were built from}
 \format{
-A data frame with 34 rows and columns:
+A data frame with 52 rows (34 implementation-guide and model
+  exports, 9 CDASH, 9 QRS supplements) and columns:
 \describe{
   \item{file}{The export's file name.}
   \item{version_string}{The export's \code{Version} value, e.g.
-    \code{"ADaMIG MD v1.0"}.}
-  \item{standard}{The canonical standard name parsed from it.}
-  \item{version}{The version number parsed from it.}
+    \code{"ADaMIG MD v1.0"}; \code{NA} for the QRS supplements, whose
+    exports have none.}
+  \item{standard}{The canonical standard name parsed from the version
+    string (for a QRS supplement, the instrument parsed from the file
+    name).}
+  \item{version}{The version number parsed from the version string (for a
+    QRS supplement, from the file name).}
   \item{table}{The dataset it was loaded into: \code{"ig_sdtm"},
-    \code{"model_sdtm"}, or \code{"ig_adam"}.}
+    \code{"model_sdtm"}, \code{"ig_adam"}, \code{"cdash_model"},
+    \code{"ig_cdash"}, or \code{"qrs_supplement"}.}
   \item{rows}{Data rows in the file, equal to the rows loaded from it.}
   \item{md5}{MD5 checksum of the file, to tell whether a rebuild used the
     same export.}
