@@ -1,5 +1,7 @@
 # cdiscdata (development version)
 
+* `inst/COPYRIGHTS` lists the source, copyright holder and licence of every bundled file and data table, including the standards metadata tables added in this version.
+
 ## Every CDISC Library implementation-guide export, replacing the Rsdtm tables
 
 * `ig_sdtm`, `ig_adam`, and the new `model_sdtm` are rebuilt from 34 CDISC

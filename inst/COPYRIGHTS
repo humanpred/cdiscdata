@@ -1,0 +1,45 @@
+Copyright and licensing of the files bundled in this package
+
+Package code and documentation: Copyright (c) Bill Denney, MIT License (see
+LICENSE).
+
+inst/extdata/schema/define-xml-2.0/*.xsd
+inst/extdata/schema/define-xml-2.1/*.xsd
+  Define-XML schema files, Copyright (c) Clinical Data Interchange Standards
+  Consortium (CDISC).  Obtained from
+  https://github.com/cdisc-org/DataExchange-RWD-Lineage (MIT License) for
+  Define-XML 2.1 and, for Define-XML 2.0, as redistributed by the defineR
+  package (https://github.com/dbosak01/defineR, CC0).
+
+inst/extdata/stylesheet/*.xsl
+  Define-XML stylesheets, Copyright (c) 2013-2018 Lex Jansen, MIT License
+  (the license text is in the header of each file).  Obtained from
+  https://github.com/cdisc-org/data-definition-engine and
+  https://github.com/dbosak01/defineR.
+
+data/ct_sdtm.rda, data/ct_adam.rda
+  CDISC Controlled Terminology as published by the National Cancer Institute
+  Enterprise Vocabulary Services (https://evs.nci.nih.gov/ftp1/CDISC/), a
+  work of the United States Government in the public domain.
+
+data/ig_sdtm.rda, data/ig_adam.rda
+  Variable metadata transcribed from the published SDTM, SDTMIG, and ADaMIG
+  specification documents (facts about the standards, not copies of the
+  documents).
+
+data/ig_sdtm.rda, data/model_sdtm.rda, data/ig_adam.rda, data/cdash_model.rda,
+data/ig_cdash.rda, data/qrs_supplement.rda, data/ig_sources.rda
+  Variable and item metadata of the CDISC standards (SDTM model, SDTMIG,
+  SDTMIG-AP, SDTMIG-MD, SENDIG, SENDIG-AR, SENDIG-DART, SENDIG-GeneTox,
+  ADaMIG, ADaMIG-MD, ADaMIG-NCA, ADaM ADAE, ADaM BDS for TTE, ADaM OCCDS,
+  ADaM popPK, CDASH Model, CDASHIG, and QRS supplements).  The standards
+  are Copyright (c) Clinical Data Interchange Standards Consortium (CDISC).
+  The tables carry only the metadata fields that implementations need:
+  variable and dataset names, labels, types, roles, core designations,
+  codelist references, order, and (for CDASH) the data-collection question
+  text and prompt, and (for QRS) the item order, test names and C-codes.
+  The guides' descriptive text, notes, definitions, mapping instructions,
+  implementation notes, and the instruments' own item wording are not
+  included.  The CDISC Library exports they were built from are used under
+  CDISC's download terms and are not redistributed; data-raw/ reads them
+  from a folder outside the package (see data-raw/README.md).
