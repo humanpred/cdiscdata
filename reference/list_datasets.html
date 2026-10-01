@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cdiscdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,27 +56,50 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">list_datasets</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 dataset       type ct_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               ct_sdtm         CT    sdtm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               ct_adam         CT    adam</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3               ig_sdtm         IG    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4               ig_adam         IG    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5     define_xml_schema     Schema    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 define_xml_stylesheet Stylesheet    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                             description                      versions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           SDTM Controlled Terminology      2007-03-06 to 2026-09-25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           ADaM Controlled Terminology      2010-03-05 to 2026-09-25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 SDTM Model + SDTMIG variable metadata Model 1.4 to 1.7 (SDTMIG 3.2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   ADaMIG ADSL + BDS variable metadata                    1.0 to 1.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                Define-XML XSD schemas                    2.0 to 2.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           Define-XML XSLT stylesheets                    2.0 to 2.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   n_versions     latest last_updated</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         84 2026-09-25   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         27 2026-09-25   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          5        1.7   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          3        1.2   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          2        2.1   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          2        2.1   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  dataset       type ct_type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                ct_sdtm         CT    sdtm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                ct_adam         CT    adam</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                ig_sdtm         IG    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4             model_sdtm      Model    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                ig_adam         IG    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6            cdash_model      CDASH    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7               ig_cdash      CDASH    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8         qrs_supplement        QRS    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      define_xml_schema     Schema    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 define_xml_stylesheet Stylesheet    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                    description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                  SDTM Controlled Terminology</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                  ADaM Controlled Terminology</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  SDTMIG, SENDIG and related SDTM-side implementation-guide variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                                                 SDTM model variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5               ADaMIG and related ADaM implementation-guide variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                CDASH model variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                       CDASH implementation-guide (CDASHIG) variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                                      QRS instrument supplement item metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                                                       Define-XML XSD schemas</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                                                 Define-XML XSLT stylesheets</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                             versions</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                                                           2007-03-06 to 2026-09-25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                                                           2010-03-05 to 2026-09-25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  SDTMIG 3.1.2 to 3.4; SDTMIG-AP 1.0; SDTMIG-MD 1.0 to 1.1; SENDIG 3.0 to 3.1.1; SENDIG-AR 1.0; SENDIG-DART 1.1; SENDIG-GeneTox 1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                                                                                                                    SDTM 1.2 to 2.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5           ADaMIG 1.0 to 1.3; ADaMIG-MD 1.0; ADaMIG-NCA 1.0; ADaM-ADAE 1.0; ADaM-BDS-TTE 1.0; ADaM-OCCDS 1.0 to 1.1; ADaM-popPK 1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                                                                                   CDASH 1.0 to 1.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                                                                                                                 CDASHIG 1.1 to 2.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                      AIMS 2.0; APACHE_II 1.0; ATLAS 1.0; CGI 2.1; HAM-A 2.1; KFSS 2.0; KPS_SCALE 2.0; PGI 1.1; SIX_MINUTE_WALK 1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                                                                                                                         2.0 to 2.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                                                                                                                        2.0 to 2.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    n_versions     latest last_updated</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          84 2026-09-25   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          27 2026-09-25   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          14       &lt;NA&gt;   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4           9       &lt;NA&gt;   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          11       &lt;NA&gt;   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6           4       &lt;NA&gt;   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7           5       &lt;NA&gt;   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8           9       &lt;NA&gt;   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9           2        2.1   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10          2        2.1   2026-09-30</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

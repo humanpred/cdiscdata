@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cdiscdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,20 +56,39 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">cdiscdata_versions</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 dataset       type                           description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               ct_sdtm         CT           SDTM Controlled Terminology</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               ct_adam         CT           ADaM Controlled Terminology</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3               ig_sdtm         IG SDTM Model + SDTMIG variable metadata</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4               ig_adam         IG   ADaMIG ADSL + BDS variable metadata</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5     define_xml_schema     Schema                Define-XML XSD schemas</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 define_xml_stylesheet Stylesheet           Define-XML XSLT stylesheets</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       latest n_versions last_updated</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 2026-09-25         84   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 2026-09-25         27   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        1.7          5   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        1.2          3   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        2.1          2   2026-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6        2.1          2   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  dataset       type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                ct_sdtm         CT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                ct_adam         CT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                ig_sdtm         IG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4             model_sdtm      Model</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                ig_adam         IG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6            cdash_model      CDASH</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7               ig_cdash      CDASH</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8         qrs_supplement        QRS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      define_xml_schema     Schema</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 define_xml_stylesheet Stylesheet</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                    description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                  SDTM Controlled Terminology</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                  ADaM Controlled Terminology</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  SDTMIG, SENDIG and related SDTM-side implementation-guide variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                                                 SDTM model variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5               ADaMIG and related ADaM implementation-guide variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                CDASH model variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                       CDASH implementation-guide (CDASHIG) variable metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                                      QRS instrument supplement item metadata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                                                       Define-XML XSD schemas</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                                                 Define-XML XSLT stylesheets</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        latest n_versions last_updated</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  2026-09-25         84   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  2026-09-25         27   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        &lt;NA&gt;         14   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        &lt;NA&gt;          9   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        &lt;NA&gt;         11   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6        &lt;NA&gt;          4   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7        &lt;NA&gt;          5   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8        &lt;NA&gt;          9   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9         2.1          2   2026-09-30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10        2.1          2   2026-09-30</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

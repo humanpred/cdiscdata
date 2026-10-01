@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cdiscdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,69 @@
       <small>Source: <a href="https://github.com/humanpred/cdiscdata/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="cdiscdata-development-version">cdiscdata (development version)<a class="anchor" aria-label="anchor" href="#cdiscdata-development-version"></a></h2>
+<div class="section level3">
+<h3 id="every-cdisc-library-implementation-guide-export-replacing-the-rsdtm-tables-development-version">Every CDISC Library implementation-guide export, replacing the Rsdtm tables<a class="anchor" aria-label="anchor" href="#every-cdisc-library-implementation-guide-export-replacing-the-rsdtm-tables-development-version"></a></h3>
+<ul><li>
+<p><code>ig_sdtm</code>, <code>ig_adam</code>, and the new <code>model_sdtm</code> are rebuilt from 34 CDISC Library CSV exports and carry every standard and version in them, replacing every row transcribed from the Rsdtm package:</p>
+<table class="table"><colgroup><col width="16%"><col width="25%"><col width="44%"><col width="13%"></colgroup><thead><tr><th>Table</th>
+<th>Standards</th>
+<th align="right">Standard versions</th>
+<th align="right">Rows</th>
+</tr></thead><tbody><tr><td><code>model_sdtm</code></td>
+<td>SDTM model</td>
+<td align="right">9</td>
+<td align="right">3,604</td>
+</tr><tr><td><code>ig_sdtm</code></td>
+<td>SDTMIG, SDTMIG-AP, SDTMIG-MD, SENDIG, SENDIG-AR, SENDIG-DART, SENDIG-GeneTox</td>
+<td align="right">14</td>
+<td align="right">10,064</td>
+</tr><tr><td><code>ig_adam</code></td>
+<td>ADaMIG, ADaMIG-MD, ADaMIG-NCA, ADaM-ADAE, ADaM-BDS-TTE, ADaM-OCCDS, ADaM-popPK</td>
+<td align="right">11</td>
+<td align="right">1,804</td>
+</tr></tbody></table><p>Only variable metadata is carried. The guides’ prose (CDISC Notes, Description, Definition, Notes, Examples) is not in the package data.</p>
+</li>
+<li><p><strong>Breaking: new columns.</strong> <code>ig_sdtm</code> is now <code>standard</code>, <code>version</code>, <code>class</code>, <code>domain</code>, <code>order</code>, <code>variable</code>, <code>label</code>, <code>type</code>, <code>role</code>, <code>core</code>, <code>codelist_code</code>, <code>codelist_submission_values</code>, <code>described_value_domain</code>, <code>value_list</code>. <code>ig_adam</code> is <code>standard</code>, <code>version</code>, <code>structure</code>, <code>variable_set</code>, <code>order</code>, <code>variable</code>, <code>label</code>, <code>type</code>, <code>core</code>, <code>codelist_code</code>, <code>codelist_submission_values</code>, <code>described_value_domain</code>, <code>value_list</code>. <code>model_sdtm</code> is <code>standard</code>, <code>version</code>, <code>class</code>, <code>dataset</code>, <code>order</code>, <code>variable</code>, <code>label</code>, <code>type</code>, <code>role</code>, <code>described_value_domain</code>, <code>variables_qualified</code>, <code>usage_restrictions</code>, <code>variable_code</code>. The old <code>source</code> (now <code>standard</code>), <code>dataset</code> and <code>category</code> (ADaM; now <code>structure</code> and <code>variable_set</code>), <code>codelist</code> (now <code>codelist_code</code>, a C-code rather than a submission value), <code>length</code>, and <code>notes</code> columns are gone. The SDTM model moved out of <code>ig_sdtm</code> into <code>model_sdtm</code>.</p></li>
+<li><p><code>ig_sources</code> lists the exports each table was built from: file name, the export’s version string, the parsed standard and version, the dataset it was loaded into, its row count, and its MD5 checksum.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="cdash-and-qrs-supplement-metadata-development-version">CDASH and QRS supplement metadata<a class="anchor" aria-label="anchor" href="#cdash-and-qrs-supplement-metadata-development-version"></a></h3>
+<ul><li>New <code>cdash_model</code> (CDASH model 1.0 to 1.3, 1,138 rows), <code>ig_cdash</code> (CDASHIG 1.1 and 2.0 to 2.3, 4,483 rows), and <code>qrs_supplement</code> (75 items of nine questionnaire, rating-scale, and functional-test supplements, 9 instrument versions), from 18 more CDISC Library exports. The CDASH tables carry the collection wording (<code>question_text</code>, <code>prompt</code>) and the SDTM target of each field, but not the definitions, CRF completion instructions, mapping instructions, or implementation notes. <code>qrs_supplement</code> carries the <code>--TEST</code>/<code>--TESTCD</code> names and codes of each item but not the item text. The QRS exports have no version column, so the instrument and version are read from the file name.</li>
+<li>New <code>get_cdash(standard, version, domain)</code> for the CDASH tables, with the same conventions as <code><a href="../reference/get_ig.html">get_ig()</a></code>. It is a separate function because the CDASH tables describe data collection, not a dataset’s structure, and so have different columns. The QRS supplements are reached with <code>get_dataset("qrs_supplement")</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="retrieval-functions-development-version">Retrieval functions<a class="anchor" aria-label="anchor" href="#retrieval-functions-development-version"></a></h3>
+<ul><li>
+<strong>Breaking: <code>get_ig(standard, version, domain)</code>.</strong> <code>standard</code> now names one of 15 standards (<code>"SDTM"</code>, <code>"SDTMIG"</code>, <code>"SDTMIG-AP"</code>, <code>"SDTMIG-MD"</code>, <code>"SENDIG"</code>, <code>"SENDIG-AR"</code>, <code>"SENDIG-DART"</code>, <code>"SENDIG-GeneTox"</code>, <code>"ADaMIG"</code>, <code>"ADaMIG-MD"</code>, <code>"ADaMIG-NCA"</code>, <code>"ADaM-ADAE"</code>, <code>"ADaM-BDS-TTE"</code>, <code>"ADaM-OCCDS"</code>, <code>"ADaM-popPK"</code>). The default is <code>"SDTMIG"</code>, and a <code>NULL</code> <code>version</code> now returns that standard’s newest version (compared numerically) where it used to return every version. The lower-case <code>"sdtm"</code> and <code>"adam"</code> are kept as aliases for <code>"SDTMIG"</code> and <code>"ADaMIG"</code>; capital <code>"SDTM"</code> is the model. <code>domain</code> filters by domain (SDTMIG), class or dataset (SDTM model), or structure (ADaM, where <code>"BDS"</code> and <code>"ADSL"</code> are accepted). An unknown standard, version, or domain is a classed error (<code>cdiscdata_error_ig_standard_unavailable</code>, <code>cdiscdata_error_ig_version_unavailable</code>, <code>cdiscdata_error_ig_domain_unavailable</code>) listing what is available.</li>
+<li>
+<strong>Fixed: <code>get_dataset("ig_sdtm")</code> and <code>get_dataset("ig_adam")</code>.</strong> They silently returned <code>NULL</code>. They now return the table, whole or restricted to the rows of one version string, and <code>get_dataset("model_sdtm")</code>, <code>get_dataset("cdash_model")</code>, <code>get_dataset("ig_cdash")</code> and <code>get_dataset("qrs_supplement")</code> work the same way. <code><a href="../reference/list_datasets.html">list_datasets()</a></code> reports the new tables with types <code>"Model"</code>, <code>"CDASH"</code>, and <code>"QRS"</code>, and counts versions per standard.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="variable-specs-development-version">Variable specs<a class="anchor" aria-label="anchor" href="#variable-specs-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/build_domain_spec.html">build_domain_spec()</a></code> takes a <code>standard</code> (any SDTM-side standard that defines the domain, e.g. <code>"SENDIG"</code> for PP) and an <code>extension</code> for ADPP: <code>"ADaMIG-NCA"</code> (or <code>"NCA"</code>), <code>"ADaM-popPK"</code>, or <code>"ADaM-BDS-TTE"</code> is unioned onto the BDS variables, as <code>adsl = TRUE</code> unions ADSL, with <code>extension_version</code> to pick its version. Unlike the ADSL and PP unions, the extension keeps its own Core designations: a variable the BDS already defines takes the extension’s Core (<code>DOSEA</code>, <code>DOSEU</code>, and <code>AVISIT</code> become required in ADaMIG-NCA) and is marked with the extension’s name in <code>source</code>. Existing calls keep working.</li>
+<li>The default specs now follow the newest guides: PP is the 26 variables of SDTMIG 3.4, and ADPP is the 195 ADaMIG 1.3 BDS variables plus the 137 ADSL variables not already there (332 in all). <code>build_domain_spec("ADPP", extension = "NCA")</code> has 388 variables. <code>sdtm_domain = "PP"</code> adds 24 variables (22 with <code>sdtmig_version = "3.3"</code>).</li>
+<li>The <code>length</code> column is kept but is always <code>NA</code>: the exports carry no length, which is a sponsor choice. <code>codelist_id</code> takes the first C-code of an IG codelist list, kept only when that codelist is in the CT release used.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="data-gates-development-version">Data gates<a class="anchor" aria-label="anchor" href="#data-gates-development-version"></a></h3>
+<ul><li>New tests in <code>test-ig_integrity.R</code> and <code>test-cdash_integrity.R</code>: every export is loaded exactly once and with as many rows as its file has; every row is unique on its key; no name or label is <code>NA</code> or contains a newline; no text field has stray whitespace; no value is long enough to be prose; <code>type</code> and <code>core</code> hold only published values; and no CSV is tracked under <code>data-raw</code>. The version-string parser is tested on all 43 version strings and on the nine QRS file names.</li>
+<li>Labels are limited to 40 characters (the XPT v5 limit, SDTMIG section 4.2.1) except for the labels the guides themselves publish longer, kept as published and listed in full in <code>helper-ig-exceptions.R</code>: 22 in the SDTM and ADaM tables (SDTMIG 3.2 and SDTMIG-MD 1.0 long forms that later versions abbreviate, the SDTM model <code>--TESTCD</code> before 1.7, and ADaMIG <code>PBCHGCyN</code>), 6 in the CDASH model, and 71 in CDASHIG 2.0. Both directions are checked, so a new over-length label fails and so does an exception that is no longer true. CDASHIG 1.1 publishes no variable labels at all (<code>NA</code>). Five SDTMIG and SDTMIG-MD rows have no <code>type</code> or <code>core</code> in the guide and are listed the same way. Shortening a label to fit an XPT file is for whoever writes the dataset, not for this package.</li>
+<li>
+<code>data-raw/utils_ig.R</code> is tested on synthetic exports written to a temporary directory, including that no prose column of any export layout reaches the data.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="corrections-to-earlier-notes-development-version">Corrections to earlier notes<a class="anchor" aria-label="anchor" href="#corrections-to-earlier-notes-development-version"></a></h3>
+<ul><li>The SDTMIG PP domain has 19 variables in 3.1.2 and 3.1.3, 21 in 3.2, 24 in 3.3, and 26 in 3.4, as the CDISC Library publishes them. Earlier development notes said 3.2 and 3.3 were the same 24-variable table; that was inferred from a version stamp in the published PDF and was wrong. <code>EPOCH</code>, <code>TAETORD</code> and <code>PPDY</code> first appear in 3.3, and <code>PPANMETH</code> and <code>PPTPTREF</code> in 3.4. <code>PPDTC</code>, not <code>PPPDTC</code>, is the published name, and nca.reporter’s <code>PTAETORD</code>, <code>PPPDTC</code> and <code>PPPDY</code> are not published SDTMIG variables.</li>
+<li>SDTMIG 3.2 <code>PPSTRESC</code> is published as “Character Result/Finding in Standard Format” (43 characters; 3.3 abbreviates it). It is now carried as published and is one of the exceptions above, where an earlier development version had abbreviated it.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="sources-development-version">Sources<a class="anchor" aria-label="anchor" href="#sources-development-version"></a></h3>
+<ul><li>The exports are downloaded under CDISC’s own terms and conditions. They are not in this repository, are never committed, and are read from <code>CDISC_SOURCES_DIR</code> (default <code>../cdisc-sources</code>) by <code>data-raw/build_ig.R</code>, which stops with a message listing every expected file if any is missing and refuses a QRS supplement it does not list. <code>data-raw/README.md</code> says how to obtain them. The Rsdtm copies in <code>data-raw/ig_source/</code> and the scripts that read them are removed.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="cdiscdata-020">cdiscdata 0.2.0<a class="anchor" aria-label="anchor" href="#cdiscdata-020"></a></h2>
 <div class="section level3">

@@ -1,14 +1,18 @@
 # ADaM implementation-guide variable metadata
 
-Versioned ADaMIG variable metadata: the ADSL (subject-level) variable
-table and the generic BDS (Basic Data Structure) variable table (used
-for ADPP, a BDS-structured dataset), for ADaMIG versions 1.0, 1.1, and
-1.2. Use
+One row per variable of seven ADaM standards, at every version: ADaMIG
+(1.0, 1.1, 1.2, 1.3), ADaMIG-MD (1.0), ADaMIG-NCA (1.0), ADaM-ADAE
+(1.0), ADaM-BDS-TTE (1.0), ADaM-OCCDS (1.0, 1.1), and ADaM-popPK (1.0);
+11 standard versions in all. Built from CDISC Library CSV exports that
+are not part of this package or repository (see
+[`ig_sources`](https://humanpred.github.io/cdiscdata/reference/ig_sources.md)
+and `data-raw/README.md`); only variable metadata is carried, not the
+guides' prose. Use
 [`get_ig`](https://humanpred.github.io/cdiscdata/reference/get_ig.md) to
-retrieve it, and
+retrieve a standard, and
 [`build_domain_spec`](https://humanpred.github.io/cdiscdata/reference/build_domain_spec.md)
-to build a ready-to-use ADPP variable spec from it (joined to CT for
-codelist ids).
+to build an ADPP variable spec from it (ADPP is a Basic Data Structure
+dataset; ADaMIG-NCA extends it).
 
 ## Usage
 
@@ -20,23 +24,26 @@ ig_adam
 
 A data frame with columns:
 
-- dataset:
+- standard:
 
-  `"ADSL"` or `"BDS"`.
+  The standard, e.g. `"ADaMIG"` or `"ADaMIG-NCA"`.
 
 - version:
 
-  ADaMIG version, e.g. `"1.2"`.
+  The standard's version, e.g. `"1.3"`.
 
-- category:
+- structure:
 
-  The Rsdtm source file's variable-category name (e.g.
-  `"ADSL_Treatment_Variables"`, `"Timing_Variables_BDS_Datasets"`), kept
-  for provenance; ADaMIG itself does not group these tables this way.
+  The data structure, as named in the export, e.g.
+  `"Basic Data Structure"` or `"Subject-Level Analysis Dataset"` (ADSL).
+
+- variable_set:
+
+  The variable set within the structure, e.g. `"Timing"`.
 
 - order:
 
-  Row order within its category file, as published.
+  Row order within the export for that standard version.
 
 - variable:
 
@@ -44,7 +51,8 @@ A data frame with columns:
 
 - label:
 
-  Variable label.
+  Variable label. At most 40 characters except `PBCHGCyN` in ADaMIG 1.2
+  and 1.3, which the guide publishes at 41.
 
 - type:
 
@@ -52,26 +60,34 @@ A data frame with columns:
 
 - core:
 
-  ADaMIG Core designation (`"Req"`/`"Exp"`/ `"Perm"`/`"Cond"`).
+  Core designation (`"Req"`, `"Perm"`, `"Cond"`, ...).
 
-- codelist:
+- codelist_code:
 
-  Codelist submission value referenced by this variable, parsed the same
-  way as
-  [`ig_sdtm`](https://humanpred.github.io/cdiscdata/reference/ig_sdtm.md)'s
-  `codelist` column; see there for details and caveats.
+  CDISC CT codelist C-code(s) the variable uses; several are separated
+  by `"; "`. `NA` when none.
 
-- length:
+- codelist_submission_values:
 
-  Maximum character length when the IG text states one explicitly; `NA`
-  otherwise. See
-  [`ig_sdtm`](https://humanpred.github.io/cdiscdata/reference/ig_sdtm.md).
+  The codelist submission value(s), where the export gives them.
 
-- notes:
+- described_value_domain:
 
-  CDISC Notes text for the variable.
+  A described value domain, where the variable has one rather than a
+  codelist.
+
+- value_list:
+
+  A fixed list of allowed values, where there is one.
 
 ## Source
 
-<https://github.com/humanpred/Rsdtm>; see `data-raw/ig_source/README.md`
-for full attribution.
+CDISC Library CSV exports, downloaded under CDISC's terms and not
+redistributed; see `data-raw/README.md`.
+
+## Details
+
+A (standard, version, structure, variable_set, variable) is unique: the
+variable set is part of the key because ADaM-OCCDS defines `DECDORGw`
+twice, once for each dictionary-specific variable set, with different
+labels.

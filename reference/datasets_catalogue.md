@@ -19,7 +19,8 @@ A data frame with columns:
 
 - type:
 
-  One of `"CT"`, `"Schema"`, `"Stylesheet"`.
+  One of `"CT"`, `"IG"`, `"Model"`, `"CDASH"`, `"QRS"`, `"Schema"`,
+  `"Stylesheet"`.
 
 - ct_type:
 

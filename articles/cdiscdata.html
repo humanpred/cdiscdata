@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cdiscdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,42 +89,84 @@ HTML.</li>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/list_datasets.html">list_datasets</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                 dataset       type ct_type</span></span>
-<span><span class="co">#&gt; 1               ct_sdtm         CT    sdtm</span></span>
-<span><span class="co">#&gt; 2               ct_adam         CT    adam</span></span>
-<span><span class="co">#&gt; 3               ig_sdtm         IG    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4               ig_adam         IG    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5     define_xml_schema     Schema    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6 define_xml_stylesheet Stylesheet    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;                             description                      versions</span></span>
-<span><span class="co">#&gt; 1           SDTM Controlled Terminology      2007-03-06 to 2026-09-25</span></span>
-<span><span class="co">#&gt; 2           ADaM Controlled Terminology      2010-03-05 to 2026-09-25</span></span>
-<span><span class="co">#&gt; 3 SDTM Model + SDTMIG variable metadata Model 1.4 to 1.7 (SDTMIG 3.2)</span></span>
-<span><span class="co">#&gt; 4   ADaMIG ADSL + BDS variable metadata                    1.0 to 1.2</span></span>
-<span><span class="co">#&gt; 5                Define-XML XSD schemas                    2.0 to 2.1</span></span>
-<span><span class="co">#&gt; 6           Define-XML XSLT stylesheets                    2.0 to 2.1</span></span>
-<span><span class="co">#&gt;   n_versions     latest last_updated</span></span>
-<span><span class="co">#&gt; 1         84 2026-09-25   2026-09-30</span></span>
-<span><span class="co">#&gt; 2         27 2026-09-25   2026-09-30</span></span>
-<span><span class="co">#&gt; 3          5        1.7   2026-09-30</span></span>
-<span><span class="co">#&gt; 4          3        1.2   2026-09-30</span></span>
-<span><span class="co">#&gt; 5          2        2.1   2026-09-30</span></span>
-<span><span class="co">#&gt; 6          2        2.1   2026-09-30</span></span>
+<span><span class="co">#&gt;                  dataset       type ct_type</span></span>
+<span><span class="co">#&gt; 1                ct_sdtm         CT    sdtm</span></span>
+<span><span class="co">#&gt; 2                ct_adam         CT    adam</span></span>
+<span><span class="co">#&gt; 3                ig_sdtm         IG    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4             model_sdtm      Model    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5                ig_adam         IG    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6            cdash_model      CDASH    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 7               ig_cdash      CDASH    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 8         qrs_supplement        QRS    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 9      define_xml_schema     Schema    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 10 define_xml_stylesheet Stylesheet    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;                                                                    description</span></span>
+<span><span class="co">#&gt; 1                                                  SDTM Controlled Terminology</span></span>
+<span><span class="co">#&gt; 2                                                  ADaM Controlled Terminology</span></span>
+<span><span class="co">#&gt; 3  SDTMIG, SENDIG and related SDTM-side implementation-guide variable metadata</span></span>
+<span><span class="co">#&gt; 4                                                 SDTM model variable metadata</span></span>
+<span><span class="co">#&gt; 5               ADaMIG and related ADaM implementation-guide variable metadata</span></span>
+<span><span class="co">#&gt; 6                                                CDASH model variable metadata</span></span>
+<span><span class="co">#&gt; 7                       CDASH implementation-guide (CDASHIG) variable metadata</span></span>
+<span><span class="co">#&gt; 8                                      QRS instrument supplement item metadata</span></span>
+<span><span class="co">#&gt; 9                                                       Define-XML XSD schemas</span></span>
+<span><span class="co">#&gt; 10                                                 Define-XML XSLT stylesheets</span></span>
+<span><span class="co">#&gt;                                                                                                                             versions</span></span>
+<span><span class="co">#&gt; 1                                                                                                           2007-03-06 to 2026-09-25</span></span>
+<span><span class="co">#&gt; 2                                                                                                           2010-03-05 to 2026-09-25</span></span>
+<span><span class="co">#&gt; 3  SDTMIG 3.1.2 to 3.4; SDTMIG-AP 1.0; SDTMIG-MD 1.0 to 1.1; SENDIG 3.0 to 3.1.1; SENDIG-AR 1.0; SENDIG-DART 1.1; SENDIG-GeneTox 1.0</span></span>
+<span><span class="co">#&gt; 4                                                                                                                    SDTM 1.2 to 2.1</span></span>
+<span><span class="co">#&gt; 5           ADaMIG 1.0 to 1.3; ADaMIG-MD 1.0; ADaMIG-NCA 1.0; ADaM-ADAE 1.0; ADaM-BDS-TTE 1.0; ADaM-OCCDS 1.0 to 1.1; ADaM-popPK 1.0</span></span>
+<span><span class="co">#&gt; 6                                                                                                                   CDASH 1.0 to 1.3</span></span>
+<span><span class="co">#&gt; 7                                                                                                                 CDASHIG 1.1 to 2.3</span></span>
+<span><span class="co">#&gt; 8                      AIMS 2.0; APACHE_II 1.0; ATLAS 1.0; CGI 2.1; HAM-A 2.1; KFSS 2.0; KPS_SCALE 2.0; PGI 1.1; SIX_MINUTE_WALK 1.0</span></span>
+<span><span class="co">#&gt; 9                                                                                                                         2.0 to 2.1</span></span>
+<span><span class="co">#&gt; 10                                                                                                                        2.0 to 2.1</span></span>
+<span><span class="co">#&gt;    n_versions     latest last_updated</span></span>
+<span><span class="co">#&gt; 1          84 2026-09-25   2026-09-30</span></span>
+<span><span class="co">#&gt; 2          27 2026-09-25   2026-09-30</span></span>
+<span><span class="co">#&gt; 3          14       &lt;NA&gt;   2026-09-30</span></span>
+<span><span class="co">#&gt; 4           9       &lt;NA&gt;   2026-09-30</span></span>
+<span><span class="co">#&gt; 5          11       &lt;NA&gt;   2026-09-30</span></span>
+<span><span class="co">#&gt; 6           4       &lt;NA&gt;   2026-09-30</span></span>
+<span><span class="co">#&gt; 7           5       &lt;NA&gt;   2026-09-30</span></span>
+<span><span class="co">#&gt; 8           9       &lt;NA&gt;   2026-09-30</span></span>
+<span><span class="co">#&gt; 9           2        2.1   2026-09-30</span></span>
+<span><span class="co">#&gt; 10          2        2.1   2026-09-30</span></span>
 <span><span class="fu"><a href="../reference/cdiscdata_versions.html">cdiscdata_versions</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                 dataset       type                           description</span></span>
-<span><span class="co">#&gt; 1               ct_sdtm         CT           SDTM Controlled Terminology</span></span>
-<span><span class="co">#&gt; 2               ct_adam         CT           ADaM Controlled Terminology</span></span>
-<span><span class="co">#&gt; 3               ig_sdtm         IG SDTM Model + SDTMIG variable metadata</span></span>
-<span><span class="co">#&gt; 4               ig_adam         IG   ADaMIG ADSL + BDS variable metadata</span></span>
-<span><span class="co">#&gt; 5     define_xml_schema     Schema                Define-XML XSD schemas</span></span>
-<span><span class="co">#&gt; 6 define_xml_stylesheet Stylesheet           Define-XML XSLT stylesheets</span></span>
-<span><span class="co">#&gt;       latest n_versions last_updated</span></span>
-<span><span class="co">#&gt; 1 2026-09-25         84   2026-09-30</span></span>
-<span><span class="co">#&gt; 2 2026-09-25         27   2026-09-30</span></span>
-<span><span class="co">#&gt; 3        1.7          5   2026-09-30</span></span>
-<span><span class="co">#&gt; 4        1.2          3   2026-09-30</span></span>
-<span><span class="co">#&gt; 5        2.1          2   2026-09-30</span></span>
-<span><span class="co">#&gt; 6        2.1          2   2026-09-30</span></span></code></pre></div>
+<span><span class="co">#&gt;                  dataset       type</span></span>
+<span><span class="co">#&gt; 1                ct_sdtm         CT</span></span>
+<span><span class="co">#&gt; 2                ct_adam         CT</span></span>
+<span><span class="co">#&gt; 3                ig_sdtm         IG</span></span>
+<span><span class="co">#&gt; 4             model_sdtm      Model</span></span>
+<span><span class="co">#&gt; 5                ig_adam         IG</span></span>
+<span><span class="co">#&gt; 6            cdash_model      CDASH</span></span>
+<span><span class="co">#&gt; 7               ig_cdash      CDASH</span></span>
+<span><span class="co">#&gt; 8         qrs_supplement        QRS</span></span>
+<span><span class="co">#&gt; 9      define_xml_schema     Schema</span></span>
+<span><span class="co">#&gt; 10 define_xml_stylesheet Stylesheet</span></span>
+<span><span class="co">#&gt;                                                                    description</span></span>
+<span><span class="co">#&gt; 1                                                  SDTM Controlled Terminology</span></span>
+<span><span class="co">#&gt; 2                                                  ADaM Controlled Terminology</span></span>
+<span><span class="co">#&gt; 3  SDTMIG, SENDIG and related SDTM-side implementation-guide variable metadata</span></span>
+<span><span class="co">#&gt; 4                                                 SDTM model variable metadata</span></span>
+<span><span class="co">#&gt; 5               ADaMIG and related ADaM implementation-guide variable metadata</span></span>
+<span><span class="co">#&gt; 6                                                CDASH model variable metadata</span></span>
+<span><span class="co">#&gt; 7                       CDASH implementation-guide (CDASHIG) variable metadata</span></span>
+<span><span class="co">#&gt; 8                                      QRS instrument supplement item metadata</span></span>
+<span><span class="co">#&gt; 9                                                       Define-XML XSD schemas</span></span>
+<span><span class="co">#&gt; 10                                                 Define-XML XSLT stylesheets</span></span>
+<span><span class="co">#&gt;        latest n_versions last_updated</span></span>
+<span><span class="co">#&gt; 1  2026-09-25         84   2026-09-30</span></span>
+<span><span class="co">#&gt; 2  2026-09-25         27   2026-09-30</span></span>
+<span><span class="co">#&gt; 3        &lt;NA&gt;         14   2026-09-30</span></span>
+<span><span class="co">#&gt; 4        &lt;NA&gt;          9   2026-09-30</span></span>
+<span><span class="co">#&gt; 5        &lt;NA&gt;         11   2026-09-30</span></span>
+<span><span class="co">#&gt; 6        &lt;NA&gt;          4   2026-09-30</span></span>
+<span><span class="co">#&gt; 7        &lt;NA&gt;          5   2026-09-30</span></span>
+<span><span class="co">#&gt; 8        &lt;NA&gt;          9   2026-09-30</span></span>
+<span><span class="co">#&gt; 9         2.1          2   2026-09-30</span></span>
+<span><span class="co">#&gt; 10        2.1          2   2026-09-30</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="controlled-terminology">Controlled Terminology<a class="anchor" aria-label="anchor" href="#controlled-terminology"></a>
