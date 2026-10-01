@@ -8,14 +8,16 @@
 #' draws on the ADaMIG BDS (Basic Data Structure) table, since ADPP is a BDS
 #' dataset and CDISC has no ADPP-specific table either, optionally unioned
 #' with the ADaMIG ADSL table (see \code{adsl} below), since a real ADPP
-#' also carries ADSL's subject-level variables.
+#' also carries ADSL's subject-level variables, and optionally with the SDTM
+#' PP domain's variables (see \code{sdtm_domain} below).
 #'
-#' This does not add PP-inherited traceability variables (\code{PPTESTCD},
-#' \code{PPTEST}, and the rest of PP's variables that a BDS dataset built
-#' from PP typically carries forward). Neither the ADaMIG BDS nor ADSL
-#' tables define those; which of PP's variables to carry into ADPP, and
-#' under what names, is a downstream derivation choice (e.g. admiral's own
-#' conventions), not IG metadata this function can source.
+#' Neither the ADaMIG BDS nor ADSL tables define the PP-inherited
+#' traceability variables (\code{PPTESTCD}, \code{PPTEST}, and the rest of
+#' PP's variables that a BDS dataset built from PP typically carries
+#' forward); which of PP's variables to carry into ADPP, and under what
+#' names, is a downstream derivation choice (e.g. admiral's own
+#' conventions), so they are only added when asked for with
+#' \code{sdtm_domain}, and the default leaves them out.
 #'
 #' @param domain One of \code{"PP"}, \code{"SUPPPP"}, or \code{"ADPP"}.
 #' @param ig_version IG version to use: an SDTMIG version (for \code{PP}/
@@ -28,10 +30,21 @@
 #'   carries ADSL's subject-level variables (treatment, demographics, ...)
 #'   alongside its own BDS variables. \code{FALSE} returns the BDS variables
 #'   alone. Ignored (with a warning) for \code{domain != "ADPP"}.
+#' @param sdtm_domain For \code{domain = "ADPP"} only: \code{NULL} (the
+#'   default) adds nothing; \code{"PP"} also unions in the SDTMIG PP
+#'   domain's variables, the same way \code{adsl = TRUE} unions ADSL's:
+#'   marked \code{source = "SDTMIG"}, \code{core} forced to \code{"Perm"},
+#'   a variable already defined by BDS or ADSL (e.g. \code{STUDYID},
+#'   \code{USUBJID}) keeping that version, and codelist ids resolved against
+#'   the ADaM CT first and the SDTM CT second. Ignored (with a warning) for
+#'   \code{domain != "ADPP"}; any value other than \code{"PP"} is an error.
+#' @param sdtmig_version SDTMIG version to take the \code{sdtm_domain}
+#'   variables from. \code{NULL} uses the newest available. Ignored (with a
+#'   warning) unless \code{domain = "ADPP"} and \code{sdtm_domain} is set.
 #' @return A data frame with columns \code{variable}, \code{label},
 #'   \code{type}, \code{length}, \code{core}, \code{order}, \code{source}
-#'   (\code{"SDTMIG"} for \code{PP}/\code{SUPPPP}; \code{"BDS"} or
-#'   \code{"ADSL"} for \code{ADPP}), and \code{codelist_id} (the codelist's
+#'   (\code{"SDTMIG"} for \code{PP}/\code{SUPPPP}; \code{"BDS"},
+#'   \code{"ADSL"}, or \code{"SDTMIG"} for \code{ADPP}), and \code{codelist_id} (the codelist's
 #'   CT C-code, e.g. \code{"C85839"} for PPTESTCD's PKPARMCD codelist;
 #'   \code{NA} when the variable has no codelist or the referenced codelist
 #'   name is not found in the CT version used). ADSL-sourced \code{ADPP} rows
@@ -45,69 +58,38 @@
 #' build_domain_spec("SUPPPP")
 #' build_domain_spec("ADPP")               # BDS + ADSL (default)
 #' build_domain_spec("ADPP", adsl = FALSE) # BDS only
+#' build_domain_spec("ADPP", sdtm_domain = "PP") # BDS + ADSL + PP variables
 build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
                               ig_version = NULL, ct_version = NULL,
-                              adsl = TRUE) {
+                              adsl = TRUE, sdtm_domain = NULL,
+                              sdtmig_version = NULL) {
   domain <- match.arg(domain)
-  if (domain != "ADPP" && !isTRUE(adsl)) {
+  if (domain == "ADPP") {
+    return(.spec_adpp(ig_version, ct_version, adsl, sdtm_domain, sdtmig_version))
+  }
+
+  if (!isTRUE(adsl)) {
     .cdiscdata_warn(
       "`adsl` is ignored for domain != \"ADPP\".",
       "adsl_ignored"
     )
   }
-
-  if (domain %in% c("PP", "SUPPPP")) {
-    ig_domain <- if (domain == "PP") "PP" else "SUPPQUAL"
-    sdtmig_all <- get_ig("sdtm")
-    sdtmig_all <- sdtmig_all[sdtmig_all$source == "SDTMIG", ]
-    version <- .resolve_ig_version(ig_version, sdtmig_all$version, "SDTMIG")
-    sub <- sdtmig_all[sdtmig_all$domain == ig_domain & sdtmig_all$version == version, ]
-    if (nrow(sub) == 0L) {
-      .cdiscdata_abort(
-        paste0("No SDTMIG '", ig_domain, "' variables found for version '", version, "'."),
-        "no_ig_variables"
-      )
-    }
-    ct <- get_ct("sdtm", version = ct_version)
-    sub$source <- "SDTMIG"
-    codelist_id <- .lookup_codelist_id(sub$codelist, ct)
-  } else {
-    adamig_all <- get_ig("adam")
-    version <- .resolve_ig_version(ig_version, adamig_all$version, "ADaMIG")
-    bds <- adamig_all[adamig_all$dataset == "BDS" & adamig_all$version == version, ]
-    if (nrow(bds) == 0L) {
-      .cdiscdata_abort(
-        paste0("No ADaMIG BDS variables found for version '", version, "'."),
-        "no_ig_variables"
-      )
-    }
-    bds$source <- "BDS"
-    ct_adam <- get_ct("adam", version = ct_version)
-
-    if (isTRUE(adsl)) {
-      adsl_tbl <- adamig_all[adamig_all$dataset == "ADSL" & adamig_all$version == version, ]
-      # ADSL and BDS both define several shared base variables (STUDYID,
-      # USUBJID, ...); a real ADPP carries each once, so ADSL contributes
-      # only the variables BDS does not already define, keeping BDS's
-      # version (and its own Core) for anything in both.
-      adsl_tbl <- adsl_tbl[!adsl_tbl$variable %in% bds$variable, ]
-      adsl_tbl$source <- "ADSL"
-      adsl_tbl$core <- "Perm"
-      adsl_tbl$order <- max(bds$order) + seq_len(nrow(adsl_tbl))
-      sub <- rbind(bds, adsl_tbl)
-      # ADSL variables carried from SDTM DM (SEX, RACE, AGEU, ...) reuse
-      # SDTM's codelists, not ADaM's much smaller CT; ADaM CT is checked
-      # first (matching the BDS-only behaviour), SDTM CT second.
-      ct_sdtm <- get_ct("sdtm", version = ct_version)
-      codelist_id <- .lookup_codelist_id(sub$codelist, ct_adam)
-      fallback <- is.na(codelist_id) & !is.na(sub$codelist)
-      codelist_id[fallback] <- .lookup_codelist_id(sub$codelist[fallback], ct_sdtm)
-    } else {
-      sub <- bds
-      codelist_id <- .lookup_codelist_id(sub$codelist, ct_adam)
-    }
+  if (!is.null(sdtm_domain) || !is.null(sdtmig_version)) {
+    .cdiscdata_warn(
+      "`sdtm_domain` and `sdtmig_version` are ignored for domain != \"ADPP\".",
+      "sdtm_domain_ignored"
+    )
   }
+  rows <- .sdtmig_domain_rows(if (domain == "PP") "PP" else "SUPPQUAL", ig_version)
+  ct <- get_ct("sdtm", version = ct_version)
+  .spec_frame(rows, .lookup_codelist_id(rows$codelist, ct))
+}
 
+# The columns of a variable spec, from any IG table's rows.
+.spec_columns <- c("variable", "label", "type", "length", "core", "order",
+                   "source", "codelist")
+
+.spec_frame <- function(sub, codelist_id) {
   data.frame(
     variable    = sub$variable,
     label       = sub$label,
@@ -119,6 +101,85 @@ build_domain_spec <- function(domain = c("PP", "SUPPPP", "ADPP"),
     codelist_id = codelist_id,
     stringsAsFactors = FALSE
   )
+}
+
+# SDTMIG variables for one domain ("PP" or "SUPPQUAL") at `ig_version`
+# (NULL = newest SDTMIG), marked source = "SDTMIG".
+.sdtmig_domain_rows <- function(ig_domain, ig_version) {
+  sdtmig_all <- get_ig("sdtm")
+  sdtmig_all <- sdtmig_all[sdtmig_all$source == "SDTMIG", ]
+  version <- .resolve_ig_version(ig_version, sdtmig_all$version, "SDTMIG")
+  rows <- sdtmig_all[sdtmig_all$domain == ig_domain & sdtmig_all$version == version, ]
+  if (nrow(rows) == 0L) {
+    .cdiscdata_abort(
+      paste0("No SDTMIG '", ig_domain, "' variables found for version '", version, "'."),
+      "no_ig_variables"
+    )
+  }
+  rows$source <- "SDTMIG"
+  rows
+}
+
+# Append `extra`'s variables to `base` that `base` does not already define,
+# marked with `source`, core forced to "Perm" (from ADPP's perspective,
+# merging a variable in from ADSL or SDTM is always optional, whatever Core
+# that table gives it for itself), and ordered after everything in `base`.
+# A variable both define keeps `base`'s version, as a real ADPP carries it once.
+.append_unique <- function(base, extra, source) {
+  extra <- extra[!extra$variable %in% base$variable, ]
+  extra$source <- source
+  extra$core <- "Perm"
+  extra$order <- max(base$order) + seq_len(nrow(extra))
+  rbind(base[, .spec_columns], extra[, .spec_columns])
+}
+
+.spec_adpp <- function(ig_version, ct_version, adsl, sdtm_domain, sdtmig_version) {
+  if (!is.null(sdtm_domain) && !identical(sdtm_domain, "PP")) {
+    .cdiscdata_abort(
+      paste0(
+        "`sdtm_domain` must be NULL or \"PP\" (the SDTMIG domain an ADPP is built from), not '",
+        paste(sdtm_domain, collapse = "', '"), "'."
+      ),
+      "sdtm_domain_unavailable"
+    )
+  }
+  if (is.null(sdtm_domain) && !is.null(sdtmig_version)) {
+    .cdiscdata_warn("`sdtmig_version` is ignored when `sdtm_domain` is NULL.",
+                    "sdtm_domain_ignored")
+  }
+
+  adamig_all <- get_ig("adam")
+  version <- .resolve_ig_version(ig_version, adamig_all$version, "ADaMIG")
+  bds <- adamig_all[adamig_all$dataset == "BDS" & adamig_all$version == version, ]
+  if (nrow(bds) == 0L) {
+    .cdiscdata_abort(
+      paste0("No ADaMIG BDS variables found for version '", version, "'."),
+      "no_ig_variables"
+    )
+  }
+  bds$source <- "BDS"
+  ct_adam <- get_ct("adam", version = ct_version)
+
+  sub <- bds[, .spec_columns]
+  if (isTRUE(adsl)) {
+    adsl_tbl <- adamig_all[adamig_all$dataset == "ADSL" & adamig_all$version == version, ]
+    sub <- .append_unique(sub, adsl_tbl, "ADSL")
+  }
+  if (!is.null(sdtm_domain)) {
+    sub <- .append_unique(sub, .sdtmig_domain_rows(sdtm_domain, sdtmig_version), "SDTMIG")
+  }
+
+  codelist_id <- .lookup_codelist_id(sub$codelist, ct_adam)
+  if (isTRUE(adsl) || !is.null(sdtm_domain)) {
+    # ADSL variables carried from SDTM DM (SEX, RACE, AGEU, ...) and PP's own
+    # codelists (PKPARMCD, PKUNIT, ...) are SDTM CT, not ADaM's much smaller
+    # CT; ADaM CT is checked first (matching the BDS-only behaviour), SDTM CT
+    # second.
+    ct_sdtm <- get_ct("sdtm", version = ct_version)
+    fallback <- is.na(codelist_id) & !is.na(sub$codelist)
+    codelist_id[fallback] <- .lookup_codelist_id(sub$codelist[fallback], ct_sdtm)
+  }
+  .spec_frame(sub, codelist_id)
 }
 
 # Resolve ig_version = NULL to the newest version present in `versions`

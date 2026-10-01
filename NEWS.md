@@ -10,9 +10,12 @@
     identifying field (`variable`, `label`, `type`, `core`, `codelist`,
     `role`).
   - 112 `ig_sdtm` and 7 `ig_adam` variable names had trailing spaces (so
-    `"--TESTCD "` never equalled `"--TESTCD"`, and the ADSL/BDS
-    de-duplication in `build_domain_spec()` silently missed e.g. `"FASFL "`);
-    `type` values such as `"Char "` were padded the same way.
+    `"--TESTCD "` never equalled `"--TESTCD"`, and
+    `build_domain_spec("ADPP", ig_version = "1.1")` returned seven ADSL
+    names padded this way: `FASFL`, `SAFFL`, `ITTFL`, `PPROTFL`, `COMPLFL`,
+    `RANDFL`, `ENRLFL`); `type` values such as `"Char "` were padded the
+    same way. The default `build_domain_spec("ADPP")` variable set is
+    unchanged.
   - Four labels over 40 characters now use the abbreviated form: SDTM Model
     1.4-1.6 `--TESTCD` ("Short Name of Measurement, Test or Exam", as in
     SDTMIG 3.3 section 6.3.10.1), SDTMIG 3.2 `PPSTRESC` ("Character
@@ -54,6 +57,23 @@
   included because CDISC does not host it publicly. nca.reporter's
   `PTAETORD`, `PPPDTC`, and `PPPDY` (seeded from aNCA) are not published
   SDTMIG names.
+
+## `build_domain_spec(sdtm_domain =)`
+
+* `build_domain_spec("ADPP", sdtm_domain = "PP")` also unions the SDTMIG PP
+  domain's variables into the ADPP spec, the same way `adsl = TRUE` unions
+  ADSL's, because a real ADPP carries PP's variables (`PPTESTCD`, `PPTEST`,
+  ...). They are marked `source = "SDTMIG"` with `core = "Perm"`, a variable
+  BDS or ADSL already defines (`STUDYID`, `USUBJID`) keeps that version, they
+  are ordered after the existing rows, and their codelist ids resolve against
+  the SDTM CT (the ADaM CT has none of PP's codelists): `PPTESTCD` C85839,
+  `PPTEST` C85493, `PPORRESU`/`PPSTRESU` C85494, `PPSTAT` C66789, `PPSPEC`
+  C78734, `EPOCH` C99079. 22 variables are added. `sdtmig_version` picks the
+  SDTMIG version (default: newest). The default is `NULL`, which leaves the
+  output unchanged. A value other than `"PP"` is a classed
+  `cdiscdata_error_sdtm_domain_unavailable`; passing `sdtm_domain` or
+  `sdtmig_version` where it has no effect is a classed
+  `cdiscdata_warning_sdtm_domain_ignored`.
 
 # cdiscdata 0.2.0
 

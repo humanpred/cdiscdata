@@ -8,7 +8,9 @@ build_domain_spec(
   domain = c("PP", "SUPPPP", "ADPP"),
   ig_version = NULL,
   ct_version = NULL,
-  adsl = TRUE
+  adsl = TRUE,
+  sdtm_domain = NULL,
+  sdtmig_version = NULL
 )
 }
 \arguments{
@@ -26,12 +28,25 @@ ADaMIG ADSL variables (default \code{TRUE}), since a real ADPP dataset
 carries ADSL's subject-level variables (treatment, demographics, ...)
 alongside its own BDS variables. \code{FALSE} returns the BDS variables
 alone. Ignored (with a warning) for \code{domain != "ADPP"}.}
+
+\item{sdtm_domain}{For \code{domain = "ADPP"} only: \code{NULL} (the
+default) adds nothing; \code{"PP"} also unions in the SDTMIG PP
+domain's variables, the same way \code{adsl = TRUE} unions ADSL's:
+marked \code{source = "SDTMIG"}, \code{core} forced to \code{"Perm"},
+a variable already defined by BDS or ADSL (e.g. \code{STUDYID},
+\code{USUBJID}) keeping that version, and codelist ids resolved against
+the ADaM CT first and the SDTM CT second. Ignored (with a warning) for
+\code{domain != "ADPP"}; any value other than \code{"PP"} is an error.}
+
+\item{sdtmig_version}{SDTMIG version to take the \code{sdtm_domain}
+variables from. \code{NULL} uses the newest available. Ignored (with a
+warning) unless \code{domain = "ADPP"} and \code{sdtm_domain} is set.}
 }
 \value{
 A data frame with columns \code{variable}, \code{label},
   \code{type}, \code{length}, \code{core}, \code{order}, \code{source}
-  (\code{"SDTMIG"} for \code{PP}/\code{SUPPPP}; \code{"BDS"} or
-  \code{"ADSL"} for \code{ADPP}), and \code{codelist_id} (the codelist's
+  (\code{"SDTMIG"} for \code{PP}/\code{SUPPPP}; \code{"BDS"},
+  \code{"ADSL"}, or \code{"SDTMIG"} for \code{ADPP}), and \code{codelist_id} (the codelist's
   CT C-code, e.g. \code{"C85839"} for PPTESTCD's PKPARMCD codelist;
   \code{NA} when the variable has no codelist or the referenced codelist
   name is not found in the CT version used). ADSL-sourced \code{ADPP} rows
@@ -49,19 +64,22 @@ structure, since CDISC has no domain-specific SUPPPP table); \code{ADPP}
 draws on the ADaMIG BDS (Basic Data Structure) table, since ADPP is a BDS
 dataset and CDISC has no ADPP-specific table either, optionally unioned
 with the ADaMIG ADSL table (see \code{adsl} below), since a real ADPP
-also carries ADSL's subject-level variables.
+also carries ADSL's subject-level variables, and optionally with the SDTM
+PP domain's variables (see \code{sdtm_domain} below).
 }
 \details{
-This does not add PP-inherited traceability variables (\code{PPTESTCD},
-\code{PPTEST}, and the rest of PP's variables that a BDS dataset built
-from PP typically carries forward). Neither the ADaMIG BDS nor ADSL
-tables define those; which of PP's variables to carry into ADPP, and
-under what names, is a downstream derivation choice (e.g. admiral's own
-conventions), not IG metadata this function can source.
+Neither the ADaMIG BDS nor ADSL tables define the PP-inherited
+traceability variables (\code{PPTESTCD}, \code{PPTEST}, and the rest of
+PP's variables that a BDS dataset built from PP typically carries
+forward); which of PP's variables to carry into ADPP, and under what
+names, is a downstream derivation choice (e.g. admiral's own
+conventions), so they are only added when asked for with
+\code{sdtm_domain}, and the default leaves them out.
 }
 \examples{
 build_domain_spec("PP")
 build_domain_spec("SUPPPP")
 build_domain_spec("ADPP")               # BDS + ADSL (default)
 build_domain_spec("ADPP", adsl = FALSE) # BDS only
+build_domain_spec("ADPP", sdtm_domain = "PP") # BDS + ADSL + PP variables
 }

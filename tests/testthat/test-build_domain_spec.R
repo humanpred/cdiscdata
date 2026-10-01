@@ -154,3 +154,112 @@ test_that("build_domain_spec aborts (classed) when an ADaMIG version has no BDS 
   )
   expect_match(conditionMessage(e), "No ADaMIG BDS variables found", fixed = TRUE)
 })
+
+# ---- sdtm_domain: union the SDTMIG PP variables into an ADPP spec ----------
+
+# PP's 24 published variables less STUDYID and USUBJID, which BDS already
+# defines (the BDS version is kept).
+pp_added_to_adpp <- c(
+  "DOMAIN", "PPSEQ", "PPGRPID", "PPTESTCD", "PPTEST", "PPCAT", "PPSCAT",
+  "PPORRES", "PPORRESU", "PPSTRESC", "PPSTRESN", "PPSTRESU", "PPSTAT",
+  "PPREASND", "PPSPEC", "TAETORD", "EPOCH", "PPDTC", "PPDY", "PPRFTDTC",
+  "PPSTINT", "PPENINT"
+)
+
+test_that("build_domain_spec ADPP leaves the PP variables out by default, and sdtm_domain = NULL is the default", {
+  base <- build_domain_spec("ADPP")
+  expect_equal(sum(base$variable %in% pp_added_to_adpp[-1L]), 0L)
+  expect_identical(base, build_domain_spec("ADPP", sdtm_domain = NULL))
+})
+
+test_that("build_domain_spec ADPP sdtm_domain = 'PP' appends exactly the 22 PP variables not already defined", {
+  base <- build_domain_spec("ADPP")
+  withpp <- build_domain_spec("ADPP", sdtm_domain = "PP")
+  added <- withpp[withpp$source == "SDTMIG", ]
+
+  expect_equal(nrow(withpp), nrow(base) + 22L)
+  # the BDS + ADSL rows are untouched and come first
+  expect_identical(withpp[seq_len(nrow(base)), ], base)
+  expect_equal(added$variable, pp_added_to_adpp)
+  expect_true(all(added$core == "Perm"))
+  # ordered after everything already there, continuing the sequence
+  expect_equal(added$order, max(base$order) + seq_len(22L))
+  # shared base variables keep their BDS version and appear once
+  expect_equal(withpp$source[withpp$variable == "STUDYID"], "BDS")
+  expect_equal(sum(withpp$variable %in% c("STUDYID", "USUBJID")), 2L)
+  expect_equal(sum(duplicated(withpp$variable)), 0L)
+})
+
+test_that("build_domain_spec ADPP sdtm_domain = 'PP' takes labels and types from the SDTMIG PP table", {
+  withpp <- build_domain_spec("ADPP", sdtm_domain = "PP")
+  row <- function(v) withpp[withpp$variable == v, ]
+  expect_equal(row("PPSTRESC")$label, "Character Result/Finding in Std Format")
+  expect_equal(row("PPSTRESC")$type, "Char")
+  expect_equal(row("PPSTRESN")$type, "Num")
+  expect_equal(row("PPTESTCD")$length, 8L)
+  expect_equal(row("EPOCH")$label, "Epoch")
+})
+
+test_that("build_domain_spec ADPP resolves the PP codelist ids against the SDTM CT (ADaM CT has none of them)", {
+  withpp <- build_domain_spec("ADPP", sdtm_domain = "PP")
+  expect_equal(withpp$codelist_id[withpp$variable == "PPTESTCD"], "C85839")
+  expect_equal(withpp$codelist_id[withpp$variable == "PPTEST"], "C85493")
+  expect_equal(withpp$codelist_id[withpp$variable == "PPORRESU"], "C85494")
+  expect_equal(withpp$codelist_id[withpp$variable == "PPSTAT"], "C66789")
+  expect_equal(withpp$codelist_id[withpp$variable == "PPSPEC"], "C78734")
+  expect_equal(withpp$codelist_id[withpp$variable == "EPOCH"], "C99079")
+})
+
+test_that("build_domain_spec ADPP sdtm_domain = 'PP' works with adsl = FALSE (BDS + PP only)", {
+  nb <- build_domain_spec("ADPP", adsl = FALSE, sdtm_domain = "PP")
+  bds <- build_domain_spec("ADPP", adsl = FALSE)
+  expect_equal(sort(unique(nb$source)), c("BDS", "SDTMIG"))
+  expect_identical(nb[seq_len(nrow(bds)), ], bds)
+  expect_equal(nb$variable[nb$source == "SDTMIG"], pp_added_to_adpp)
+  expect_equal(nb$codelist_id[nb$variable == "PPTESTCD"], "C85839")
+})
+
+test_that("build_domain_spec ADPP sdtmig_version picks the SDTMIG version (3.2 and 3.3 PP tables are identical)", {
+  expect_identical(
+    build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "3.2"),
+    build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "3.3")
+  )
+  e <- expect_error(
+    build_domain_spec("ADPP", sdtm_domain = "PP", sdtmig_version = "9.9"),
+    class = "cdiscdata_error_ig_version_unavailable"
+  )
+  expect_match(conditionMessage(e), "Version '9.9' is not available for SDTMIG.", fixed = TRUE)
+})
+
+test_that("build_domain_spec ADPP aborts (classed) on an sdtm_domain other than PP", {
+  e <- expect_error(
+    build_domain_spec("ADPP", sdtm_domain = "LB"),
+    class = "cdiscdata_error_sdtm_domain_unavailable"
+  )
+  expect_equal(
+    conditionMessage(e),
+    "`sdtm_domain` must be NULL or \"PP\" (the SDTMIG domain an ADPP is built from), not 'LB'."
+  )
+  e2 <- expect_error(
+    build_domain_spec("ADPP", sdtm_domain = c("PP", "LB")),
+    class = "cdiscdata_error_sdtm_domain_unavailable"
+  )
+  expect_match(conditionMessage(e2), "not 'PP', 'LB'.", fixed = TRUE)
+})
+
+test_that("build_domain_spec warns (classed) when sdtm_domain or sdtmig_version is passed where it has no effect", {
+  w1 <- expect_warning(
+    build_domain_spec("PP", sdtm_domain = "PP"),
+    class = "cdiscdata_warning_sdtm_domain_ignored"
+  )
+  expect_equal(conditionMessage(w1),
+               "`sdtm_domain` and `sdtmig_version` are ignored for domain != \"ADPP\".")
+  expect_warning(build_domain_spec("SUPPPP", sdtmig_version = "3.3"),
+                 class = "cdiscdata_warning_sdtm_domain_ignored")
+
+  w2 <- expect_warning(
+    build_domain_spec("ADPP", sdtmig_version = "3.3"),
+    class = "cdiscdata_warning_sdtm_domain_ignored"
+  )
+  expect_equal(conditionMessage(w2), "`sdtmig_version` is ignored when `sdtm_domain` is NULL.")
+})
