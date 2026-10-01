@@ -1,4 +1,0 @@
-variable,after,label,type,codelist,role,core,evidence
-TAETORD,PPSPEC,Planned Order of Element within Arm,Num,,Timing,Perm,"SDTMIG v3.3 PDF section 6.3.11.2 PP specification table (printed p.546/796); Core per Certara PKSubmit SDTM_3.2 appendix"
-EPOCH,TAETORD,Epoch,Char,(EPOCH),Timing,Perm,"SDTMIG v3.3 PDF section 6.3.11.2 PP specification table (printed p.546/796), codelist EPOCH C99079; Core per Certara PKSubmit SDTM_3.2 appendix"
-PPDY,PPDTC,Study Day of Parameter Calculations,Num,,Timing,Perm,"SDTMIG v3.3 PDF section 6.3.11.2 PP specification table (printed p.546/796); Core per Certara PKSubmit SDTM_3.2 appendix"

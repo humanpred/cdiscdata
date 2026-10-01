@@ -1,151 +1,171 @@
-# Helpers for building versioned SDTM/ADaM implementation-guide (IG) variable
-# metadata from the CSV transcriptions under data-raw/ig_source/.
-# Sourced by build_ig_sdtm.R and build_ig_adam.R.
+# Helpers for building the IG and model datasets (ig_sdtm, model_sdtm, ig_adam,
+# ig_sources) from CDISC Library CSV exports. Sourced by build_ig.R.
 #
-# Those source CSVs are column-inconsistent in minor ways across files and
-# CDISC versions (a stray blank header cell here, "Codelist/ Controlled
-# Terms" vs "Codelist / Controlled Terms" there, "Variable" vs
-# "Variable Name"), evidently from how each was originally transcribed from
-# a CDISC PDF/Word table. read_ig_csv() normalises all of that by matching
-# column *names* (not position) against the canonical fields every one of
-# these tables can carry, rather than assuming a fixed column order.
+# The exports are downloaded under CDISC's own terms and conditions (use within
+# the downloader's organization only; no copying, distribution, or derivative
+# works of the material itself). They are therefore never committed here: they
+# are read from CDISC_SOURCES_DIR (default "../cdisc-sources", relative to the
+# checkout), and only variable metadata is transcribed into data/. See
+# data-raw/README.md for how to obtain them.
 
-# Read one IG source CSV and return it with canonical column names:
-# variable, label, type, core, codelist, role, notes. Any canonical column
-# absent from this particular file (e.g. "role" in an ADaM spec) is filled
-# with NA. Blank/duplicate header cells (transcription artifacts) are
-# dropped before matching.
-read_ig_csv <- function(path) {
-  # These CSVs are transcriptions of CDISC Word/PDF tables and are encoded
-  # as Windows-1252 (smart quotes, non-breaking spaces), not UTF-8; reading
-  # as UTF-8 silently mangles those characters into mojibake instead of
-  # erroring, so the encoding must be stated explicitly.
-  raw <- utils::read.csv(path, check.names = FALSE, stringsAsFactors = FALSE,
-                          na.strings = "", fileEncoding = "windows-1252")
-  # Collapse embedded newlines/extra whitespace in header cells so matching
-  # is robust to how the CSV happened to wrap a multi-word header.
-  nm <- gsub("\\s+", " ", trimws(names(raw)))
-  nm[is.na(nm) | !nzchar(nm)] <- NA_character_
-  names(raw) <- nm
-  raw <- raw[, !is.na(names(raw)) & !duplicated(names(raw)), drop = FALSE]
+# The 34 exports this build reads, one standard version per file.
+ig_source_files <- c(
+  "SDTM_v1.2.csv", "SDTM_v1.3.csv", "SDTM_v1.4.csv", "SDTM_v1.5.csv",
+  "SDTM_v1.6.csv", "SDTM_v1.7.csv", "SDTM_v1.8.csv", "SDTM_v2.0.csv",
+  "SDTM_v2.1.csv",
+  "SDTMIG_v3.1.2.csv", "SDTMIG_v3.1.3.csv", "SDTMIG_v3.2.csv",
+  "SDTMIG_v3.3.csv", "SDTMIG_v3.4.csv", "SDTMIG-AP_v1.0.csv",
+  "SDTMIG-MD_v1.0.csv", "SDTMIG-MD_v1.1.csv",
+  "SENDIG_v3.0.csv", "SENDIG_v3.1.csv", "SENDIG_v3.1.1.csv",
+  "SENDIG-AR_v1.0.csv", "SENDIG-DART_v1.1.csv", "SENDIG-GeneTox_v1.0.csv",
+  "ADaMIG_v1.0.csv", "ADaMIG_v1.1.csv", "ADaMIG_v1.2.csv", "ADaMIG_v1.3.csv",
+  "ADaMIG_MD_v1.0.csv", "ADaMIG_NCA_v1.0.csv", "ADaM_ADAE_v1.0.csv",
+  "ADaM_BDS_for_TTE_v1.0.csv", "ADaM_OCCDS_v1.0.csv", "ADaM_OCCDS_v1.1.csv",
+  "ADaM_popPK_v1.0.csv"
+)
 
-  pick <- function(pattern, exclude = NULL) {
-    hit <- grepl(pattern, names(raw), ignore.case = TRUE)
-    if (!is.null(exclude)) hit <- hit & !grepl(exclude, names(raw), ignore.case = TRUE)
-    if (!any(hit)) return(rep(NA_character_, nrow(raw)))
-    as.character(raw[[which(hit)[1L]]])
+# The four column layouts the exports come in, and the dataset each feeds.
+ig_source_shapes <- list(
+  ig_sdtm = c(
+    "Version", "Variable Order", "Class", "Dataset Name", "Variable Name",
+    "Variable Label", "Type", "CDISC CT Codelist Code(s)",
+    "Codelist Submission Values", "Described Value Domain(s)", "Value List",
+    "Role", "CDISC Notes", "Core"
+  ),
+  model_v1 = c(
+    "Version", "Variable Order", "Class", "Dataset Name", "Variable Name",
+    "Variable Label", "Type", "Described Value Domain", "Role",
+    "Variables Qualified", "Description"
+  ),
+  model_v2 = c(
+    "Version", "Variable Order", "Class", "Dataset Name", "Variable Name",
+    "Variable Label", "Type", "Described Value Domain", "Role",
+    "Variables Qualified", "Usage Restrictions", "Variable C-Code",
+    "Definition", "Notes", "Examples"
+  ),
+  ig_adam = c(
+    "Version", "Data Structure Name", "Variable Set", "Variable Name",
+    "Variable Label", "Type", "CDISC CT Codelist Code(s)",
+    "CDISC CT Codelist Submission Value(s)", "Described Value Domain(s)",
+    "Value List Value", "Core", "CDISC Notes"
+  )
+)
+
+# Collapse every run of whitespace (hard line breaks and non-breaking spaces
+# from a wrapped table cell included) to one space, trim the ends, and turn
+# the empty result into NA. Applied to every field that is carried into the
+# data; the guide prose columns (CDISC Notes, Description, Definition, Notes,
+# Examples) are never read into it.
+tidy_text <- function(x) {
+  x <- trimws(gsub("[[:space:] ]+", " ", x, perl = TRUE))
+  x[!is.na(x) & !nzchar(x)] <- NA_character_
+  x
+}
+
+# Absolute path of the CDISC sources directory (not part of this repository).
+cdisc_sources_dir <- function() {
+  Sys.getenv("CDISC_SOURCES_DIR", "../cdisc-sources")
+}
+
+# Paths of all expected export files; stops with a message that lists every
+# one that is missing, so a partial download is obvious.
+cdisc_source_paths <- function(files = ig_source_files) {
+  dir <- cdisc_sources_dir()
+  paths <- file.path(dir, files)
+  missing <- files[!file.exists(paths)]
+  if (length(missing)) {
+    stop(
+      length(missing), " of the ", length(files), " expected CDISC Library ",
+      "export file(s) are missing from ",
+      normalizePath(dir, winslash = "/", mustWork = FALSE), ":\n  ",
+      paste(missing, collapse = "\n  "), "\n",
+      "They are not part of this repository; obtain them under your own CDISC ",
+      "terms (see data-raw/README.md) and put them there, or set the ",
+      "CDISC_SOURCES_DIR environment variable to the directory that holds them.",
+      call. = FALSE
+    )
   }
+  stats::setNames(paths, files)
+}
 
+# Read one export and say which of the four shapes it is.
+read_library_export <- function(path) {
+  x <- utils::read.csv(path, check.names = FALSE, stringsAsFactors = FALSE,
+                       na.strings = "", fileEncoding = "UTF-8")
+  shape <- names(ig_source_shapes)[vapply(
+    ig_source_shapes, function(cols) identical(sort(cols), sort(names(x))), logical(1L)
+  )]
+  if (length(shape) != 1L) {
+    stop(basename(path), " has columns that match none of the four known export ",
+         "shapes: ", paste(names(x), collapse = " | "), call. = FALSE)
+  }
+  versions <- unique(x$Version)
+  if (length(versions) != 1L) {
+    stop(basename(path), " must carry exactly one Version value, found ",
+         length(versions), ": ", paste(versions, collapse = "; "), call. = FALSE)
+  }
+  list(data = x, shape = shape, version_string = versions)
+}
+
+# ---- one converter per shape: only metadata fields are read ----------------
+
+ig_sdtm_rows <- function(x, parsed) {
   data.frame(
-    variable = tidy_text(pick("^Variable( Name)?$", exclude = "Label")),
-    label    = tidy_text(pick("Variable Label")),
-    type     = tidy_text(pick("^Type$")),
-    core     = tidy_text(pick("^Core$")),
-    codelist = tidy_text(pick("Codelist|Controlled Terms")),
-    role     = tidy_text(pick("^Role$")),
-    notes    = pick("CDISC Notes|^Description$"),
+    standard   = parsed$standard,
+    version    = parsed$version,
+    class      = tidy_text(x$Class),
+    domain     = tidy_text(x[["Dataset Name"]]),
+    order      = as.integer(x[["Variable Order"]]),
+    variable   = tidy_text(x[["Variable Name"]]),
+    label      = tidy_text(x[["Variable Label"]]),
+    type       = tidy_text(x$Type),
+    role       = tidy_text(x$Role),
+    core       = tidy_text(x$Core),
+    codelist_code              = tidy_text(x[["CDISC CT Codelist Code(s)"]]),
+    codelist_submission_values = tidy_text(x[["Codelist Submission Values"]]),
+    described_value_domain     = tidy_text(x[["Described Value Domain(s)"]]),
+    value_list                 = tidy_text(x[["Value List"]]),
     stringsAsFactors = FALSE
   )
 }
 
-# Collapse every run of whitespace (including the hard line breaks and
-# non-breaking spaces left by transcribing a wrapped Word/PDF table cell)
-# to a single space and trim the ends. Without this, a table cell that wrapped
-# across lines in the source document keeps a literal newline in the value, and
-# a cell with a trailing space in the source becomes e.g. the variable name
-# "--TESTCD " that never equals "--TESTCD". Applied to every identifying or
-# categorical field; not to `notes`, which is free text meant to keep its
-# paragraph breaks.
-tidy_text <- function(x) {
-  trimws(gsub("[[:space:] ]+", " ", x, perl = TRUE))
-}
-
-# Apply documented label overrides to a built IG table.
-#
-# A handful of labels as published in a CDISC IG exceed the 40-character
-# limit for a SAS v5 transport (XPT) variable label, which the same IGs state
-# for every variable they define (SDTMIG 3.3 section 4.2.1, "Variable
-# descriptive names (labels), up to 40 characters"). The IGs deal with this
-# by abbreviating in the domain tables themselves while leaving the generic
-# model table or a sibling row at its long form, so the long form is what
-# transcribes. `overrides` carries, for each such row, the published
-# abbreviation to use instead (or, where the IG publishes none, a sibling-
-# consistent one) and `evidence` naming the table checked; this stops, rather
-# than silently skipping, if an override does not match exactly the rows it is
-# written for.
-apply_label_overrides <- function(tbl, overrides, by) {
-  stopifnot(all(c(by, "label", "evidence") %in% names(overrides)))
-  for (i in seq_len(nrow(overrides))) {
-    hit <- rep(TRUE, nrow(tbl))
-    for (col in by) hit <- hit & !is.na(tbl[[col]]) & tbl[[col]] == overrides[[col]][i]
-    if (!any(hit)) {
-      stop("Label override matched no rows: ",
-           paste(by, unlist(overrides[i, by]), sep = "=", collapse = ", "))
-    }
-    tbl$label[hit] <- overrides$label[i]
+model_sdtm_rows <- function(x, parsed) {
+  chr_or_na <- function(col) {
+    if (col %in% names(x)) tidy_text(x[[col]]) else rep(NA_character_, nrow(x))
   }
-  tbl
+  data.frame(
+    standard   = parsed$standard,
+    version    = parsed$version,
+    class      = tidy_text(x$Class),
+    dataset    = tidy_text(x[["Dataset Name"]]),
+    order      = as.integer(x[["Variable Order"]]),
+    variable   = tidy_text(x[["Variable Name"]]),
+    label      = tidy_text(x[["Variable Label"]]),
+    type       = tidy_text(x$Type),
+    role       = tidy_text(x$Role),
+    described_value_domain = tidy_text(x[["Described Value Domain"]]),
+    variables_qualified    = tidy_text(x[["Variables Qualified"]]),
+    usage_restrictions     = chr_or_na("Usage Restrictions"),
+    variable_code          = chr_or_na("Variable C-Code"),
+    stringsAsFactors = FALSE
+  )
 }
 
-# Extract a codelist submission value (e.g. "PKPARMCD") from the free-text
-# "Codelist/Controlled Terms" column, e.g. "(PKPARMCD)" -> "PKPARMCD". CDISC
-# also uses this column for a non-codelist marker ("*" = extensible list not
-# further specified in the IG) or a format note ("ISO 8601"); neither names
-# an actual codelist, so both return NA.
-parse_codelist_token <- function(x) {
-  text  <- ifelse(is.na(x), "", x)
-  pos   <- regexpr("\\(([A-Za-z0-9_]+)\\)", text)
-  hit   <- pos > 0L
-  token <- rep(NA_character_, length(x))
-  # regmatches(text, pos) returns matches only for the TRUE positions of
-  # `hit`, in order, so it lines up with token[hit] element-for-element.
-  matched <- regmatches(text, pos)
-  token[hit] <- sub("^\\((.*)\\)$", "\\1", matched)
-  # A handful of IG tables reference a codelist by bare name (no
-  # parentheses), e.g. SUPP--'s RDOMAIN -> "DOMAIN".
-  bare_ok <- is.na(token) & grepl("^[A-Z][A-Z0-9_]*$", text)
-  token[bare_ok] <- text[bare_ok]
-  token
-}
-
-# Recover a documented maximum character length from CDISC Notes text, e.g.
-# "cannot be longer than 8 characters" -> 8L. CDISC implementation guides do
-# not publish a Length column at all (length is a sponsor/define.xml
-# choice); this recovers the few lengths the IG text states explicitly as a
-# hard rule, rather than guessing one for every variable.
-parse_documented_length <- function(notes) {
-  text <- ifelse(is.na(notes), "", notes)
-  pos  <- regexpr("longer than (\\d+) character", text, ignore.case = TRUE)
-  hit  <- pos > 0L
-  len  <- rep(NA_integer_, length(notes))
-  # regmatches(text, pos) returns matches only for the TRUE positions of
-  # `hit`, in order, so it lines up with len[hit] element-for-element.
-  matched <- regmatches(text, pos)
-  len[hit] <- suppressWarnings(as.integer(sub("\\D*(\\d+).*", "\\1", matched)))
-  len
-}
-
-# Path to a CDISC source file that is NOT part of this repository.
-#
-# The SDTMIG 3.4 export is a CDISC Library download made under CDISC's own
-# terms and conditions (use within the downloader's organization only; no
-# copying, distribution, or derivative works of the material itself). The
-# file is therefore never committed here: it is read from CDISC_SOURCES_DIR
-# (default "../cdisc-sources", relative to the checkout), and only variable
-# metadata is transcribed from it into data/. Anyone reproducing the build
-# obtains the export under their own CDISC terms and places it there.
-cdisc_sources_file <- function(file) {
-  dir  <- Sys.getenv("CDISC_SOURCES_DIR", "../cdisc-sources")
-  path <- file.path(dir, file)
-  if (!file.exists(path)) {
-    stop(
-      "Cannot find the CDISC source file '", file, "'.\n",
-      "Expected it at: ", normalizePath(path, winslash = "/", mustWork = FALSE), "\n",
-      "It is a CDISC Library export that is not part of this repository; obtain it ",
-      "under your own CDISC terms and put it there, or set the CDISC_SOURCES_DIR ",
-      "environment variable to the directory that holds it.",
-      call. = FALSE
-    )
-  }
-  path
+ig_adam_rows <- function(x, parsed) {
+  data.frame(
+    standard     = parsed$standard,
+    version      = parsed$version,
+    structure    = tidy_text(x[["Data Structure Name"]]),
+    variable_set = tidy_text(x[["Variable Set"]]),
+    order        = seq_len(nrow(x)),
+    variable     = tidy_text(x[["Variable Name"]]),
+    label        = tidy_text(x[["Variable Label"]]),
+    type         = tidy_text(x$Type),
+    core         = tidy_text(x$Core),
+    codelist_code              = tidy_text(x[["CDISC CT Codelist Code(s)"]]),
+    codelist_submission_values = tidy_text(x[["CDISC CT Codelist Submission Value(s)"]]),
+    described_value_domain     = tidy_text(x[["Described Value Domain(s)"]]),
+    value_list                 = tidy_text(x[["Value List Value"]]),
+    stringsAsFactors = FALSE
+  )
 }

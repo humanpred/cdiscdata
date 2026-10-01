@@ -2,7 +2,8 @@
 
 # Suppress R CMD check notes about lazy-loaded package data objects
 # that are not visible to the static checker.
-utils::globalVariables(c("ct_sdtm", "ct_adam", "ig_sdtm", "ig_adam", "datasets_catalogue"))
+utils::globalVariables(c("ct_sdtm", "ct_adam", "ig_sdtm", "model_sdtm", "ig_adam",
+                         "ig_sources", "datasets_catalogue"))
 
 # Retrieve one of the package's own lazy-loaded datasets (ct_sdtm, ct_adam,
 # datasets_catalogue, ...) regardless of whether cdiscdata is attached.

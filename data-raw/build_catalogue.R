@@ -1,8 +1,8 @@
 # Rebuild the datasets_catalogue object after any data update.
-# Called at the end of fetch_all.R (CT), and after build_ig_sdtm.R /
-# build_ig_adam.R (IG metadata, which fetch_all.R does not touch).
-# Requires ct_sdtm, ct_adam, ig_sdtm, and ig_adam to be loaded in the
-# environment (e.g. via load("data/ct_sdtm.rda") or a prior build script).
+# Called at the end of fetch_all.R (CT), and after build_ig.R (IG and model
+# metadata, which fetch_all.R does not touch).
+# Requires ct_sdtm, ct_adam, ig_sdtm, model_sdtm, and ig_adam to be loaded in
+# the environment (e.g. via load("data/ct_sdtm.rda") or a prior build script).
 
 build_version_range <- function(x) {
   x <- sort(unique(x))
@@ -36,36 +36,42 @@ ct_entries <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# ── IG entries ────────────────────────────────────────────────────────────────
-# ig_sdtm bundles two independently-versioned sources (SDTM Model, SDTMIG;
-# see R/data.R), so its version range is reported per source rather than as
-# one min/max across both numbering systems.
-ig_sdtm_model_versions <- sort(unique(ig_sdtm$version[ig_sdtm$source == "SDTM_MODEL"]))
-ig_sdtm_ig_versions    <- sort(unique(ig_sdtm$version[ig_sdtm$source == "SDTMIG"]))
-ig_adam_versions       <- sort(unique(ig_adam$version))
+# ── IG and model entries ──────────────────────────────────────────────────────
+# Each of these tables holds several standards, each with its own version
+# numbering, so the version range is reported per standard ("SDTMIG 3.1.2 to
+# 3.4; SDTMIG-AP 1.0; ..."), n_versions counts (standard, version) pairs, and
+# `latest` is NA because there is no single latest across standards.
+describe_standards <- function(tbl) {
+  parts <- vapply(split(tbl$version, tbl$standard), function(v) {
+    v <- unique(v)
+    v <- v[order(package_version(v))]
+    if (length(v) == 1L) v else paste(v[[1L]], "to", v[[length(v)]])
+  }, character(1L))
+  parts <- parts[unique(tbl$standard)]
+  paste(paste(names(parts), parts), collapse = "; ")
+}
+count_versions <- function(tbl) nrow(unique(tbl[c("standard", "version")]))
 
 ig_entries <- data.frame(
-  dataset = c("ig_sdtm", "ig_adam"),
-  type    = c("IG", "IG"),
+  dataset = c("ig_sdtm", "model_sdtm", "ig_adam"),
+  type    = c("IG", "Model", "IG"),
   ct_type = NA_character_,
   description = c(
-    "SDTM Model + SDTMIG variable metadata",
-    "ADaMIG ADSL + BDS variable metadata"
+    "SDTMIG, SENDIG and related SDTM-side implementation-guide variable metadata",
+    "SDTM model variable metadata",
+    "ADaMIG and related ADaM implementation-guide variable metadata"
   ),
   versions = c(
-    sprintf("Model %s (SDTMIG %s)",
-            build_version_range(ig_sdtm_model_versions),
-            paste(ig_sdtm_ig_versions, collapse = ", ")),
-    build_version_range(ig_adam_versions)
+    describe_standards(ig_sdtm),
+    describe_standards(model_sdtm),
+    describe_standards(ig_adam)
   ),
   n_versions = c(
-    length(ig_sdtm_model_versions) + length(ig_sdtm_ig_versions),
-    length(ig_adam_versions)
+    count_versions(ig_sdtm),
+    count_versions(model_sdtm),
+    count_versions(ig_adam)
   ),
-  latest = c(
-    max(ig_sdtm_model_versions),
-    as.character(max(package_version(ig_adam_versions)))
-  ),
+  latest = NA_character_,
   last_updated = Sys.Date(),
   stringsAsFactors = FALSE
 )

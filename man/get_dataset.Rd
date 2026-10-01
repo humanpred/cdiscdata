@@ -9,23 +9,29 @@ get_dataset(name, version = NULL)
 \arguments{
 \item{name}{Dataset name from \code{\link{list_datasets}()$dataset}.}
 
-\item{version}{Version string. \code{NULL} returns the latest available
-version. For CT: a date string e.g. \code{"2024-09-27"}. For
-schemas/stylesheets: a Define-XML version string e.g. \code{"2.1"}.}
+\item{version}{Version string. For CT, \code{NULL} returns the latest
+available version and a value is a date string e.g. \code{"2024-09-27"}.
+For schemas/stylesheets, \code{NULL} is the latest and a value is a
+Define-XML version string e.g. \code{"2.1"}. For the IG and model datasets,
+\code{NULL} returns every version.}
 }
 \value{
-A data frame (for CT data) or a file path string (for
-  schemas/stylesheets).
+A data frame (for CT, IG, and model data) or a file path string
+  (for schemas/stylesheets).
 }
 \description{
 Generic retrieval gateway. For CT datasets, filters to rows valid at
-the requested version date. For schemas and stylesheets, returns the
-file path for the requested Define-XML version. Use \code{\link{list_datasets}}
-to see available dataset names.
+the requested version date. For the implementation-guide and model datasets
+(\code{ig_sdtm}, \code{model_sdtm}, \code{ig_adam}), returns the whole
+table, or the rows whose \code{version} column equals \code{version} (across
+every standard in it; use \code{\link{get_ig}} to pick one standard). For
+schemas and stylesheets, returns the file path for the requested Define-XML
+version. Use \code{\link{list_datasets}} to see available dataset names.
 }
 \examples{
 get_dataset("ct_sdtm")
 get_dataset("ct_sdtm", version = "2024-09-27")
+get_dataset("ig_adam", version = "1.3")
 get_dataset("define_xml_schema", version = "2.1")
 get_dataset("define_xml_stylesheet", version = "2.0")
 }

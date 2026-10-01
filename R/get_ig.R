@@ -1,79 +1,120 @@
-#' Retrieve CDISC implementation-guide variable metadata
+#' Retrieve CDISC implementation-guide or model variable metadata
 #'
-#' Mirrors \code{\link{get_ct}}, but for implementation-guide (IG) variable
-#' metadata rather than controlled terminology. Unlike CT, which uses a
-#' single validity-date timeline per standard, \code{ig_sdtm} bundles two
-#' independently-versioned sources (the SDTM Model and the SDTMIG; see
-#' \code{\link{ig_sdtm}}), so there is no single "latest" snapshot to default
-#' to: \code{version = NULL} returns every source and version, for the
-#' caller to filter further (by \code{source}/\code{domain}/\code{class} for
-#' \code{ig_sdtm}, or \code{dataset}/\code{category} for \code{ig_adam}).
-#' \code{\link{build_domain_spec}} does this filtering for the PP, SUPPPP,
-#' and ADPP datasets specifically.
+#' One accessor over every standard in \code{\link{ig_sdtm}},
+#' \code{\link{model_sdtm}}, and \code{\link{ig_adam}}, mirroring
+#' \code{\link{get_ct}}. The standard is chosen with \code{standard}; the
+#' version defaults to that standard's newest.
 #'
-#' \strong{SDTMIG coverage.} SDTMIG 3.2 and 3.3 carry only the PP domain and
-#' the generic SUPP-- structure; version 3.3 reuses the 3.2 tables, since the
-#' published SDTMIG v3.3 stamps its PP specification "Version 3.2" (unchanged
-#' since 3.2) and its SUPP-- specification has the same ten variables. Both
-#' include \code{TAETORD}, \code{EPOCH}, and \code{PPDY}, which the Rsdtm
-#' transcription of 3.2 this package copies from omitted. SDTMIG 3.4 carries
-#' every one of its 63 domains, from a CDISC Library export (names, labels,
-#' types, codelists, roles, Core, and order; the export's CDISC Notes text is
-#' not included, so \code{notes} is \code{NA} for those rows). Its PP table
-#' adds \code{PPANMETH} and \code{PPTPTREF}. \code{PPDTC} (not
-#' \code{PPPDTC}) is the published name of the date/time-of-calculation
-#' variable in all three versions. See \code{data-raw/ig_source/README.md}.
+#' The standards, and the dataset each is stored in:
+#' \itemize{
+#'   \item \code{"SDTM"} (model versions 1.2 to 2.1): \code{\link{model_sdtm}}.
+#'   \item \code{"SDTMIG"} (3.1.2 to 3.4), \code{"SDTMIG-AP"},
+#'     \code{"SDTMIG-MD"}, \code{"SENDIG"} (3.0 to 3.1.1),
+#'     \code{"SENDIG-AR"}, \code{"SENDIG-DART"}, \code{"SENDIG-GeneTox"}:
+#'     \code{\link{ig_sdtm}}.
+#'   \item \code{"ADaMIG"} (1.0 to 1.3), \code{"ADaMIG-MD"},
+#'     \code{"ADaMIG-NCA"}, \code{"ADaM-ADAE"}, \code{"ADaM-BDS-TTE"},
+#'     \code{"ADaM-OCCDS"}, \code{"ADaM-popPK"}: \code{\link{ig_adam}}.
+#' }
+#' The lower-case names \code{"sdtm"} and \code{"adam"}, the only values the
+#' first argument took before it named a standard, are kept as aliases for the
+#' defaults \code{"SDTMIG"} and \code{"ADaMIG"} (note \code{"SDTM"} in capitals
+#' is the model, not the implementation guide).
 #'
-#' @param standard One of \code{"sdtm"} or \code{"adam"}.
-#' @param version A version string present in the \code{version} column
-#'   (e.g. \code{"3.2"} for SDTMIG, \code{"1.7"} for the SDTM Model,
-#'   \code{"1.2"} for ADaMIG). \code{NULL} (the default) returns all
-#'   versions.
-#' @param domain Restrict to one domain/dataset: for \code{"sdtm"}, the
-#'   \code{domain} column (\code{"PP"} or \code{"SUPPQUAL"} at SDTMIG
-#'   3.2 and 3.3, any of 63 domains at 3.4; SDTM Model rows have no domain
-#'   and are excluded); for \code{"adam"}, the
-#'   \code{dataset} column (\code{"ADSL"} or \code{"BDS"}). \code{NULL}
-#'   (the default) applies no domain filter.
-#' @return A data frame: \code{\link{ig_sdtm}} or \code{\link{ig_adam}},
-#'   optionally filtered to one version and/or domain.
+#' All of this comes from CDISC Library CSV exports that are not part of this
+#' package or repository (see \code{\link{ig_sources}} for exactly which
+#' files, and \code{data-raw/README.md}). Only variable metadata is carried;
+#' the guides' prose (CDISC Notes, Description, Definition, Examples) is not.
+#'
+#' @param standard One standard from the list above (default
+#'   \code{"SDTMIG"}), or the alias \code{"sdtm"} or \code{"adam"}.
+#' @param version A version string of that standard (e.g. \code{"3.4"}).
+#'   \code{NULL} (the default) uses the newest, compared numerically, so
+#'   \code{"3.1.3"} ranks below \code{"3.2"}.
+#' @param domain Restrict to one domain or structure. For the
+#'   implementation-guide standards in \code{\link{ig_sdtm}}, the
+#'   \code{domain} column (e.g. \code{"PP"}); for \code{"SDTM"}, a
+#'   \code{class} (e.g. \code{"Findings"}) or a \code{dataset} (e.g.
+#'   \code{"DM"}); for the ADaM standards, the \code{structure} column, where
+#'   \code{"BDS"} and \code{"ADSL"} are accepted as aliases for
+#'   \code{"Basic Data Structure"} and \code{"Subject-Level Analysis
+#'   Dataset"}. \code{NULL} (the default) applies no filter.
+#' @return A data frame: the rows of \code{\link{ig_sdtm}},
+#'   \code{\link{model_sdtm}}, or \code{\link{ig_adam}} for that standard,
+#'   version, and domain. An unknown standard, version, or domain is a classed
+#'   error (\code{cdiscdata_error_ig_standard_unavailable},
+#'   \code{cdiscdata_error_ig_version_unavailable},
+#'   \code{cdiscdata_error_ig_domain_unavailable}).
 #' @export
 #' @examples
-#' get_ig("sdtm")
-#' get_ig("sdtm", version = "3.3", domain = "PP")
-#' get_ig("adam", version = "1.2", domain = "BDS")
-get_ig <- function(standard = c("sdtm", "adam"), version = NULL, domain = NULL) {
-  standard <- match.arg(standard)
-  tbl <- .pkg_data(paste0("ig_", standard))
+#' get_ig()                                          # newest SDTMIG (3.4)
+#' get_ig("SDTMIG", version = "3.3", domain = "PP")
+#' get_ig("SENDIG", domain = "PP")
+#' get_ig("ADaMIG", domain = "BDS")
+#' get_ig("ADaMIG-NCA")
+#' get_ig("SDTM", version = "2.1", domain = "Findings")
+get_ig <- function(standard = "SDTMIG", version = NULL, domain = NULL) {
+  standard <- .resolve_ig_standard(standard)
+  table <- .ig_standards$table[match(standard, .ig_standards$standard)]
+  tbl <- .pkg_data(table)
+  tbl <- tbl[tbl$standard == standard, ]
 
-  if (!is.null(version)) {
-    avail <- sort(unique(tbl$version))
-    if (!version %in% avail) {
-      .cdiscdata_abort(
-        paste0(
-          "Version '", version, "' is not available for standard '", standard, "'. ",
-          "Available versions: ", paste(avail, collapse = ", "), "."
-        ),
-        "ig_version_unavailable"
-      )
-    }
-    tbl <- tbl[tbl$version == version, ]
-  }
+  version <- .resolve_ig_version(version, tbl$version, standard)
+  tbl <- tbl[tbl$version == version, ]
 
-  if (!is.null(domain)) {
-    domain_col <- if (standard == "sdtm") "domain" else "dataset"
-    avail <- sort(unique(tbl[[domain_col]]))
-    if (!domain %in% avail) {
-      .cdiscdata_abort(
-        paste0(
-          "Domain '", domain, "' is not available for standard '", standard, "'",
-          if (!is.null(version)) paste0(" at version '", version, "'"),
-          ". Available: ", if (length(avail)) paste(avail, collapse = ", ") else "none", "."
-        ),
-        "ig_domain_unavailable"
-      )
-    }
-    tbl <- tbl[tbl[[domain_col]] %in% domain, ]
+  if (is.null(domain)) {
+    return(tbl)
   }
-  tbl
+  .filter_ig_domain(tbl, table, domain, standard, version)
+}
+
+# "sdtm"/"adam" are the pre-redesign first-argument values; any other value
+# must be one of the canonical standard names.
+.resolve_ig_standard <- function(standard) {
+  if (!is.character(standard) || length(standard) != 1L || is.na(standard)) {
+    .cdiscdata_abort("`standard` must be a single string.", "ig_standard_unavailable")
+  }
+  standard <- switch(standard, sdtm = "SDTMIG", adam = "ADaMIG", standard)
+  if (!standard %in% .ig_standards$standard) {
+    .cdiscdata_abort(
+      paste0(
+        "Standard '", standard, "' is not available. Available standards: ",
+        paste(.ig_standards$standard, collapse = ", "), "."
+      ),
+      "ig_standard_unavailable"
+    )
+  }
+  standard
+}
+
+# Short names for the two ADaM structures people ask for most.
+.adam_structure_aliases <- c(
+  BDS  = "Basic Data Structure",
+  ADSL = "Subject-Level Analysis Dataset"
+)
+
+.filter_ig_domain <- function(tbl, table, domain, standard, version) {
+  if (table == "model_sdtm") {
+    avail <- sort(unique(c(tbl$class, tbl$dataset)))
+    keep <- tbl$class %in% domain | tbl$dataset %in% domain
+  } else {
+    column <- if (table == "ig_adam") "structure" else "domain"
+    if (table == "ig_adam") {
+      domain <- ifelse(domain %in% names(.adam_structure_aliases),
+                       .adam_structure_aliases[domain], domain)
+    }
+    avail <- sort(unique(tbl[[column]]))
+    keep <- tbl[[column]] %in% domain
+  }
+  if (!all(domain %in% avail)) {
+    .cdiscdata_abort(
+      paste0(
+        "Domain '", paste(setdiff(domain, avail), collapse = "', '"),
+        "' is not available for standard '", standard, "' at version '", version,
+        "'. Available: ", paste(avail, collapse = ", "), "."
+      ),
+      "ig_domain_unavailable"
+    )
+  }
+  tbl[keep, ]
 }

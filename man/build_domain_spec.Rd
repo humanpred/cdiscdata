@@ -10,17 +10,19 @@ build_domain_spec(
   ct_version = NULL,
   adsl = TRUE,
   sdtm_domain = NULL,
-  sdtmig_version = NULL
+  sdtmig_version = NULL,
+  standard = NULL,
+  extension = NULL,
+  extension_version = NULL
 )
 }
 \arguments{
 \item{domain}{One of \code{"PP"}, \code{"SUPPPP"}, or \code{"ADPP"}.}
 
-\item{ig_version}{IG version to use: an SDTMIG version (for \code{PP}/
-\code{SUPPPP}) or an ADaMIG version (for \code{ADPP}).
-\code{NULL} uses the newest available for that IG.}
+\item{ig_version}{Version of \code{standard} to use. \code{NULL} uses the
+newest available.}
 
-\item{ct_version}{CT version to resolve codelist ids against; passed to
+\item{ct_version}{CT version to check codelist ids against; passed to
 \code{\link{get_ct}}. \code{NULL} uses the newest available.}
 
 \item{adsl}{For \code{domain = "ADPP"} only: whether to union in the
@@ -33,39 +35,66 @@ alone. Ignored (with a warning) for \code{domain != "ADPP"}.}
 default) adds nothing; \code{"PP"} also unions in the SDTMIG PP
 domain's variables, the same way \code{adsl = TRUE} unions ADSL's:
 marked \code{source = "SDTMIG"}, \code{core} forced to \code{"Perm"},
-a variable already defined by BDS or ADSL (e.g. \code{STUDYID},
-\code{USUBJID}) keeping that version, and codelist ids resolved against
-the ADaM CT first and the SDTM CT second. Ignored (with a warning) for
-\code{domain != "ADPP"}; any value other than \code{"PP"} is an error.}
+a variable already defined keeping that version, and codelist ids
+checked against the ADaM CT first and the SDTM CT second. Ignored (with
+a warning) for \code{domain != "ADPP"}; any value other than
+\code{"PP"} is an error.}
 
 \item{sdtmig_version}{SDTMIG version to take the \code{sdtm_domain}
 variables from. \code{NULL} uses the newest available. Ignored (with a
 warning) unless \code{domain = "ADPP"} and \code{sdtm_domain} is set.}
+
+\item{standard}{The implementation guide to take the domain's variables
+from. \code{NULL} (the default) uses \code{"SDTMIG"} for \code{PP} and
+\code{SUPPPP} and \code{"ADaMIG"} for \code{ADPP}; any standard in
+\code{\link{get_ig}} that has the domain works (e.g. \code{"SENDIG"}
+defines \code{PP} too).}
+
+\item{extension}{For \code{domain = "ADPP"} only: \code{NULL} (the
+default) adds nothing; \code{"ADaMIG-NCA"} (or the alias \code{"NCA"}),
+\code{"ADaM-popPK"}, or \code{"ADaM-BDS-TTE"} unions that BDS extension
+onto the BDS variables. Unlike the ADSL and PP unions, the extension's
+own Core designations are kept, as they are the point of the extension: a
+new variable is appended with its published Core, and a variable the BDS
+already defines takes the extension's (stronger) Core (e.g. \code{AVISIT}
+becomes required in ADaMIG-NCA). Rows the extension touches are marked
+with its name in \code{source}. Ignored (with a warning) for
+\code{domain != "ADPP"}.}
+
+\item{extension_version}{Version of the \code{extension}; \code{NULL} uses
+the newest. Ignored (with a warning) unless \code{domain = "ADPP"} and
+\code{extension} is set.}
 }
 \value{
 A data frame with columns \code{variable}, \code{label},
-  \code{type}, \code{length}, \code{core}, \code{order}, \code{source}
-  (\code{"SDTMIG"} for \code{PP}/\code{SUPPPP}; \code{"BDS"},
-  \code{"ADSL"}, or \code{"SDTMIG"} for \code{ADPP}), and \code{codelist_id} (the codelist's
-  CT C-code, e.g. \code{"C85839"} for PPTESTCD's PKPARMCD codelist;
-  \code{NA} when the variable has no codelist or the referenced codelist
-  name is not found in the CT version used). ADSL-sourced \code{ADPP} rows
-  have \code{core} forced to \code{"Perm"} regardless of their Core
-  designation in ADSL itself: from ADPP's perspective, merging in an
-  ADSL variable is a common but optional choice, not a requirement ADSL's
-  own Core reflects.
+  \code{type}, \code{length}, \code{core}, \code{order}, \code{source}, and
+  \code{codelist_id}. \code{source} is \code{"SDTMIG"} (or the SDTM-side
+  \code{standard}) for \code{PP}/\code{SUPPPP}; \code{"BDS"},
+  \code{"ADSL"}, \code{"SDTMIG"}, or the extension's name for \code{ADPP}.
+  \code{order} is the published order, renumbered consecutively, with
+  unioned variables following. \code{codelist_id} is the C-code of the
+  first codelist the IG lists for the variable, when that codelist is in
+  the CT release used, and \code{NA} otherwise (no codelist, or one not in
+  that release, e.g. a codelist since retired). \code{length} is always
+  \code{NA}: the CDISC Library exports this package is built from carry no
+  length, which is a sponsor choice, and the column is kept so existing
+  code that reads it keeps working. ADSL-sourced \code{ADPP} rows have
+  \code{core} forced to \code{"Perm"} regardless of their Core designation
+  in ADSL itself: from ADPP's perspective, merging in an ADSL variable is a
+  common but optional choice, not a requirement ADSL's own Core reflects.
 }
 \description{
-Combines \code{\link{get_ig}} (variable name, label, type, core, order)
-with \code{\link{get_ct}} (codelist id lookup) into a single, ready-to-use
-variable specification for one of the three PK datasets. \code{PP} and
-\code{SUPPPP} draw on the SDTMIG (\code{SUPPPP} from the generic SUPP--
+Combines \code{\link{get_ig}} (variable name, label, type, core, order,
+codelist) with \code{\link{get_ct}} (is that codelist in the controlled
+terminology release) into a single, ready-to-use variable specification for
+one of the three PK datasets. \code{PP} and \code{SUPPPP} draw on an
+SDTM-side implementation guide (\code{SUPPPP} from the generic SUPP--
 structure, since CDISC has no domain-specific SUPPPP table); \code{ADPP}
-draws on the ADaMIG BDS (Basic Data Structure) table, since ADPP is a BDS
-dataset and CDISC has no ADPP-specific table either, optionally unioned
-with the ADaMIG ADSL table (see \code{adsl} below), since a real ADPP
-also carries ADSL's subject-level variables, and optionally with the SDTM
-PP domain's variables (see \code{sdtm_domain} below).
+draws on the ADaMIG Basic Data Structure (BDS) table, since ADPP is a BDS
+dataset and CDISC has no ADPP-specific table either. An ADPP spec can
+optionally be unioned with the ADaMIG ADSL table (\code{adsl}), with a BDS
+extension such as ADaMIG-NCA (\code{extension}), and with the SDTM PP
+domain's variables (\code{sdtm_domain}).
 }
 \details{
 Neither the ADaMIG BDS nor ADSL tables define the PP-inherited
@@ -81,5 +110,6 @@ build_domain_spec("PP")
 build_domain_spec("SUPPPP")
 build_domain_spec("ADPP")               # BDS + ADSL (default)
 build_domain_spec("ADPP", adsl = FALSE) # BDS only
-build_domain_spec("ADPP", sdtm_domain = "PP") # BDS + ADSL + PP variables
+build_domain_spec("ADPP", sdtm_domain = "PP")  # BDS + ADSL + PP variables
+build_domain_spec("ADPP", extension = "NCA")   # BDS + ADSL + ADaMIG-NCA
 }

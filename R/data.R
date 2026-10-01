@@ -35,91 +35,156 @@
 #' @source \url{https://evs.nci.nih.gov/ftp1/CDISC/ADaM/}
 "ct_adam"
 
-#' SDTM implementation-guide variable metadata
+#' SDTM-side implementation-guide variable metadata
 #'
-#' Versioned SDTM Model and SDTMIG variable metadata: the Model's Findings
-#' general-observation-class variables (versions 1.4-1.7); the SDTMIG PP
-#' domain and generic SUPP-- qualifier structure (used for SUPPPP) at
-#' versions 3.2 and 3.3, which share the same tables; and every domain of
-#' SDTMIG 3.4 (63 domains, 1917 variables), transcribed from a CDISC Library
-#' export that is not redistributed (see \code{\link{get_ig}} and
-#' \code{data-raw/ig_source/README.md}).
-#' Use \code{\link{get_ig}} to retrieve it, and
+#' One row per variable of every domain of seven implementation-guide
+#' standards, at every version: SDTMIG (3.1.2, 3.1.3, 3.2, 3.3, 3.4),
+#' SDTMIG-AP (1.0), SDTMIG-MD (1.0, 1.1), SENDIG (3.0, 3.1, 3.1.1),
+#' SENDIG-AR (1.0), SENDIG-DART (1.1), and SENDIG-GeneTox (1.0); 14 standard
+#' versions in all. Built from CDISC Library CSV exports that are not part of
+#' this package or repository (see \code{\link{ig_sources}} and
+#' \code{data-raw/README.md}); only variable metadata is carried, not the
+#' guides' prose. Use \code{\link{get_ig}} to retrieve a standard, and
 #' \code{\link{build_domain_spec}} to build a ready-to-use PP/SUPPPP/ADPP
-#' variable spec from it (joined to CT for codelist ids).
+#' variable spec from it. The SDTM model itself is in
+#' \code{\link{model_sdtm}}.
+#'
+#' A (standard, version, domain, variable) is unique.
 #'
 #' @format A data frame with columns:
 #' \describe{
-#'   \item{source}{\code{"SDTM_MODEL"} or \code{"SDTMIG"}.}
-#'   \item{version}{SDTM Model version (\code{"1.4"}-\code{"1.7"}) for
-#'     \code{source == "SDTM_MODEL"} rows; SDTMIG version (\code{"3.2"},
-#'     \code{"3.3"}, or \code{"3.4"}) for \code{source == "SDTMIG"} rows. The two are independent numbering
-#'     systems; see \code{\link{get_ig}}.}
-#'   \item{class}{General observation class, e.g. \code{"Findings"}.
-#'     \code{NA} for \code{SDTMIG} 3.2 and 3.3 rows; populated for 3.4.}
-#'   \item{domain}{Domain: \code{"PP"} or \code{"SUPPQUAL"} for SDTMIG 3.2
-#'     and 3.3; any of the 63 SDTMIG 3.4 domains (\code{"AE"}, \code{"LB"},
-#'     \code{"SUPPQUAL"}, ...) for 3.4. \code{NA} for \code{SDTM_MODEL}
-#'     rows.}
-#'   \item{order}{Row order within its source table, as published.}
+#'   \item{standard}{The standard, e.g. \code{"SDTMIG"} or \code{"SENDIG-AR"}.}
+#'   \item{version}{The standard's version, e.g. \code{"3.4"}.}
+#'   \item{class}{General observation class, e.g. \code{"Findings"}.}
+#'   \item{domain}{Domain, e.g. \code{"PP"}, \code{"LB"}, \code{"SUPPQUAL"}.}
+#'   \item{order}{Position within the domain, as published.}
 #'   \item{variable}{Variable name, e.g. \code{"PPTESTCD"}.}
-#'   \item{label}{Variable label.}
+#'   \item{label}{Variable label. At most 40 characters except for 22 labels
+#'     the guides themselves publish longer (see the data-integrity tests).}
 #'   \item{type}{\code{"Char"} or \code{"Num"}.}
-#'   \item{role}{CDISC variable role, e.g. \code{"Topic"}. \code{NA} for
-#'     ADaM rows (not applicable, and not present in \code{ig_adam}).}
-#'   \item{core}{SDTMIG Core designation (\code{"Req"}/\code{"Exp"}/
-#'     \code{"Perm"}). \code{NA} for \code{SDTM_MODEL} rows (the model does
-#'     not designate Core; that is an IG-level concept).}
-#'   \item{codelist}{Codelist submission value referenced by this variable
-#'     (e.g. \code{"PKPARMCD"}), parsed from the IG's free-text
-#'     "Controlled Terms" column. Look up its codelist C-code via
-#'     \code{\link{get_ct}}'s \code{codelist_name}/\code{codelist_code}
-#'     columns, as \code{\link{build_domain_spec}} does. \code{NA} when the
-#'     variable has no codelist, or the column instead names a format
-#'     (e.g. "ISO 8601") or an unspecified extensible list ("*").}
-#'   \item{length}{Maximum character length, when the IG text states one
-#'     explicitly (e.g. PPTESTCD's 8-character limit); \code{NA} otherwise,
-#'     since CDISC implementation guides do not otherwise publish a Length
-#'     column (length is a sponsor/define.xml choice).}
-#'   \item{notes}{CDISC Notes / Description text for the variable.}
+#'   \item{role}{CDISC variable role, e.g. \code{"Topic"}.}
+#'   \item{core}{Core designation (\code{"Req"}, \code{"Exp"},
+#'     \code{"Perm"}, \code{"Cond"}, or the published \code{"Not used"}).}
+#'   \item{codelist_code}{CDISC CT codelist C-code(s) the variable uses, as
+#'     published; several are separated by \code{"; "} (e.g. PPORRESU lists
+#'     PKUNIT and four normalised-unit codelists). \code{NA} when none.}
+#'   \item{codelist_submission_values}{The codelist submission value(s),
+#'     where the export gives them (the SEND guides do; the SDTMIG exports do
+#'     not, so look the code up in \code{\link{get_ct}}).}
+#'   \item{described_value_domain}{A described value domain such as
+#'     \code{"ISO 8601"}, where the variable has one rather than a codelist.}
+#'   \item{value_list}{A fixed list of allowed values, e.g. the domain
+#'     abbreviation for \code{DOMAIN}.}
 #' }
-#' @source \url{https://github.com/humanpred/Rsdtm}; see
-#'   \code{data-raw/ig_source/README.md} for full attribution.
+#' @source CDISC Library CSV exports, downloaded under CDISC's terms and not
+#'   redistributed; see \code{data-raw/README.md}.
 "ig_sdtm"
+
+#' SDTM model variable metadata
+#'
+#' One row per variable of the CDISC SDTM model, at every version: 1.2, 1.3,
+#' 1.4, 1.5, 1.6, 1.7, 1.8, 2.0, and 2.1. Built from CDISC Library CSV exports
+#' not redistributed with this package (see \code{\link{ig_sources}}); only
+#' variable metadata is carried, not the model's descriptions, definitions,
+#' notes, or examples. Retrieve it with \code{\link{get_ig}("SDTM")}.
+#'
+#' A (standard, version, class, dataset, variable) is unique. \code{dataset}
+#' is \code{NA} for the general-observation-class variables (Events,
+#' Findings, ...), which are defined once per class with a \code{--} prefix,
+#' and set for the datasets the model defines outright (e.g. \code{"DM"}).
+#'
+#' @format A data frame with columns:
+#' \describe{
+#'   \item{standard}{Always \code{"SDTM"}.}
+#'   \item{version}{Model version, e.g. \code{"2.1"}.}
+#'   \item{class}{Observation class or dataset class, e.g.
+#'     \code{"Findings"}, \code{"Trial Design"}.}
+#'   \item{dataset}{Dataset name, or \code{NA} for class-level variables.}
+#'   \item{order}{Position within the class/dataset, as published.}
+#'   \item{variable}{Variable name, e.g. \code{"--TESTCD"}.}
+#'   \item{label}{Variable label. \code{"--TESTCD"} is published at 46
+#'     characters in model versions 1.2 to 1.6.}
+#'   \item{type}{\code{"Char"} or \code{"Num"}.}
+#'   \item{role}{CDISC variable role.}
+#'   \item{described_value_domain}{A described value domain, e.g.
+#'     \code{"ISO 8601"}; sparse before version 2.0.}
+#'   \item{variables_qualified}{The variable(s) this one qualifies.}
+#'   \item{usage_restrictions}{Usage restrictions on the variable; version
+#'     2.0 and later, \code{NA} before.}
+#'   \item{variable_code}{The variable's NCI C-code; version 2.0 and later,
+#'     \code{NA} before.}
+#' }
+#' @source CDISC Library CSV exports, downloaded under CDISC's terms and not
+#'   redistributed; see \code{data-raw/README.md}.
+"model_sdtm"
 
 #' ADaM implementation-guide variable metadata
 #'
-#' Versioned ADaMIG variable metadata: the ADSL (subject-level) variable
-#' table and the generic BDS (Basic Data Structure) variable table (used for
-#' ADPP, a BDS-structured dataset), for ADaMIG versions 1.0, 1.1, and 1.2.
-#' Use \code{\link{get_ig}} to retrieve it, and
-#' \code{\link{build_domain_spec}} to build a ready-to-use ADPP variable
-#' spec from it (joined to CT for codelist ids).
+#' One row per variable of seven ADaM standards, at every version: ADaMIG
+#' (1.0, 1.1, 1.2, 1.3), ADaMIG-MD (1.0), ADaMIG-NCA (1.0), ADaM-ADAE (1.0),
+#' ADaM-BDS-TTE (1.0), ADaM-OCCDS (1.0, 1.1), and ADaM-popPK (1.0); 11 standard
+#' versions in all. Built from CDISC Library CSV exports that are not part of
+#' this package or repository (see \code{\link{ig_sources}} and
+#' \code{data-raw/README.md}); only variable metadata is carried, not the
+#' guides' prose. Use \code{\link{get_ig}} to retrieve a standard, and
+#' \code{\link{build_domain_spec}} to build an ADPP variable spec from it
+#' (ADPP is a Basic Data Structure dataset; ADaMIG-NCA extends it).
+#'
+#' A (standard, version, structure, variable_set, variable) is unique: the
+#' variable set is part of the key because ADaM-OCCDS defines \code{DECDORGw}
+#' twice, once for each dictionary-specific variable set, with different
+#' labels.
 #'
 #' @format A data frame with columns:
 #' \describe{
-#'   \item{dataset}{\code{"ADSL"} or \code{"BDS"}.}
-#'   \item{version}{ADaMIG version, e.g. \code{"1.2"}.}
-#'   \item{category}{The Rsdtm source file's variable-category name (e.g.
-#'     \code{"ADSL_Treatment_Variables"}, \code{"Timing_Variables_BDS_Datasets"}),
-#'     kept for provenance; ADaMIG itself does not group these tables this
-#'     way.}
-#'   \item{order}{Row order within its category file, as published.}
+#'   \item{standard}{The standard, e.g. \code{"ADaMIG"} or
+#'     \code{"ADaMIG-NCA"}.}
+#'   \item{version}{The standard's version, e.g. \code{"1.3"}.}
+#'   \item{structure}{The data structure, as named in the export, e.g.
+#'     \code{"Basic Data Structure"} or \code{"Subject-Level Analysis
+#'     Dataset"} (ADSL).}
+#'   \item{variable_set}{The variable set within the structure, e.g.
+#'     \code{"Timing"}.}
+#'   \item{order}{Row order within the export for that standard version.}
 #'   \item{variable}{Variable name, e.g. \code{"AVAL"}.}
-#'   \item{label}{Variable label.}
+#'   \item{label}{Variable label. At most 40 characters except
+#'     \code{PBCHGCyN} in ADaMIG 1.2 and 1.3, which the guide publishes at 41.}
 #'   \item{type}{\code{"Char"} or \code{"Num"}.}
-#'   \item{core}{ADaMIG Core designation (\code{"Req"}/\code{"Exp"}/
-#'     \code{"Perm"}/\code{"Cond"}).}
-#'   \item{codelist}{Codelist submission value referenced by this variable,
-#'     parsed the same way as \code{\link{ig_sdtm}}'s \code{codelist}
-#'     column; see there for details and caveats.}
-#'   \item{length}{Maximum character length when the IG text states one
-#'     explicitly; \code{NA} otherwise. See \code{\link{ig_sdtm}}.}
-#'   \item{notes}{CDISC Notes text for the variable.}
+#'   \item{core}{Core designation (\code{"Req"}, \code{"Perm"},
+#'     \code{"Cond"}, ...).}
+#'   \item{codelist_code}{CDISC CT codelist C-code(s) the variable uses;
+#'     several are separated by \code{"; "}. \code{NA} when none.}
+#'   \item{codelist_submission_values}{The codelist submission value(s),
+#'     where the export gives them.}
+#'   \item{described_value_domain}{A described value domain, where the
+#'     variable has one rather than a codelist.}
+#'   \item{value_list}{A fixed list of allowed values, where there is one.}
 #' }
-#' @source \url{https://github.com/humanpred/Rsdtm}; see
-#'   \code{data-raw/ig_source/README.md} for full attribution.
+#' @source CDISC Library CSV exports, downloaded under CDISC's terms and not
+#'   redistributed; see \code{data-raw/README.md}.
 "ig_adam"
+
+#' The CDISC Library exports the IG and model datasets were built from
+#'
+#' One row per export file read by \code{data-raw/build_ig.R}, so which
+#' standard versions are bundled, and from exactly which files, is itself
+#' data. The files are not part of this package or repository.
+#'
+#' @format A data frame with 34 rows and columns:
+#' \describe{
+#'   \item{file}{The export's file name.}
+#'   \item{version_string}{The export's \code{Version} value, e.g.
+#'     \code{"ADaMIG MD v1.0"}.}
+#'   \item{standard}{The canonical standard name parsed from it.}
+#'   \item{version}{The version number parsed from it.}
+#'   \item{table}{The dataset it was loaded into: \code{"ig_sdtm"},
+#'     \code{"model_sdtm"}, or \code{"ig_adam"}.}
+#'   \item{rows}{Data rows in the file, equal to the rows loaded from it.}
+#'   \item{md5}{MD5 checksum of the file, to tell whether a rebuild used the
+#'     same export.}
+#' }
+#' @source CDISC Library CSV exports; see \code{data-raw/README.md}.
+"ig_sources"
 
 #' Datasets catalogue
 #'
@@ -129,7 +194,8 @@
 #' @format A data frame with columns:
 #' \describe{
 #'   \item{dataset}{R object name or logical dataset identifier.}
-#'   \item{type}{One of \code{"CT"}, \code{"Schema"}, \code{"Stylesheet"}.}
+#'   \item{type}{One of \code{"CT"}, \code{"IG"}, \code{"Model"},
+#'     \code{"Schema"}, \code{"Stylesheet"}.}
 #'   \item{ct_type}{One of \code{"sdtm"}, \code{"adam"}, or \code{NA} for
 #'     non-CT datasets.}
 #'   \item{description}{Human-readable description.}
