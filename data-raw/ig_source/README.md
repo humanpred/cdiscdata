@@ -76,7 +76,9 @@ space becomes a variable name such as `"--TESTCD "`. `notes` is left as is.
 
 Labels in the IGs are limited to 40 characters (SDTMIG 3.3 section 4.2.1);
 the few that transcribe longer are set in `sdtm_label_overrides`
-(`build_ig_sdtm.R`) and `adam_label_overrides` (`build_ig_adam.R`), each with
-the IG table it was checked against. The ADaMIG 1.2 PBCHGCyN override is a
-derived abbreviation, since the IG itself publishes 41 characters there.
-`tests/testthat/test-data_integrity.R` gates all of this.
+(`build_ig_sdtm.R`) to the shorter form the guide itself publishes, with the
+IG table each was checked against. The one label the guides publish longer
+than 40 characters, ADaMIG 1.2 PBCHGCyN ("Percent Change to Baseline Category
+y (N)", 41 characters), is kept as published and is the documented exception
+in the gate: shortening a label is the dataset writer's job, not this
+package's. `tests/testthat/test-data_integrity.R` gates all of this.

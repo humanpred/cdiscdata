@@ -16,20 +16,25 @@
     `RANDFL`, `ENRLFL`); `type` values such as `"Char "` were padded the
     same way. The default `build_domain_spec("ADPP")` variable set is
     unchanged.
-  - Four labels over 40 characters now use the abbreviated form: SDTM Model
-    1.4-1.6 `--TESTCD` ("Short Name of Measurement, Test or Exam", as in
-    SDTMIG 3.3 section 6.3.10.1), SDTMIG 3.2 `PPSTRESC` ("Character
-    Result/Finding in Std Format", as in SDTMIG 3.3 section 6.3.11.2), and
-    ADaMIG 1.2 `PBCHGCyN` ("Percent Chg to Baseline Category y (N)"; the
-    IG publishes 41 characters here, so this follows its sibling
-    `PCHGCAyN`'s "Chg" abbreviation and is a derived label).
+  - Labels over 40 characters now use the abbreviated form the guide
+    publishes: SDTM Model 1.4-1.6 `--TESTCD` ("Short Name of Measurement,
+    Test or Exam", as in SDTMIG 3.3 section 6.3.10.1) and `PPSTRESC` in
+    SDTMIG 3.2 and 3.3 ("Character Result/Finding in Std Format", as in
+    SDTMIG 3.3 section 6.3.11.2).
+  - ADaMIG 1.2 `PBCHGCyN` is kept as the guide publishes it, "Percent Change
+    to Baseline Category y (N)", which is 41 characters (ADaMIG v1.2 draft,
+    section 3.3.4.1, Table 3.3.4.1.1; the sibling `PCHGCAyN` is published
+    abbreviated). It is the one documented exception in the 40-character
+    gate, an exact-match allow-list in `test-data_integrity.R`, so any other
+    over-length label still fails. Shortening a label to fit an XPT file is
+    for whoever writes the dataset, not for this package.
   - Five section sub-headings in the ADaMIG 1.0 combined ADSL table
     ("Study Identifiers", "Subject Demographics", ...) were transcribed as
     variables with no label; they are dropped (`ig_adam` is 851 rows, was
     856).
   - New gates in `tests/testthat/test-data_integrity.R`: no label in
     `ig_sdtm`/`ig_adam` is `NA`, contains a newline, or exceeds 40
-    characters; no variable name is `NA`, blank, or contains whitespace; no
+    characters (bar the exception above); no variable name is `NA`, blank, or contains whitespace; no
     `type`/`core`/`codelist`/`role` value has stray whitespace.
 
 ## SDTMIG 3.3 PP/SUPP-- and `get_ig(domain =)`

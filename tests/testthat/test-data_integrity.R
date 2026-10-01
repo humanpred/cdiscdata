@@ -101,16 +101,50 @@ ig_tables_for_gate <- function() {
   list(ig_sdtm = get_ig("sdtm"), ig_adam = get_ig("adam"))
 }
 
-test_that("no IG label is NA, contains a newline, or exceeds 40 characters", {
+# The one label the guides themselves publish longer than 40 characters, kept
+# as published (decision: shortening a label for an XPT file is the dataset
+# writer's job, not cdiscdata's). An exact match on table, version, variable
+# and text, so any other over-length label, or this one changing, still fails.
+ig_over_length_allowed <- data.frame(
+  table    = "ig_adam",
+  dataset  = "BDS",
+  version  = "1.2",
+  variable = "PBCHGCyN",
+  label    = "Percent Change to Baseline Category y (N)",
+  reason   = paste("Published at 41 characters in ADaMIG v1.2 (draft, CDISC wiki),",
+                   "section 3.3.4.1, Table 3.3.4.1.1 Analysis Parameter Variables",
+                   "for BDS Datasets; the sibling PCHGCAyN is published abbreviated."),
+  stringsAsFactors = FALSE
+)
+
+test_that("no IG label is NA, contains a newline, or exceeds 40 characters (bar the documented exception)", {
   for (nm in names(ig_tables_for_gate())) {
     tbl <- ig_tables_for_gate()[[nm]]
     expect_false(anyNA(tbl$label), label = paste(nm, "has an NA label"))
     expect_false(any(grepl("[\r\n]", tbl$label)),
                  label = paste(nm, "has a label containing a newline"))
     too_long <- nchar(tbl$label) > 40L
+    if ("dataset" %in% names(tbl)) {
+      key <- paste(tbl$dataset, tbl$version, tbl$variable, tbl$label, sep = "\r")
+      allowed <- ig_over_length_allowed[ig_over_length_allowed$table == nm, ]
+      allowed_key <- paste(allowed$dataset, allowed$version, allowed$variable,
+                           allowed$label, sep = "\r")
+      too_long <- too_long & !key %in% allowed_key
+    }
     expect_equal(tbl$variable[too_long], character(0L),
                  label = paste(nm, "variables whose label exceeds 40 characters"))
   }
+})
+
+test_that("the over-length allow-list is exactly the published 41-character PBCHGCyN label and nothing stale", {
+  adam <- get_ig("adam")
+  row <- adam[adam$dataset == "BDS" & adam$version == "1.2" & adam$variable == "PBCHGCyN", ]
+  expect_equal(nrow(row), 1L)
+  expect_equal(row$label, ig_over_length_allowed$label)
+  expect_equal(nchar(row$label), 41L)
+  # every other ig_adam / ig_sdtm label is within the limit
+  expect_equal(sum(nchar(adam$label) > 40L), 1L)
+  expect_equal(sum(nchar(get_ig("sdtm")$label) > 40L), 0L)
 })
 
 test_that("no IG variable name is NA, blank, or contains whitespace", {
@@ -135,7 +169,7 @@ test_that("IG categorical fields carry no leading/trailing or doubled whitespace
   }
 })
 
-test_that("the specific IG labels that exceeded 40 characters are the abbreviated published forms", {
+test_that("the SDTM IG labels that exceeded 40 characters are the abbreviated published forms", {
   sdtm <- get_ig("sdtm")
   testcd <- sdtm[sdtm$source == "SDTM_MODEL" & sdtm$variable == "--TESTCD" &
                    sdtm$version %in% c("1.4", "1.5", "1.6"), ]
@@ -145,9 +179,6 @@ test_that("the specific IG labels that exceeded 40 characters are the abbreviate
   expect_equal(sort(ppstresc$version), c("3.2", "3.3"))
   expect_equal(ppstresc$label, rep("Character Result/Finding in Std Format", 2L))
 
-  adam <- get_ig("adam")
-  expect_equal(adam$label[adam$variable == "PBCHGCyN"],
-               "Percent Chg to Baseline Category y (N)")
 })
 
 test_that("ADaMIG 1.0 ADSL section sub-headings are not transcribed as variables", {
