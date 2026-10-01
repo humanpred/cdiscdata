@@ -24,8 +24,10 @@ file path for the requested Define-XML version. Use \code{\link{list_datasets}}
 to see available dataset names.
 }
 \examples{
-get_dataset("ct_sdtm")
-get_dataset("ct_sdtm", version = "2024-09-27")
+ct <- get_dataset("ct_sdtm")
+head(ct)
+ct_2024 <- get_dataset("ct_sdtm", version = "2024-09-27")
+nrow(ct_2024)
 get_dataset("define_xml_schema", version = "2.1")
 get_dataset("define_xml_stylesheet", version = "2.0")
 }
