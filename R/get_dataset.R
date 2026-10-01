@@ -26,7 +26,8 @@ get_dataset <- function(name, version = NULL) {
     ))
   }
 
-  cat_row <- datasets_catalogue[datasets_catalogue$dataset == name, ]
+  catalogue <- .pkg_data("datasets_catalogue")
+  cat_row <- catalogue[catalogue$dataset == name, ]
 
   switch(cat_row$type,
     "CT"         = .get_ct_dataset(name, version),
@@ -37,7 +38,7 @@ get_dataset <- function(name, version = NULL) {
 
 # Internal: filter CT table to a specific version date
 .get_ct_dataset <- function(name, version) {
-  tbl <- get(name, envir = asNamespace("cdiscdata"))
+  tbl <- .pkg_data(name)
   ct_type <- if (grepl("sdtm", name, fixed = TRUE)) "sdtm" else "adam"
   version_date <- .resolve_ct_version(version, ct_type)
   tbl[tbl$valid_from <= version_date &

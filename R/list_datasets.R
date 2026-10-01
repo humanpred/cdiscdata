@@ -6,5 +6,5 @@
 #' @examples
 #' list_datasets()
 list_datasets <- function() {
-  datasets_catalogue
+  .pkg_data("datasets_catalogue")
 }
