@@ -37,15 +37,54 @@ read_ig_csv <- function(path) {
   }
 
   data.frame(
-    variable = pick("^Variable( Name)?$", exclude = "Label"),
-    label    = pick("Variable Label"),
-    type     = pick("^Type$"),
-    core     = pick("^Core$"),
-    codelist = pick("Codelist|Controlled Terms"),
-    role     = pick("^Role$"),
+    variable = tidy_text(pick("^Variable( Name)?$", exclude = "Label")),
+    label    = tidy_text(pick("Variable Label")),
+    type     = tidy_text(pick("^Type$")),
+    core     = tidy_text(pick("^Core$")),
+    codelist = tidy_text(pick("Codelist|Controlled Terms")),
+    role     = tidy_text(pick("^Role$")),
     notes    = pick("CDISC Notes|^Description$"),
     stringsAsFactors = FALSE
   )
+}
+
+# Collapse every run of whitespace (including the hard line breaks and
+# non-breaking spaces left by transcribing a wrapped Word/PDF table cell)
+# to a single space and trim the ends. Without this, a table cell that wrapped
+# across lines in the source document keeps a literal newline in the value, and
+# a cell with a trailing space in the source becomes e.g. the variable name
+# "--TESTCD " that never equals "--TESTCD". Applied to every identifying or
+# categorical field; not to `notes`, which is free text meant to keep its
+# paragraph breaks.
+tidy_text <- function(x) {
+  trimws(gsub("[[:space:] ]+", " ", x, perl = TRUE))
+}
+
+# Apply documented label overrides to a built IG table.
+#
+# A handful of labels as published in a CDISC IG exceed the 40-character
+# limit for a SAS v5 transport (XPT) variable label, which the same IGs state
+# for every variable they define (SDTMIG 3.3 section 4.2.1, "Variable
+# descriptive names (labels), up to 40 characters"). The IGs deal with this
+# by abbreviating in the domain tables themselves while leaving the generic
+# model table or a sibling row at its long form, so the long form is what
+# transcribes. `overrides` carries, for each such row, the published
+# abbreviation to use instead (or, where the IG publishes none, a sibling-
+# consistent one) and `evidence` naming the table checked; this stops, rather
+# than silently skipping, if an override does not match exactly the rows it is
+# written for.
+apply_label_overrides <- function(tbl, overrides, by) {
+  stopifnot(all(c(by, "label", "evidence") %in% names(overrides)))
+  for (i in seq_len(nrow(overrides))) {
+    hit <- rep(TRUE, nrow(tbl))
+    for (col in by) hit <- hit & !is.na(tbl[[col]]) & tbl[[col]] == overrides[[col]][i]
+    if (!any(hit)) {
+      stop("Label override matched no rows: ",
+           paste(by, unlist(overrides[i, by]), sep = "=", collapse = ", "))
+    }
+    tbl$label[hit] <- overrides$label[i]
+  }
+  tbl
 }
 
 # Extract a codelist submission value (e.g. "PKPARMCD") from the free-text

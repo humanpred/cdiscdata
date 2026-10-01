@@ -91,6 +91,72 @@ test_that("historical codelist_name/codelist_code gaps stay within a known bound
   expect_lt(sum(is.na(ct_sdtm$term_code) & is.na(ct_sdtm$codelist_code)), 200L)
 })
 
+# Mechanical gate on the IG tables' identifying text, so the transcription
+# problems found by nca.reporter when writing XPT v5 files (40-character
+# variable-label limit, SDTMIG 3.3 section 4.2.1) cannot recur unnoticed:
+# hard-wrapped labels with embedded newlines, over-length labels, section
+# sub-headings transcribed as variables (NA label), and variable names with
+# trailing whitespace (e.g. "--TESTCD " never equals "--TESTCD").
+ig_tables_for_gate <- function() {
+  list(ig_sdtm = get_ig("sdtm"), ig_adam = get_ig("adam"))
+}
+
+test_that("no IG label is NA, contains a newline, or exceeds 40 characters", {
+  for (nm in names(ig_tables_for_gate())) {
+    tbl <- ig_tables_for_gate()[[nm]]
+    expect_false(anyNA(tbl$label), label = paste(nm, "has an NA label"))
+    expect_false(any(grepl("[\r\n]", tbl$label)),
+                 label = paste(nm, "has a label containing a newline"))
+    too_long <- nchar(tbl$label) > 40L
+    expect_equal(tbl$variable[too_long], character(0L),
+                 label = paste(nm, "variables whose label exceeds 40 characters"))
+  }
+})
+
+test_that("no IG variable name is NA, blank, or contains whitespace", {
+  for (nm in names(ig_tables_for_gate())) {
+    tbl <- ig_tables_for_gate()[[nm]]
+    expect_false(anyNA(tbl$variable), label = paste(nm, "has an NA variable"))
+    expect_equal(tbl$variable[!nzchar(tbl$variable)], character(0L))
+    expect_equal(tbl$variable[grepl("[[:space:]]", tbl$variable)], character(0L),
+                 label = paste(nm, "variable names containing whitespace"))
+  }
+})
+
+test_that("IG categorical fields carry no leading/trailing or doubled whitespace", {
+  for (nm in names(ig_tables_for_gate())) {
+    tbl <- ig_tables_for_gate()[[nm]]
+    for (col in intersect(c("type", "core", "codelist", "role"), names(tbl))) {
+      v <- tbl[[col]]
+      v <- v[!is.na(v)]
+      expect_equal(v[v != trimws(v) | grepl("[[:space:]]{2,}|[\r\n]", v)], character(0L),
+                   label = paste(nm, col, "values with stray whitespace"))
+    }
+  }
+})
+
+test_that("the specific IG labels that exceeded 40 characters are the abbreviated published forms", {
+  sdtm <- get_ig("sdtm")
+  testcd <- sdtm[sdtm$source == "SDTM_MODEL" & sdtm$variable == "--TESTCD" &
+                   sdtm$version %in% c("1.4", "1.5", "1.6"), ]
+  expect_equal(sort(testcd$version), c("1.4", "1.5", "1.6"))
+  expect_equal(testcd$label, rep("Short Name of Measurement, Test or Exam", 3L))
+  expect_equal(sdtm$label[sdtm$variable == "PPSTRESC" & sdtm$source == "SDTMIG"],
+               "Character Result/Finding in Std Format")
+
+  adam <- get_ig("adam")
+  expect_equal(adam$label[adam$variable == "PBCHGCyN"],
+               "Percent Chg to Baseline Category y (N)")
+})
+
+test_that("ADaMIG 1.0 ADSL section sub-headings are not transcribed as variables", {
+  adsl_10 <- get_ig("adam", version = "1.0")
+  adsl_10 <- adsl_10[adsl_10$dataset == "ADSL", ]
+  expect_false(any(c("Study Identifiers", "Subject Demographics",
+                     "Population Indicator(s)", "Treatment Variables",
+                     "Trial Dates") %in% adsl_10$variable))
+})
+
 # Gap-detection thresholds below are calibrated against verified NCI
 # publishing history (checked directly against NCI's own file listing API;
 # see data-raw/utils_nci.R's list_archive_dates()), not against an assumed

@@ -1,5 +1,34 @@
 # cdiscdata (development version)
 
+## IG label and identifier fixes
+
+* Fixed transcription defects in `ig_sdtm` and `ig_adam` found by nca.reporter
+  when writing XPT v5 files (labels are limited to 40 characters; SDTMIG 3.3
+  section 4.2.1):
+  - 62 `ig_sdtm` and 271 `ig_adam` labels carried literal newlines from
+    hard-wrapped Word table cells; whitespace is now collapsed for every
+    identifying field (`variable`, `label`, `type`, `core`, `codelist`,
+    `role`).
+  - 112 `ig_sdtm` and 7 `ig_adam` variable names had trailing spaces (so
+    `"--TESTCD "` never equalled `"--TESTCD"`, and the ADSL/BDS
+    de-duplication in `build_domain_spec()` silently missed e.g. `"FASFL "`);
+    `type` values such as `"Char "` were padded the same way.
+  - Four labels over 40 characters now use the abbreviated form: SDTM Model
+    1.4-1.6 `--TESTCD` ("Short Name of Measurement, Test or Exam", as in
+    SDTMIG 3.3 section 6.3.10.1), SDTMIG 3.2 `PPSTRESC` ("Character
+    Result/Finding in Std Format", as in SDTMIG 3.3 section 6.3.11.2), and
+    ADaMIG 1.2 `PBCHGCyN` ("Percent Chg to Baseline Category y (N)"; the
+    IG publishes 41 characters here, so this follows its sibling
+    `PCHGCAyN`'s "Chg" abbreviation and is a derived label).
+  - Five section sub-headings in the ADaMIG 1.0 combined ADSL table
+    ("Study Identifiers", "Subject Demographics", ...) were transcribed as
+    variables with no label; they are dropped (`ig_adam` is 851 rows, was
+    856).
+  - New gates in `tests/testthat/test-data_integrity.R`: no label in
+    `ig_sdtm`/`ig_adam` is `NA`, contains a newline, or exceeds 40
+    characters; no variable name is `NA`, blank, or contains whitespace; no
+    `type`/`core`/`codelist`/`role` value has stray whitespace.
+
 # cdiscdata 0.2.0
 
 ## Classed conditions and coverage

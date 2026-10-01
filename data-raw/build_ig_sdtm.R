@@ -80,10 +80,36 @@ sdtmig_rows <- do.call(rbind, c(
 ig_sdtm <- rbind(model_rows, sdtmig_rows)
 rownames(ig_sdtm) <- NULL
 
+# ── Labels over the 40-character XPT limit ─────────────────────────────────
+# Checked against the published SDTMIG v3.3 (CDISC wiki PDF
+# https://wiki.cdisc.org/download/attachments/66274516/sdtmig_v3.3.pdf):
+# - section 4.2.1: "Variable descriptive names (labels), up to 40
+#   characters, should be provided as data variable labels for all
+#   variables, including Supplemental Qualifier variables."
+# - section 6.3.11.2 (Pharmacokinetics Parameters), PP specification table:
+#   PPSTRESC is labelled "Character Result/Finding in Std Format".
+# - section 6.3.10.1 (Generic Morphology/Physiology Specification), generic
+#   table: --TESTCD is labelled "Short Name of Measurement, Test or Exam".
+#   Model 1.7 as transcribed already uses a 40-character form of this
+#   (with an Oxford comma); Model 1.4-1.6 transcribe the long form
+#   "Short Name of Measurement, Test or Examination" (46 characters).
+sdtm_label_overrides <- data.frame(
+  source   = c("SDTM_MODEL", "SDTM_MODEL", "SDTM_MODEL", "SDTMIG"),
+  version  = c("1.4", "1.5", "1.6", "3.2"),
+  variable = c("--TESTCD", "--TESTCD", "--TESTCD", "PPSTRESC"),
+  label    = c(rep("Short Name of Measurement, Test or Exam", 3),
+               "Character Result/Finding in Std Format"),
+  evidence = c(rep("SDTMIG v3.3 6.3.10.1 generic table; 4.2.1 label limit", 3),
+               "SDTMIG v3.3 6.3.11.2 PP specification table"),
+  stringsAsFactors = FALSE
+)
+ig_sdtm <- apply_label_overrides(ig_sdtm, sdtm_label_overrides,
+                                 by = c("source", "version", "variable"))
+
 stopifnot(
   all(c("source", "version", "class", "domain", "order", "variable", "label",
         "type", "role", "core", "codelist", "length", "notes") %in% names(ig_sdtm)),
-  !anyNA(ig_sdtm$variable), !anyNA(ig_sdtm$version)
+  !anyNA(ig_sdtm$variable), !anyNA(ig_sdtm$version), !anyNA(ig_sdtm$label)
 )
 
 usethis::use_data(ig_sdtm, overwrite = TRUE, compress = "xz")

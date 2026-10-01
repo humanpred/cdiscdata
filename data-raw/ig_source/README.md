@@ -48,3 +48,18 @@ choice). `ig_sdtm$length` / `ig_adam$length` are `NA` except for the small
 number of variables (PPTESTCD, PPTEST, ...) whose IG text explicitly states
 a maximum character count, which `parse_documented_length()` recovers from
 that text.
+
+## Whitespace and labels
+
+`read_ig_csv()` collapses every run of whitespace (hard line breaks and
+non-breaking spaces from wrapped Word/PDF table cells included) in the
+`variable`, `label`, `type`, `core`, `codelist`, and `role` fields, because a
+wrapped cell otherwise keeps a literal newline and a cell with a trailing
+space becomes a variable name such as `"--TESTCD "`. `notes` is left as is.
+
+Labels in the IGs are limited to 40 characters (SDTMIG 3.3 section 4.2.1);
+the few that transcribe longer are set in `sdtm_label_overrides`
+(`build_ig_sdtm.R`) and `adam_label_overrides` (`build_ig_adam.R`), each with
+the IG table it was checked against. The ADaMIG 1.2 PBCHGCyN override is a
+derived abbreviation, since the IG itself publishes 41 characters there.
+`tests/testthat/test-data_integrity.R` gates all of this.
