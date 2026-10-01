@@ -37,7 +37,7 @@
     characters (bar the exception above); no variable name is `NA`, blank, or contains whitespace; no
     `type`/`core`/`codelist`/`role` value has stray whitespace.
 
-## SDTMIG 3.3 PP/SUPP-- and `get_ig(domain =)`
+## Newer SDTMIG PP and SUPP-- tables, and `get_ig` by domain
 
 * `ig_sdtm` now carries the SDTMIG PP domain and generic SUPP-- structure at
   version 3.3 as well as 3.2, and `get_ig()` gains a `domain` argument
@@ -63,7 +63,7 @@
   `PTAETORD`, `PPPDTC`, and `PPPDY` (seeded from aNCA) are not published
   SDTMIG names.
 
-## `build_domain_spec(sdtm_domain =)`
+## ADPP: optional PP variables via `sdtm_domain`
 
 * `build_domain_spec("ADPP", sdtm_domain = "PP")` also unions the SDTMIG PP
   domain's variables into the ADPP spec, the same way `adsl = TRUE` unions
