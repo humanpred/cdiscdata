@@ -22,11 +22,6 @@ data/ct_sdtm.rda, data/ct_adam.rda
   Enterprise Vocabulary Services (https://evs.nci.nih.gov/ftp1/CDISC/), a
   work of the United States Government in the public domain.
 
-data/ig_sdtm.rda, data/ig_adam.rda
-  Variable metadata transcribed from the published SDTM, SDTMIG, and ADaMIG
-  specification documents (facts about the standards, not copies of the
-  documents).
-
 data/ig_sdtm.rda, data/model_sdtm.rda, data/ig_adam.rda, data/cdash_model.rda,
 data/ig_cdash.rda, data/qrs_supplement.rda, data/ig_sources.rda
   Variable and item metadata of the CDISC standards (SDTM model, SDTMIG,
