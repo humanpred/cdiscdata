@@ -11,13 +11,21 @@ Authors@R: c(
            comment = "Define-XML stylesheets in inst/extdata/stylesheet (MIT License)"),
     person("National Cancer Institute Enterprise Vocabulary Services", role = "dtc",
            comment = "CDISC Controlled Terminology (public domain)"))
-Description: Provides versioned CDISC Controlled Terminology (SDTM, ADaM),
-    variable metadata for the SDTM model, the SDTMIG, SENDIG, and ADaMIG
-    families of implementation guides, CDASH, and QRS supplements,
-    and Define-XML schemas (XSD) and CDISC XSLT stylesheets. Uses a
-    validity-date design to store all historical CT versions compactly
-    without redundant row duplication. Intended as a shared data
-    dependency for pharmaverse-aligned packages.
+Description: Provides versioned reference data for the standards of the
+    Clinical Data Interchange Standards Consortium (CDISC)
+    <https://www.cdisc.org/standards>: the CDISC Controlled Terminology (CT)
+    for the Study Data Tabulation Model (SDTM) and the Analysis Data Model
+    (ADaM); variable metadata for the SDTM model and for the families of the
+    SDTM Implementation Guide (SDTMIG), the Standard for Exchange of
+    Nonclinical Data Implementation Guide (SENDIG), and the ADaM
+    Implementation Guide (ADaMIG); the Clinical Data Acquisition Standards
+    Harmonization (CDASH) model and implementation guide; the Questionnaires,
+    Ratings, and Scales (QRS) supplements; and the Define-XML schemas, written
+    in the Extensible Markup Language (XML) Schema Definition (XSD) language,
+    with Extensible Stylesheet Language Transformations (XSLT) stylesheets
+    for them. A validity-date design stores every historical CT version
+    compactly, without duplicating rows. Intended as a shared data
+    dependency for pharmaverse-aligned packages <https://pharmaverse.org>.
 License: MIT + file LICENSE
 Depends: R (>= 4.1.0)
 Suggests:
