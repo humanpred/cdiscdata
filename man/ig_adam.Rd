@@ -7,39 +7,52 @@
 \format{
 A data frame with columns:
 \describe{
-  \item{dataset}{\code{"ADSL"} or \code{"BDS"}.}
-  \item{version}{ADaMIG version, e.g. \code{"1.2"}.}
-  \item{category}{The Rsdtm source file's variable-category name (e.g.
-    \code{"ADSL_Treatment_Variables"}, \code{"Timing_Variables_BDS_Datasets"}),
-    kept for provenance; ADaMIG itself does not group these tables this
-    way.}
-  \item{order}{Row order within its category file, as published.}
+  \item{standard}{The standard, e.g. \code{"ADaMIG"} or
+    \code{"ADaMIG-NCA"}.}
+  \item{version}{The standard's version, e.g. \code{"1.3"}.}
+  \item{structure}{The data structure, as named in the export, e.g.
+    \code{"Basic Data Structure"} or \code{"Subject-Level Analysis
+    Dataset"} (ADSL).}
+  \item{variable_set}{The variable set within the structure, e.g.
+    \code{"Timing"}.}
+  \item{order}{Row order within the export for that standard version.}
   \item{variable}{Variable name, e.g. \code{"AVAL"}.}
-  \item{label}{Variable label.}
+  \item{label}{Variable label. At most 40 characters except
+    \code{PBCHGCyN} in ADaMIG 1.2 and 1.3, which the guide publishes at 41.}
   \item{type}{\code{"Char"} or \code{"Num"}.}
-  \item{core}{ADaMIG Core designation (\code{"Req"}/\code{"Exp"}/
-    \code{"Perm"}/\code{"Cond"}).}
-  \item{codelist}{Codelist submission value referenced by this variable,
-    parsed the same way as \code{\link{ig_sdtm}}'s \code{codelist}
-    column; see there for details and caveats.}
-  \item{length}{Maximum character length when the IG text states one
-    explicitly; \code{NA} otherwise. See \code{\link{ig_sdtm}}.}
-  \item{notes}{CDISC Notes text for the variable.}
+  \item{core}{Core designation (\code{"Req"}, \code{"Perm"},
+    \code{"Cond"}, ...).}
+  \item{codelist_code}{CDISC CT codelist C-code(s) the variable uses;
+    several are separated by \code{"; "}. \code{NA} when none.}
+  \item{codelist_submission_values}{The codelist submission value(s),
+    where the export gives them.}
+  \item{described_value_domain}{A described value domain, where the
+    variable has one rather than a codelist.}
+  \item{value_list}{A fixed list of allowed values, where there is one.}
 }
 }
 \source{
-\url{https://github.com/humanpred/Rsdtm}; see
-  \code{data-raw/ig_source/README.md} for full attribution.
+CDISC Library CSV exports, downloaded under CDISC's terms and not
+  redistributed; see \code{data-raw/README.md}.
 }
 \usage{
 ig_adam
 }
 \description{
-Versioned ADaMIG variable metadata: the ADSL (subject-level) variable
-table and the generic BDS (Basic Data Structure) variable table (used for
-ADPP, a BDS-structured dataset), for ADaMIG versions 1.0, 1.1, and 1.2.
-Use \code{\link{get_ig}} to retrieve it, and
-\code{\link{build_domain_spec}} to build a ready-to-use ADPP variable
-spec from it (joined to CT for codelist ids).
+One row per variable of seven ADaM standards, at every version: ADaMIG
+(1.0, 1.1, 1.2, 1.3), ADaMIG-MD (1.0), ADaMIG-NCA (1.0), ADaM-ADAE (1.0),
+ADaM-BDS-TTE (1.0), ADaM-OCCDS (1.0, 1.1), and ADaM-popPK (1.0); 11 standard
+versions in all. Built from CDISC Library CSV exports that are not part of
+this package or repository (see \code{\link{ig_sources}} and
+\code{data-raw/README.md}); only variable metadata is carried, not the
+guides' prose. Use \code{\link{get_ig}} to retrieve a standard, and
+\code{\link{build_domain_spec}} to build an ADPP variable spec from it
+(ADPP is a Basic Data Structure dataset; ADaMIG-NCA extends it).
+}
+\details{
+A (standard, version, structure, variable_set, variable) is unique: the
+variable set is part of the key because ADaM-OCCDS defines \code{DECDORGw}
+twice, once for each dictionary-specific variable set, with different
+labels.
 }
 \keyword{datasets}

@@ -13,3 +13,10 @@
 /doc/
 /Meta/
 docs
+
+*.tgz
+src/*.o
+src/*.so
+src/*.dll
+Rplots.pdf
+inst/doc/

@@ -3,6 +3,7 @@
 export(available_ct_versions)
 export(build_domain_spec)
 export(cdiscdata_versions)
+export(get_cdash)
 export(get_ct)
 export(get_dataset)
 export(get_ig)
