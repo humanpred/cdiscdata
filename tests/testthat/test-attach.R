@@ -5,13 +5,10 @@
 # even from inside the package's own functions. See R/utils.R's .pkg_data()
 # for the fix and rationale.
 
-# Locate a genuine, buildable package source tree, if one is available in
-# this test run. devtools::test()/pkgload::load_all() set the working
-# directory to the package root; R CMD check instead runs tests against an
-# already-installed copy with no source tree alongside it, in which case the
-# ambient installation (found via .libPaths()) already *is* the build under
-# test, and there is nothing to rebuild.
-locate_pkg_source_root <- function() {
+# Whether the tests run from a package source tree (devtools::test() and
+# pkgload::load_all() set the working directory to the package root), rather
+# than against an installed copy as under R CMD check
+running_from_source <- function() {
   candidates <- unique(c(
     getwd(),
     tryCatch(
@@ -21,46 +18,23 @@ locate_pkg_source_root <- function() {
   ))
   for (root in candidates) {
     has_desc <- file.exists(file.path(root, "DESCRIPTION"))
-    r_files  <- if (dir.exists(file.path(root, "R"))) {
-      list.files(file.path(root, "R"), pattern = "[.]R$")
-    } else {
-      character(0L)
+    has_r <- dir.exists(file.path(root, "R")) && length(list.files(file.path(root, "R"), pattern = "[.]R$")) > 0L
+    if (has_desc && has_r) {
+      return(TRUE)
     }
-    if (has_desc && length(r_files) > 0L) return(root)
   }
-  NULL
+  FALSE
 }
 
+# The subprocess must load cdiscdata from an installed copy that is the build
+# under test.  Under R CMD check, the installed copy under .libPaths() is that
+# build; from a source tree, the installed copy (if any) may be older, and the
+# test does not install one, so it skips.
 test_that("get_ct works via cdiscdata:: alone, no library(), in a fresh subprocess", {
   skip_on_cran()
   skip_if_not_installed("callr")
-
-  root <- locate_pkg_source_root()
-  if (is.null(root)) {
-    # No source tree alongside the tests (e.g. R CMD check): the ambient
-    # installation under .libPaths() is the build under test.
-    lib <- .libPaths()
-  } else {
-    skip_if_not_installed("pkgbuild")
-    build_dir <- withr::local_tempdir()
-    lib       <- withr::local_tempdir()
-    tarball <- pkgbuild::build(
-      root, dest_path = build_dir, quiet = TRUE, vignettes = FALSE
-    )
-    # Installed in a separate subprocess, not in this session: when running
-    # under devtools::test(), cdiscdata is already loaded here via pkgload,
-    # and install.packages() refuses to (re)install a package that is
-    # currently in use in the calling session, even into an unrelated
-    # library path.
-    callr::r(
-      function(tarball, lib) {
-        utils::install.packages(tarball, repos = NULL, type = "source",
-                                lib = lib, quiet = TRUE)
-      },
-      args = list(tarball = tarball, lib = lib)
-    )
-    lib <- c(lib, .libPaths())
-  }
+  skip_if(running_from_source(), "Needs the installed build under test (run under R CMD check)")
+  lib <- .libPaths()
 
   sdtm <- callr::r(function() cdiscdata::get_ct("sdtm"), libpath = lib)
   expect_s3_class(sdtm, "data.frame")

@@ -36,8 +36,7 @@ Suggests:
     pkgdown,
     knitr,
     rmarkdown,
-    callr,
-    pkgbuild
+    callr
 LazyData: true
 LazyDataCompression: xz
 Encoding: UTF-8
