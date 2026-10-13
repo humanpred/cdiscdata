@@ -8,6 +8,11 @@
   `Authors@R` and `inst/COPYRIGHTS` (the README had described them as
   Apache-licensed), and a spelling word list is added.
 
+* Resubmission: the Description explains every acronym and links the CDISC
+  standards, and the attach test no longer installs the package (it runs
+  against the installed copy under `R CMD check` and skips from a source
+  tree), so pkgbuild leaves Suggests.
+
 * `inst/COPYRIGHTS` lists the source, copyright holder, and license of every bundled file and data table, including the standards metadata tables added in this version.
 
 ## Every CDISC Library implementation-guide export, replacing the Rsdtm tables
