@@ -8,7 +8,7 @@
   `Authors@R` and `inst/COPYRIGHTS` (the README had described them as
   Apache-licensed), and a spelling word list is added.
 
-* `inst/COPYRIGHTS` lists the source, copyright holder and licence of every bundled file and data table, including the standards metadata tables added in this version.
+* `inst/COPYRIGHTS` lists the source, copyright holder, and license of every bundled file and data table, including the standards metadata tables added in this version.
 
 ## Every CDISC Library implementation-guide export, replacing the Rsdtm tables
 
