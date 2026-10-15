@@ -2,8 +2,10 @@
 # Safe to re-run; existing files are not re-downloaded.
 #
 # Sources (both publicly available, open-source licensed):
-#   Define-XML 2.1: cdisc-org/data-definition-engine (Apache License 2.0)
-#   Define-XML 2.0: dbosak01/defineR CRAN package (MIT License)
+#   Define-XML 2.1: cdisc-org/data-definition-engine (MIT License; the
+#     stylesheet itself is Copyright (c) Lex Jansen, MIT License)
+#   Define-XML 2.0: dbosak01/defineR CRAN package (CC0; the stylesheet itself
+#     is Copyright (c) Lex Jansen, MIT License)
 
 STYLESHEET_URLS <- c(
   "define2-1-0.xsl" =

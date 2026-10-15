@@ -1,16 +1,31 @@
 Package: cdiscdata
 Title: Versioned CDISC Standards Reference Data
-Version: 0.2.0.9000
-Authors@R: person("Bill", "Denney", email = "wdenney@humanpred.com",
-    role = c("aut", "cre"),
-    comment = c(ORCID = "0000-0002-5759-428X"))
-Description: Provides versioned CDISC Controlled Terminology (SDTM, ADaM),
-    variable metadata for the SDTM model, the SDTMIG, SENDIG, and ADaMIG
-    families of implementation guides, CDASH, and QRS supplements,
-    and Define-XML schemas (XSD) and CDISC XSLT stylesheets. Uses a
-    validity-date design to store all historical CT versions compactly
-    without redundant row duplication. Intended as a shared data
-    dependency for pharmaverse-aligned packages.
+Version: 0.2.0
+Authors@R: c(
+    person("Bill", "Denney", email = "wdenney@humanpredictions.com",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5759-428X")),
+    person("Clinical Data Interchange Standards Consortium (CDISC)", role = "cph",
+           comment = "Define-XML schema files in inst/extdata/schema (MIT License)"),
+    person("Lex", "Jansen", role = "cph",
+           comment = "Define-XML stylesheets in inst/extdata/stylesheet (MIT License)"),
+    person("National Cancer Institute Enterprise Vocabulary Services", role = "dtc",
+           comment = "CDISC Controlled Terminology (public domain)"))
+Description: Provides versioned reference data for the standards of the
+    Clinical Data Interchange Standards Consortium (CDISC)
+    <https://www.cdisc.org/standards>: the CDISC Controlled Terminology (CT)
+    for the Study Data Tabulation Model (SDTM) and the Analysis Data Model
+    (ADaM); variable metadata for the SDTM model and for the families of the
+    SDTM Implementation Guide (SDTMIG), the Standard for Exchange of
+    Nonclinical Data Implementation Guide (SENDIG), and the ADaM
+    Implementation Guide (ADaMIG); the Clinical Data Acquisition Standards
+    Harmonization (CDASH) model and implementation guide; the Questionnaires,
+    Ratings, and Scales (QRS) supplements; and the Define-XML schemas, written
+    in the Extensible Markup Language (XML) Schema Definition (XSD) language,
+    with Extensible Stylesheet Language Transformations (XSLT) stylesheets
+    for them. A validity-date design stores every historical CT version
+    compactly, without duplicating rows. Intended as a shared data
+    dependency for pharmaverse-aligned packages <https://pharmaverse.org>.
 License: MIT + file LICENSE
 Depends: R (>= 4.1.0)
 Suggests:
@@ -21,11 +36,11 @@ Suggests:
     pkgdown,
     knitr,
     rmarkdown,
-    callr,
-    pkgbuild
+    callr
 LazyData: true
 LazyDataCompression: xz
 Encoding: UTF-8
+Language: en-US
 Config/testthat/edition: 3
 URL: https://github.com/humanpred/cdiscdata, https://humanpred.github.io/cdiscdata/
 BugReports: https://github.com/humanpred/cdiscdata/issues
