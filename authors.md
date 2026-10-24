@@ -19,7 +19,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/humanpred/cdiscdata/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/humanpred/cdiscdata/blob/v0.2.0/DESCRIPTION)
 
 Denney B (2026). *cdiscdata: Versioned CDISC Standards Reference Data*.
 R package version 0.2.0, <https://github.com/humanpred/cdiscdata>.
