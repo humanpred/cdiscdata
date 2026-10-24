@@ -1,8 +1,21 @@
 # Changelog
 
-## cdiscdata (development version)
+## cdiscdata 0.2.0
 
-- `inst/COPYRIGHTS` lists the source, copyright holder and licence of
+### CRAN release preparation
+
+- First CRAN submission: the maintainer email address is corrected, the
+  copyright holders of the bundled Define-XML schema files (CDISC, MIT
+  License) and stylesheets (Lex Jansen, MIT License) are stated in
+  `Authors@R` and `inst/COPYRIGHTS` (the README had described them as
+  Apache-licensed), and a spelling word list is added.
+
+- Resubmission: the Description explains every acronym and links the
+  CDISC standards, and the attach test no longer installs the package
+  (it runs against the installed copy under `R CMD check` and skips from
+  a source tree), so pkgbuild leaves Suggests.
+
+- `inst/COPYRIGHTS` lists the source, copyright holder, and license of
   every bundled file and data table, including the standards metadata
   tables added in this version.
 
@@ -160,8 +173,6 @@
   not list. `data-raw/README.md` says how to obtain them. The Rsdtm
   copies in `data-raw/ig_source/` and the scripts that read them are
   removed.
-
-## cdiscdata 0.2.0
 
 ### Classed conditions and coverage
 

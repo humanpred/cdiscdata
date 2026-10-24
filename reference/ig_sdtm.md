@@ -72,7 +72,7 @@ A data frame with columns:
 
   CDISC CT codelist C-code(s) the variable uses, as published; several
   are separated by `"; "` (e.g. PPORRESU lists PKUNIT and four
-  normalised-unit codelists). `NA` when none.
+  normalized-unit codelists). `NA` when none.
 
 - codelist_submission_values:
 

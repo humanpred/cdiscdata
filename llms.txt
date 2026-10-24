@@ -175,9 +175,9 @@ decisions:
 | SDTM model, SDTMIG, SENDIG, ADaMIG, and related guides: variable metadata | 34 CDISC Library CSV exports, downloaded under CDISC’s terms and **not redistributed**; only variable metadata is transcribed (not the CDISC Notes, Description, Definition, Notes, or Examples text); see `data-raw/README.md` | CDISC terms and conditions |
 | CDASH model and CDASHIG variable metadata | 9 CDISC Library CSV exports, as above; the collection wording (question text, prompt) is carried, the definitions, mapping and CRF completion instructions, and implementation notes are not | CDISC terms and conditions |
 | QRS supplement item metadata | 9 CDISC Library CSV exports, as above; the `--TEST` and `--TESTCD` names and codes are carried, the item text is not | CDISC terms and conditions |
-| Define-XML 2.1 schema | [cdisc-org/DataExchange-RWD-Lineage](https://github.com/cdisc-org/DataExchange-RWD-Lineage) | Apache 2.0 |
+| Define-XML 2.1 schema | [cdisc-org/DataExchange-RWD-Lineage](https://github.com/cdisc-org/DataExchange-RWD-Lineage) | MIT (CDISC) |
 | Define-XML 2.0 schema | [dbosak01/defineR](https://github.com/dbosak01/defineR) | MIT |
-| XSLT stylesheets | [cdisc-org/data-definition-engine](https://github.com/cdisc-org/data-definition-engine) / [dbosak01/defineR](https://github.com/dbosak01/defineR) | Apache 2.0 / MIT |
+| XSLT stylesheets | [cdisc-org/data-definition-engine](https://github.com/cdisc-org/data-definition-engine) / [dbosak01/defineR](https://github.com/dbosak01/defineR) | MIT (Lex Jansen) |
 
 ## Related packages
 
