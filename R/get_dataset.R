@@ -20,9 +20,12 @@
 #'   path string (for schemas/stylesheets).
 #' @export
 #' @examples
-#' get_dataset("ct_sdtm")
-#' get_dataset("ct_sdtm", version = "2024-09-27")
-#' get_dataset("ig_adam", version = "1.3")
+#' ct <- get_dataset("ct_sdtm")
+#' head(ct)
+#' ct_2024 <- get_dataset("ct_sdtm", version = "2024-09-27")
+#' nrow(ct_2024)
+#' ig_adam_1_3 <- get_dataset("ig_adam", version = "1.3")
+#' nrow(ig_adam_1_3)
 #' get_dataset("define_xml_schema", version = "2.1")
 #' get_dataset("define_xml_stylesheet", version = "2.0")
 get_dataset <- function(name, version = NULL) {

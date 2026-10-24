@@ -67,7 +67,7 @@
 #'     \code{"Perm"}, \code{"Cond"}, or the published \code{"Not used"}).}
 #'   \item{codelist_code}{CDISC CT codelist C-code(s) the variable uses, as
 #'     published; several are separated by \code{"; "} (e.g. PPORRESU lists
-#'     PKUNIT and four normalised-unit codelists). \code{NA} when none.}
+#'     PKUNIT and four normalized-unit codelists). \code{NA} when none.}
 #'   \item{codelist_submission_values}{The codelist submission value(s),
 #'     where the export gives them (the SEND guides do; the SDTMIG exports do
 #'     not, so look the code up in \code{\link{get_ct}}).}
